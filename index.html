@@ -1,0 +1,110 @@
+index.html
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Market Run</title>
+
+<style>
+body {
+  background:#111;
+  color:#fff;
+  font-family:Arial;
+  text-align:center;
+}
+
+.city {
+  background:#222;
+  margin:10px;
+  padding:15px;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+button {
+  padding:10px;
+  margin-top:10px;
+  background:gold;
+  border:none;
+  border-radius:8px;
+}
+
+#log {
+  margin-top:20px;
+  background:#000;
+  padding:10px;
+  border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Market Run</h1>
+
+<p>Day: <span id="day">1</span></p>
+<p>Cash: $<span id="cash">2500</span></p>
+<p>City: <span id="city">Des Moines</span></p>
+
+<h2>Choose City</h2>
+
+<div class="city" onclick="selectCity('Des Moines')">Des Moines</div>
+<div class="city" onclick="selectCity('Waterloo')">Waterloo</div>
+<div class="city" onclick="selectCity('Cedar Falls')">Cedar Falls</div>
+<div class="city" onclick="selectCity('Ames')">Ames</div>
+
+<div id="info"></div>
+<div id="log"></div>
+
+<script>
+
+let cash = 2500
+let day = 1
+let currentCity = "Des Moines"
+
+function log(msg){
+  document.getElementById("log").innerHTML =
+  msg + "<br>" + document.getElementById("log").innerHTML
+}
+
+function selectCity(city){
+  document.getElementById("info").innerHTML =
+  "<h3>"+city+"</h3>" +
+  "<button onclick='travel(\""+city+"\")'>Travel Here</button>"
+}
+
+function travel(city){
+
+  if(city === currentCity){
+    alert("You're already there")
+    return
+  }
+
+  currentCity = city
+  day++
+
+  let event = Math.random()
+
+  if(event < 0.3){
+    let loss = Math.floor(Math.random()*300)
+    cash -= loss
+    log("💀 Mugged! Lost $" + loss)
+  }
+  else if(event < 0.6){
+    let gain = Math.floor(Math.random()*300)
+    cash += gain
+    log("🔥 Lucky deal! Gained $" + gain)
+  }
+  else{
+    log("😐 Quiet trip.")
+  }
+
+  document.getElementById("day").innerText = day
+  document.getElementById("cash").innerText = cash
+  document.getElementById("city").innerText = city
+}
+
+</script>
+
+</body>
+</html>
