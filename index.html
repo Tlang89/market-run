@@ -25,7 +25,7 @@
     color:var(--text);
   }
   .wrap{
-    max-width:980px;
+    max-width:1100px;
     margin:0 auto;
     padding:16px;
   }
@@ -41,11 +41,11 @@
   }
   .stats{
     display:grid;
-    grid-template-columns:repeat(3,1fr);
+    grid-template-columns:repeat(4,1fr);
     gap:10px;
     margin-bottom:14px;
   }
-  .card{
+  .card,.panel{
     background:var(--panel);
     border:1px solid var(--line);
     border-radius:14px;
@@ -59,16 +59,14 @@
   }
   .value{
     color:var(--gold);
-    font-size:28px;
+    font-size:24px;
     font-weight:700;
     margin-top:6px;
   }
-  .panel{
-    background:var(--panel);
-    border:1px solid var(--line);
-    border-radius:16px;
-    padding:14px;
-    margin-bottom:14px;
+  .grid{
+    display:grid;
+    grid-template-columns:1.3fr 1fr;
+    gap:14px;
   }
   .panel h2{
     margin:0 0 10px 0;
@@ -89,9 +87,7 @@
     fill:none;
     opacity:.95;
   }
-  .cityNode{
-    cursor:pointer;
-  }
+  .cityNode{cursor:pointer}
   .cityPulse{
     fill:rgba(119,194,255,.08);
     stroke:rgba(119,194,255,.5);
@@ -132,13 +128,14 @@
     display:grid;
     grid-template-columns:repeat(2,1fr);
     gap:10px;
+    margin-bottom:10px;
   }
-  .cityBtn{
+  .cityBtn,.buyBtn,.sellBtn,.travelBtn{
     background:var(--panel2);
     color:var(--text);
     border:none;
     border-radius:12px;
-    padding:12px;
+    padding:10px 12px;
     font-weight:700;
     cursor:pointer;
   }
@@ -147,11 +144,6 @@
   }
   .travelBtn{
     width:100%;
-    border:none;
-    border-radius:12px;
-    padding:12px;
-    font-weight:700;
-    cursor:pointer;
     background:var(--gold);
     color:#111;
     margin-top:10px;
@@ -160,8 +152,21 @@
     opacity:.6;
     cursor:not-allowed;
   }
+  .marketRow,.invRow{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    padding:10px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .actions{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+  }
   .log{
-    max-height:280px;
+    max-height:320px;
     overflow:auto;
     background:#101015;
     border:1px solid var(--line);
@@ -176,8 +181,9 @@
   .good{color:var(--good)}
   .bad{color:var(--bad)}
   .gold{color:var(--gold)}
-  @media (max-width:700px){
-    .stats{grid-template-columns:1fr}
+  @media (max-width:800px){
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .grid{grid-template-columns:1fr}
     .cityList{grid-template-columns:1fr}
   }
 </style>
@@ -185,77 +191,90 @@
 <body>
 <div class="wrap">
   <h1>Market Run</h1>
-  <div class="sub">Tap a city, then travel. The road pulse is the experience.</div>
+  <div class="sub">Open market mode: prices move in real time while you watch.</div>
 
   <div class="stats">
-    <div class="card">
-      <div class="label">Day</div>
-      <div class="value" id="dayStat">1</div>
-    </div>
-    <div class="card">
-      <div class="label">Cash</div>
-      <div class="value" id="cashStat">$2,500</div>
-    </div>
-    <div class="card">
-      <div class="label">Current City</div>
-      <div class="value" id="cityStat">Des Moines</div>
-    </div>
+    <div class="card"><div class="label">Day</div><div class="value" id="dayStat">1</div></div>
+    <div class="card"><div class="label">Cash</div><div class="value" id="cashStat">$2,500</div></div>
+    <div class="card"><div class="label">Current City</div><div class="value" id="cityStat">Des Moines</div></div>
+    <div class="card"><div class="label">Market Tick</div><div class="value" id="tickStat">Live</div></div>
   </div>
 
-  <div class="panel">
-    <h2>Travel Map</h2>
-    <div class="small">Select a city, then press travel to see the road pulse move there.</div>
+  <div class="grid">
+    <div>
+      <div class="panel">
+        <h2>Travel Map</h2>
+        <div class="small">Select a city, then travel. Prices keep moving while you wait.</div>
 
-    <div class="mapWrap">
-      <svg viewBox="0 0 900 300">
-        <path id="road-Des Moines-Waterloo" class="road" d="M160 190 C230 180, 300 165, 365 120" />
-        <path id="road-Des Moines-Ames" class="road" d="M160 190 C205 150, 245 120, 290 90" />
-        <path id="road-Waterloo-Cedar Falls" class="road" d="M365 120 C410 112, 445 110, 490 108" />
-        <path id="road-Ames-Cedar Falls" class="road" d="M290 90 C360 82, 430 88, 490 108" />
-        <path id="road-Ames-Waterloo" class="road" d="M290 90 C315 105, 338 113, 365 120" />
+        <div class="mapWrap">
+          <svg viewBox="0 0 900 300">
+            <path id="road-Des Moines-Waterloo" class="road" d="M160 190 C230 180, 300 165, 365 120" />
+            <path id="road-Des Moines-Ames" class="road" d="M160 190 C205 150, 245 120, 290 90" />
+            <path id="road-Waterloo-Cedar Falls" class="road" d="M365 120 C410 112, 445 110, 490 108" />
+            <path id="road-Ames-Cedar Falls" class="road" d="M290 90 C360 82, 430 88, 490 108" />
+            <path id="road-Ames-Waterloo" class="road" d="M290 90 C315 105, 338 113, 365 120" />
 
-        <g class="cityNode" data-city="Des Moines">
-          <circle class="cityPulse" cx="160" cy="190" r="24"></circle>
-          <circle id="node-Des Moines" class="cityCore" cx="160" cy="190" r="13"></circle>
-          <text class="cityLabel" x="104" y="225">Des Moines</text>
-        </g>
+            <g class="cityNode" data-city="Des Moines">
+              <circle class="cityPulse" cx="160" cy="190" r="24"></circle>
+              <circle id="node-Des Moines" class="cityCore" cx="160" cy="190" r="13"></circle>
+              <text class="cityLabel" x="104" y="225">Des Moines</text>
+            </g>
+            <g class="cityNode" data-city="Waterloo">
+              <circle class="cityPulse" cx="365" cy="120" r="24"></circle>
+              <circle id="node-Waterloo" class="cityCore" cx="365" cy="120" r="13"></circle>
+              <text class="cityLabel" x="330" y="92">Waterloo</text>
+            </g>
+            <g class="cityNode" data-city="Cedar Falls">
+              <circle class="cityPulse" cx="490" cy="108" r="24"></circle>
+              <circle id="node-Cedar Falls" class="cityCore" cx="490" cy="108" r="13"></circle>
+              <text class="cityLabel" x="454" y="80">Cedar Falls</text>
+            </g>
+            <g class="cityNode" data-city="Ames">
+              <circle class="cityPulse" cx="290" cy="90" r="24"></circle>
+              <circle id="node-Ames" class="cityCore" cx="290" cy="90" r="13"></circle>
+              <text class="cityLabel" x="270" y="62">Ames</text>
+            </g>
 
-        <g class="cityNode" data-city="Waterloo">
-          <circle class="cityPulse" cx="365" cy="120" r="24"></circle>
-          <circle id="node-Waterloo" class="cityCore" cx="365" cy="120" r="13"></circle>
-          <text class="cityLabel" x="330" y="92">Waterloo</text>
-        </g>
+            <circle id="travelPulse" class="travelPulse" cx="-100" cy="-100" r="8"></circle>
+          </svg>
+          <div id="travelBanner" class="travelBanner"></div>
+        </div>
 
-        <g class="cityNode" data-city="Cedar Falls">
-          <circle class="cityPulse" cx="490" cy="108" r="24"></circle>
-          <circle id="node-Cedar Falls" class="cityCore" cx="490" cy="108" r="13"></circle>
-          <text class="cityLabel" x="454" y="80">Cedar Falls</text>
-        </g>
+        <div class="cityList" id="cityList"></div>
+        <button class="travelBtn" id="travelBtn">Travel</button>
+      </div>
 
-        <g class="cityNode" data-city="Ames">
-          <circle class="cityPulse" cx="290" cy="90" r="24"></circle>
-          <circle id="node-Ames" class="cityCore" cx="290" cy="90" r="13"></circle>
-          <text class="cityLabel" x="270" y="62">Ames</text>
-        </g>
-
-        <circle id="travelPulse" class="travelPulse" cx="-100" cy="-100" r="8"></circle>
-      </svg>
-
-      <div id="travelBanner" class="travelBanner"></div>
+      <div class="panel">
+        <h2>Open Market</h2>
+        <div class="small">Prices update every 3 seconds.</div>
+        <div id="marketRows"></div>
+      </div>
     </div>
 
-    <div class="cityList" id="cityList"></div>
-    <button class="travelBtn" id="travelBtn">Travel</button>
-  </div>
+    <div>
+      <div class="panel">
+        <h2>Inventory</h2>
+        <div id="inventoryRows"></div>
+      </div>
 
-  <div class="panel">
-    <h2>Event Log</h2>
-    <div class="log" id="log"></div>
+      <div class="panel">
+        <h2>Event Log</h2>
+        <div class="log" id="log"></div>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
-const cities = ["Des Moines", "Waterloo", "Cedar Falls", "Ames"];
+const cities = ["Des Moines","Waterloo","Cedar Falls","Ames"];
+const items = ["Food","Sneakers","Tech"];
+
+const basePrices = {
+  "Des Moines": { Food: 120, Sneakers: 290, Tech: 520 },
+  "Waterloo": { Food: 90, Sneakers: 230, Tech: 440 },
+  "Cedar Falls": { Food: 135, Sneakers: 340, Tech: 610 },
+  "Ames": { Food: 150, Sneakers: 315, Tech: 560 }
+};
 
 const nodeCoords = {
   "Des Moines": {x:160, y:190},
@@ -269,7 +288,10 @@ const state = {
   cash: 2500,
   currentCity: "Des Moines",
   selectedCity: "Des Moines",
-  isTraveling: false
+  isTraveling: false,
+  inventory: { Food: 0, Sneakers: 0, Tech: 0 },
+  prices: {},
+  trends: {}
 };
 
 function fmt(n){
@@ -281,6 +303,33 @@ function log(msg, cls=""){
   div.className = "entry " + cls;
   div.innerHTML = msg;
   document.getElementById("log").prepend(div);
+}
+
+function initMarkets(){
+  cities.forEach(city => {
+    state.prices[city] = {};
+    state.trends[city] = {};
+    items.forEach(item => {
+      state.prices[city][item] = basePrices[city][item];
+      state.trends[city][item] = "Steady";
+    });
+  });
+}
+
+function tickMarket(){
+  cities.forEach(city => {
+    items.forEach(item => {
+      const oldPrice = state.prices[city][item];
+      const change = Math.floor(Math.random() * 31) - 15;
+      const newPrice = Math.max(25, oldPrice + change);
+      state.prices[city][item] = newPrice;
+      if (newPrice > oldPrice) state.trends[city][item] = "Rising";
+      else if (newPrice < oldPrice) state.trends[city][item] = "Falling";
+      else state.trends[city][item] = "Steady";
+    });
+  });
+  renderMarket();
+  renderInventory();
 }
 
 function renderStats(){
@@ -327,6 +376,80 @@ function renderTravelButton(){
   }
 }
 
+function renderMarket(){
+  const rows = document.getElementById("marketRows");
+  rows.innerHTML = "";
+  const city = state.currentCity;
+
+  items.forEach(item => {
+    const row = document.createElement("div");
+    row.className = "marketRow";
+    const trend = state.trends[city][item];
+    const trendClass = trend === "Rising" ? "good" : trend === "Falling" ? "bad" : "";
+    row.innerHTML = `
+      <div>
+        <strong>${item}</strong><br>
+        <span class="small">${fmt(state.prices[city][item])} • <span class="${trendClass}">${trend}</span></span>
+      </div>
+      <div class="actions">
+        <button class="buyBtn" data-item="${item}">Buy</button>
+        <button class="sellBtn" data-item="${item}">Sell</button>
+      </div>
+    `;
+    rows.appendChild(row);
+  });
+
+  document.querySelectorAll(".buyBtn").forEach(btn => {
+    btn.onclick = () => buyItem(btn.dataset.item);
+  });
+  document.querySelectorAll(".sellBtn").forEach(btn => {
+    btn.onclick = () => sellItem(btn.dataset.item);
+  });
+}
+
+function renderInventory(){
+  const rows = document.getElementById("inventoryRows");
+  rows.innerHTML = "";
+  items.forEach(item => {
+    const row = document.createElement("div");
+    row.className = "invRow";
+    row.innerHTML = `
+      <div>
+        <strong>${item}</strong><br>
+        <span class="small">Owned: ${state.inventory[item]}</span>
+      </div>
+      <div class="small">Local value: ${fmt(state.prices[state.currentCity][item] * state.inventory[item])}</div>
+    `;
+    rows.appendChild(row);
+  });
+}
+
+function buyItem(item){
+  const price = state.prices[state.currentCity][item];
+  if (state.cash < price){
+    log(`Not enough cash to buy <span class="gold">${item}</span>.`, "bad");
+    return;
+  }
+  state.cash -= price;
+  state.inventory[item] += 1;
+  renderStats();
+  renderInventory();
+  log(`Bought 1 <span class="gold">${item}</span> for ${fmt(price)}.`, "good");
+}
+
+function sellItem(item){
+  if (state.inventory[item] <= 0){
+    log(`No <span class="gold">${item}</span> to sell.`, "bad");
+    return;
+  }
+  const price = state.prices[state.currentCity][item];
+  state.cash += price;
+  state.inventory[item] -= 1;
+  renderStats();
+  renderInventory();
+  log(`Sold 1 <span class="gold">${item}</span> for ${fmt(price)}.`, "good");
+}
+
 function routeId(a, b){
   const ids = [
     `road-${a}-${b}`,
@@ -335,15 +458,17 @@ function routeId(a, b){
   return ids.find(id => document.getElementById(id));
 }
 
-function randomEvent(){
+function randomTravelEvent(){
   const r = Math.random();
   if (r < 0.33){
     const loss = Math.floor(Math.random() * 250);
     state.cash -= loss;
+    renderStats();
     log(`💀 Mugged on the way to <span class="gold">${state.currentCity}</span>. Lost ${fmt(loss)}.`, "bad");
   } else if (r < 0.66){
     const gain = Math.floor(Math.random() * 300);
     state.cash += gain;
+    renderStats();
     log(`🔥 Lucky deal in <span class="gold">${state.currentCity}</span>. Gained ${fmt(gain)}.`, "good");
   } else {
     log(`😐 Quiet trip into <span class="gold">${state.currentCity}</span>.`);
@@ -403,8 +528,7 @@ async function travel(){
 
   state.currentCity = toCity;
   state.day += 1;
-
-  randomEvent();
+  randomTravelEvent();
 
   state.isTraveling = false;
   renderAll();
@@ -427,13 +551,17 @@ function renderAll(){
   renderCityButtons();
   updateMapCurrentCity();
   renderTravelButton();
+  renderMarket();
+  renderInventory();
 }
 
 document.getElementById("travelBtn").addEventListener("click", travel);
 
+initMarkets();
 bindMapClicks();
 renderAll();
 log(`Run started in <span class="gold">${state.currentCity}</span> with ${fmt(state.cash)}.`, "good");
+setInterval(tickMarket, 3000);
 </script>
 </body>
 </html>
