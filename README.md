@@ -1,210 +1,1001 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Market Run</title>
-
 <style>
-body {
-  background:#0e0e0e;
-  color:#fff;
-  font-family:Arial;
-  text-align:center;
-}
-
-button {
-  padding:12px;
-  margin:5px;
-  background:gold;
-  border:none;
-  border-radius:8px;
-  font-weight:bold;
-}
-
-.hidden { display:none; }
-
-.city {
-  background:#1c1c1c;
-  padding:10px;
-  margin:5px;
-  border-radius:10px;
-}
-
-canvas {
-  background:#111;
-  border-radius:10px;
-  margin-top:10px;
-}
+  :root{
+    --bg:#0d0d0f;
+    --panel:#17171c;
+    --panel2:#202028;
+    --panel3:#101015;
+    --text:#f3efe4;
+    --muted:#b8b0a1;
+    --gold:#c8a45c;
+    --blue:#77c2ff;
+    --line:#2e2e37;
+    --good:#7fc97f;
+    --bad:#c75b5b;
+    --purple:#9a7cff;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:Arial, Helvetica, sans-serif;
+    background:linear-gradient(180deg,#09090c,#14141a 48%,#101015);
+    color:var(--text);
+  }
+  .wrap{max-width:1220px;margin:0 auto;padding:16px}
+  h1,h2,h3,p{margin-top:0}
+  .sub,.small{color:var(--muted);line-height:1.45}
+  .introOverlay,.choiceOverlay,.winOverlay{
+    position:fixed;
+    inset:0;
+    background:rgba(5,5,8,.95);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:9999;
+  }
+  .choiceOverlay,.winOverlay{display:none}
+  .introCard,.choiceCard,.winCard{
+    width:min(860px,100%);
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:22px;
+    box-shadow:0 20px 60px rgba(0,0,0,.35);
+  }
+  .heroArt{
+    width:100%;
+    height:180px;
+    border-radius:14px;
+    margin-bottom:14px;
+    background:
+      linear-gradient(180deg,rgba(0,0,0,.0),rgba(0,0,0,.35)),
+      radial-gradient(circle at 15% 25%, rgba(119,194,255,.35), transparent 20%),
+      radial-gradient(circle at 80% 20%, rgba(154,124,255,.25), transparent 18%),
+      linear-gradient(180deg,#1a1c28,#101018 60%,#0a0a10);
+    border:1px solid var(--line);
+    position:relative;
+    overflow:hidden;
+  }
+  .heroCity{
+    position:absolute; inset:auto 0 0 0; height:70px;
+    background:
+      linear-gradient(90deg,transparent 0 2%, #1c2433 2% 5%, transparent 5% 8%, #20293a 8% 12%, transparent 12% 16%, #18202d 16% 20%, transparent 20% 24%, #21293b 24% 28%, transparent 28% 32%, #1b2231 32% 36%, transparent 36% 40%, #222b3d 40% 44%, transparent 44% 48%, #182130 48% 54%, transparent 54% 60%, #222b3d 60% 66%, transparent 66% 72%, #1a2333 72% 78%, transparent 78% 84%, #20293a 84% 91%, transparent 91% 100%);
+  }
+  .heroRoad{
+    position:absolute; left:0; right:0; bottom:0; height:44px;
+    background:linear-gradient(180deg,#1b1b22,#121218);
+    border-top:1px solid #2a3140;
+  }
+  .heroRoad:before{
+    content:"";
+    position:absolute; left:0; right:0; top:20px; height:4px;
+    background:repeating-linear-gradient(90deg, transparent 0 18px, #d9c06c 18px 34px);
+    opacity:.85;
+  }
+  .heroCar{
+    position:absolute; bottom:18px; left:18%;
+    width:54px; height:20px; border-radius:4px;
+    background:linear-gradient(180deg,#65aaff,#2d6fc8);
+    box-shadow:0 0 12px rgba(119,194,255,.5);
+  }
+  .heroCar:before,.heroCar:after{
+    content:""; position:absolute; bottom:-6px; width:10px; height:10px; border-radius:50%;
+    background:#111;
+    border:2px solid #777;
+  }
+  .heroCar:before{left:6px}
+  .heroCar:after{right:6px}
+  .heroTitle{
+    position:absolute; left:18px; top:18px;
+    color:var(--gold); font-size:34px; font-weight:800; letter-spacing:1px;
+    text-shadow:0 2px 0 #000;
+  }
+  .heroTag{
+    position:absolute; left:20px; top:62px; color:#d9d1bf; font-size:14px;
+  }
+  .startBtn,.travelBtn,.cityBtn,.buyBtn,.sellBtn,.choiceBtn,.musicBtn{
+    border:none; border-radius:12px; padding:10px 12px; font-weight:700; cursor:pointer;
+  }
+  .startBtn,.travelBtn,.choiceBtn{
+    background:var(--gold); color:#111;
+  }
+  .travelBtn,.startBtn{width:100%; margin-top:12px}
+  .cityBtn,.buyBtn,.sellBtn,.musicBtn{
+    background:var(--panel2); color:var(--text);
+  }
+  .choiceRow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+  .choiceBox{
+    background:var(--panel2);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:14px;
+  }
+  .stats{
+    display:grid; grid-template-columns:repeat(6,1fr); gap:10px; margin-bottom:14px;
+  }
+  .card,.panel{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:12px;
+  }
+  .label{
+    color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.08em;
+  }
+  .value{
+    color:var(--gold); font-size:22px; font-weight:700; margin-top:6px;
+  }
+  .grid{
+    display:grid; grid-template-columns:1.25fr 1fr; gap:14px;
+  }
+  .panel h2{margin:0 0 10px 0;color:var(--gold)}
+  .mapWrap{
+    background:linear-gradient(180deg,#0d1118,#131925);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:10px;
+    margin-bottom:12px;
+  }
+  svg{display:block;width:100%;height:auto}
+  .road{stroke:#334155;stroke-width:4;fill:none;opacity:.95}
+  .cityNode{cursor:pointer}
+  .cityPulse{
+    fill:rgba(119,194,255,.08);
+    stroke:rgba(119,194,255,.45);
+    stroke-width:2;
+    pointer-events:none;
+  }
+  .cityCore{fill:#1d2637;stroke:var(--gold);stroke-width:2}
+  .cityCore.current{fill:#24314b;stroke:var(--blue)}
+  .cityCore.selected{fill:#2c2644;stroke:var(--purple)}
+  .cityLabel{
+    fill:var(--text); font-size:13px; font-weight:700; pointer-events:none; user-select:none;
+  }
+  .travelPulse{
+    fill:var(--blue);
+    filter:drop-shadow(0 0 8px rgba(119,194,255,.95));
+  }
+  .travelBanner{
+    display:none;
+    margin-top:10px;
+    padding:10px 12px;
+    border-radius:12px;
+    background:#111924;
+    border:1px solid #29415f;
+    color:#cfe6ff;
+    font-weight:700;
+  }
+  .cityList{
+    display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:10px;
+  }
+  .marketRow,.invRow,.eventRow,.walletRow{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    padding:10px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .actions{display:flex;gap:6px;flex-wrap:wrap}
+  .log{
+    max-height:340px;
+    overflow:auto;
+    background:var(--panel3);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:10px;
+  }
+  .entry{
+    padding:8px 6px;
+    border-bottom:1px solid #24242c;
+    line-height:1.35;
+  }
+  .good{color:var(--good)}
+  .bad{color:var(--bad)}
+  .gold{color:var(--gold)}
+  .purple{color:var(--purple)}
+  .pill{
+    display:inline-block;
+    padding:3px 8px;
+    border-radius:999px;
+    font-size:12px;
+    background:#23232b;
+    color:var(--muted);
+    margin-left:6px;
+  }
+  .musicRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  @media (max-width:1000px){
+    .stats{grid-template-columns:repeat(3,1fr)}
+    .grid{grid-template-columns:1fr}
+  }
+  @media (max-width:650px){
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .cityList,.choiceRow{grid-template-columns:1fr}
+    .heroTitle{font-size:26px}
+  }
 </style>
 </head>
-
 <body>
 
-<h1 style="color:gold;">Market Run</h1>
-
-<!-- INTRO -->
-<div id="intro">
-<p>Travel city to city, read the market, and make real buy/sell decisions.</p>
-<p>Trade <b>Food</b>, <b>Sneakers</b>, and <b>Electronics</b>.</p>
-<p>Buy low, travel, sell high — or lose money.</p>
-<p>The 🔵 shows your travel path.</p>
-
-<button onclick="startGame()">Enter the Market</button>
+<div id="introOverlay" class="introOverlay">
+  <div class="introCard">
+    <div class="heroArt">
+      <div class="heroTitle">MARKET RUN</div>
+      <div class="heroTag">16-bit inspired road gamble • city markets • empire dream</div>
+      <div class="heroCity"></div>
+      <div class="heroRoad"></div>
+      <div class="heroCar"></div>
+    </div>
+    <p class="sub">
+      Start with cash, scout city markets, and make daily gamble decisions on <strong>Beef</strong>, <strong>Chicken</strong>, <strong>Seafood</strong>, <strong>Rare Sneakers</strong>, and <strong>Electronics</strong>.
+    </p>
+    <p class="sub">
+      Some days a city gets hit with a protein outbreak. Some days rare sneakers vanish and demand explodes. Travel can trigger breakdowns, wallet choices, lucky breaks, and high-risk opportunities.
+    </p>
+    <p class="sub">
+      Your dream goal is <span class="gold">$100,000,000</span> in net worth. At <span class="gold">$1,000,000</span>, you choose your empire path: <span class="gold">Store</span> or <span class="gold">Fleet</span>.
+    </p>
+    <div class="musicRow">
+      <button class="musicBtn" id="musicToggleBtn">Music: ON</button>
+      <span class="small">retro 16-bit inspired sound built in</span>
+    </div>
+    <button id="startBtn" class="startBtn">Enter the Market</button>
+  </div>
 </div>
 
-<!-- GAME -->
-<div id="game" class="hidden">
+<div id="choiceOverlay" class="choiceOverlay">
+  <div class="choiceCard">
+    <h2 class="gold">Empire Unlock</h2>
+    <p class="sub">You crossed <span class="gold">$1,000,000</span>. Choose your path.</p>
+    <div class="choiceRow">
+      <div class="choiceBox">
+        <h3>Open a Store</h3>
+        <p class="small">Steadier daily income, safer growth, stronger local pricing.</p>
+        <button class="choiceBtn" onclick="chooseEmpire('store')">Choose Store</button>
+      </div>
+      <div class="choiceBox">
+        <h3>Build a Fleet</h3>
+        <p class="small">Higher upside across cities, but breakdown risk grows too.</p>
+        <button class="choiceBtn" onclick="chooseEmpire('fleet')">Choose Fleet</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-<h3 id="day">Day: 1</h3>
-<h3 id="money">Money: $1000</h3>
+<div id="winOverlay" class="winOverlay">
+  <div class="winCard">
+    <h2 class="gold">Dream Realized</h2>
+    <p>You reached <span class="gold">$100,000,000</span> in net worth.</p>
+    <p class="sub">You turned a risky road hustle into a full empire.</p>
+  </div>
+</div>
 
-<canvas id="map" width="300" height="200"></canvas>
+<div class="wrap">
+  <h1>Market Run</h1>
+  <div class="sub">High-risk strategy. Every day is a new city gamble.</div>
 
-<h2 id="cityName">City</h2>
+  <div class="stats">
+    <div class="card">
+      <div class="label">Day</div>
+      <div class="value" id="dayStat">1</div>
+    </div>
+    <div class="card">
+      <div class="label">Cash</div>
+      <div class="value" id="cashStat">$2,500</div>
+    </div>
+    <div class="card">
+      <div class="label">Current City</div>
+      <div class="value" id="cityStat">Des Moines</div>
+    </div>
+    <div class="card">
+      <div class="label">Selected City</div>
+      <div class="value" id="selectedStat">Des Moines</div>
+    </div>
+    <div class="card">
+      <div class="label">Net Worth</div>
+      <div class="value" id="worthStat">$2,500</div>
+    </div>
+    <div class="card">
+      <div class="label">Empire</div>
+      <div class="value" id="empireStat">None</div>
+    </div>
+  </div>
 
-<div id="prices"></div>
+  <div class="grid">
+    <div>
+      <div class="panel">
+        <h2>Travel Map</h2>
+        <div class="small">Tap a city, then press Travel. The blue point runs the route.</div>
 
-<h3>Inventory</h3>
-<p id="inventory"></p>
+        <div class="mapWrap">
+          <svg viewBox="0 0 900 300">
+            <path id="road-Des Moines-Waterloo" class="road" d="M160 190 C230 180, 300 165, 365 120" />
+            <path id="road-Des Moines-Ames" class="road" d="M160 190 C205 150, 245 120, 290 90" />
+            <path id="road-Waterloo-Cedar Falls" class="road" d="M365 120 C410 112, 445 110, 490 108" />
+            <path id="road-Ames-Cedar Falls" class="road" d="M290 90 C360 82, 430 88, 490 108" />
+            <path id="road-Ames-Waterloo" class="road" d="M290 90 C315 105, 338 113, 365 120" />
 
-<button onclick="buy('food')">Buy Food</button>
-<button onclick="sell('food')">Sell Food</button><br>
+            <g class="cityNode" data-city="Des Moines">
+              <circle class="cityPulse" cx="160" cy="190" r="24"></circle>
+              <circle id="node-Des Moines" class="cityCore" cx="160" cy="190" r="13"></circle>
+              <text class="cityLabel" x="104" y="225">Des Moines</text>
+            </g>
 
-<button onclick="buy('sneakers')">Buy Sneakers</button>
-<button onclick="sell('sneakers')">Sell Sneakers</button><br>
+            <g class="cityNode" data-city="Waterloo">
+              <circle class="cityPulse" cx="365" cy="120" r="24"></circle>
+              <circle id="node-Waterloo" class="cityCore" cx="365" cy="120" r="13"></circle>
+              <text class="cityLabel" x="330" y="92">Waterloo</text>
+            </g>
 
-<button onclick="buy('electronics')">Buy Electronics</button>
-<button onclick="sell('electronics')">Sell Electronics</button>
+            <g class="cityNode" data-city="Cedar Falls">
+              <circle class="cityPulse" cx="490" cy="108" r="24"></circle>
+              <circle id="node-Cedar Falls" class="cityCore" cx="490" cy="108" r="13"></circle>
+              <text class="cityLabel" x="454" y="80">Cedar Falls</text>
+            </g>
 
-<br><br>
+            <g class="cityNode" data-city="Ames">
+              <circle class="cityPulse" cx="290" cy="90" r="24"></circle>
+              <circle id="node-Ames" class="cityCore" cx="290" cy="90" r="13"></circle>
+              <text class="cityLabel" x="270" y="62">Ames</text>
+            </g>
 
-<button onclick="travel()">Travel</button>
+            <circle id="travelPulse" class="travelPulse" cx="-100" cy="-100" r="8"></circle>
+          </svg>
 
+          <div id="travelBanner" class="travelBanner"></div>
+        </div>
+
+        <div class="cityList" id="cityList"></div>
+        <button id="travelBtn" class="travelBtn">Travel</button>
+      </div>
+
+      <div class="panel">
+        <h2>Selected City Market</h2>
+        <div class="small" id="selectedCityInfo"></div>
+        <div id="marketRows"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Today’s City Events</h2>
+        <div id="eventRows"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel">
+        <h2>Inventory</h2>
+        <div id="inventoryRows"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Road Choices</h2>
+        <div id="walletRows"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Event Log</h2>
+        <div id="log" class="log"></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-// GAME STATE
-let money = 1000;
-let day = 1;
+const cities = ["Des Moines","Waterloo","Cedar Falls","Ames"];
+const items = ["Beef","Chicken","Seafood","Rare Sneakers","Electronics"];
+const proteinItems = ["Beef","Chicken","Seafood"];
 
-let inventory = {
-  food:0,
-  sneakers:0,
-  electronics:0
+const basePrices = {
+  "Des Moines": { Beef: 120, Chicken: 70, Seafood: 160, "Rare Sneakers": 300, Electronics: 420 },
+  "Waterloo": { Beef: 95, Chicken: 60, Seafood: 145, "Rare Sneakers": 250, Electronics: 380 },
+  "Cedar Falls": { Beef: 130, Chicken: 75, Seafood: 180, "Rare Sneakers": 340, Electronics: 460 },
+  "Ames": { Beef: 125, Chicken: 72, Seafood: 170, "Rare Sneakers": 320, Electronics: 440 }
 };
 
-let cities = [
-  {name:"Des Moines", x:50, y:100},
-  {name:"Chicago", x:150, y:50},
-  {name:"Denver", x:250, y:120}
-];
+const state = {
+  day: 1,
+  cash: 2500,
+  currentCity: "Des Moines",
+  selectedCity: "Des Moines",
+  isTraveling: false,
+  inventory: {},
+  prices: {},
+  trends: {},
+  cityEvents: {},
+  empireChosen: false,
+  empireType: "",
+  gameWon: false,
+  musicOn: true,
+  walletChoiceActive: false,
+  pendingWallet: null
+};
 
-let currentCity = 0;
+items.forEach(item => {
+  state.inventory[item] = { qty: 0, avg: 0 };
+});
 
-let prices = {};
+let audioCtx = null;
+let musicTimer = null;
+let leadStep = 0;
 
-// START GAME
-function startGame(){
-  document.getElementById("intro").classList.add("hidden");
-  document.getElementById("game").classList.remove("hidden");
-  generatePrices();
-  updateUI();
-  drawMap();
+function fmt(n){ return "$" + Math.round(n).toLocaleString(); }
+
+function log(msg, cls=""){
+  const div = document.createElement("div");
+  div.className = "entry " + cls;
+  div.innerHTML = msg;
+  document.getElementById("log").prepend(div);
 }
 
-// GENERATE MARKET
-function generatePrices(){
-  prices = {
-    food: rand(5,20),
-    sneakers: rand(50,200),
-    electronics: rand(100,500)
-  };
+function ensureAudio(){
+  if (!audioCtx) {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (Ctx) audioCtx = new Ctx();
+  }
+  return audioCtx;
 }
 
-// RANDOM
-function rand(min,max){
-  return Math.floor(Math.random()*(max-min+1)+min);
+function beep(freq=440, duration=0.12, type="square", volume=0.03){
+  if (!state.musicOn) return;
+  const ctx = ensureAudio();
+  if (!ctx) return;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  gain.gain.value = volume;
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start();
+  gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+  osc.stop(ctx.currentTime + duration);
 }
 
-// UPDATE UI
-function updateUI(){
-  document.getElementById("money").innerText = "Money: $" + money;
-  document.getElementById("day").innerText = "Day: " + day;
-  document.getElementById("cityName").innerText = cities[currentCity].name;
-
-  document.getElementById("prices").innerHTML =
-    "Food: $" + prices.food +
-    " | Sneakers: $" + prices.sneakers +
-    " | Electronics: $" + prices.electronics;
-
-  document.getElementById("inventory").innerText =
-    "Food: " + inventory.food +
-    " | Sneakers: " + inventory.sneakers +
-    " | Electronics: " + inventory.electronics;
+function startMusic(){
+  if (!state.musicOn || musicTimer) return;
+  ensureAudio();
+  const melody = [220, 247, 262, 294, 262, 247, 220, 196];
+  musicTimer = setInterval(() => {
+    if (!state.musicOn) return;
+    beep(melody[leadStep % melody.length], 0.18, "square", 0.022);
+    setTimeout(() => beep(melody[(leadStep+2) % melody.length] / 2, 0.16, "triangle", 0.012), 90);
+    leadStep++;
+  }, 320);
 }
 
-// BUY
-function buy(item){
-  if(money >= prices[item]){
-    money -= prices[item];
-    inventory[item]++;
-    updateUI();
+function stopMusic(){
+  if (musicTimer) {
+    clearInterval(musicTimer);
+    musicTimer = null;
   }
 }
 
-// SELL
-function sell(item){
-  if(inventory[item] > 0){
-    money += prices[item];
-    inventory[item]--;
-    updateUI();
-  }
+function toggleMusic(){
+  state.musicOn = !state.musicOn;
+  document.getElementById("musicToggleBtn").textContent = "Music: " + (state.musicOn ? "ON" : "OFF");
+  if (state.musicOn) startMusic();
+  else stopMusic();
 }
 
-// TRAVEL
-function travel(){
-  let oldCity = currentCity;
-  currentCity = rand(0, cities.length-1);
-
-  day++;
-  generatePrices();
-  updateUI();
-  drawMap(oldCity, currentCity);
+function initMarkets(){
+  cities.forEach(city => {
+    state.prices[city] = {};
+    state.trends[city] = {};
+    items.forEach(item => {
+      state.prices[city][item] = basePrices[city][item];
+      state.trends[city][item] = "Steady";
+    });
+  });
+  generateCityEvents();
+  generateWalletSituation(false);
 }
 
-// MAP DRAW
-function drawMap(from=null, to=null){
-  let canvas = document.getElementById("map");
-  let ctx = canvas.getContext("2d");
+function randomInt(min, max){
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
-  ctx.clearRect(0,0,300,200);
+function routeId(a,b){
+  const ids = [`road-${a}-${b}`, `road-${b}-${a}`];
+  return ids.find(id => document.getElementById(id));
+}
 
-  // draw cities
-  cities.forEach((c,i)=>{
-    ctx.fillStyle = "white";
-    ctx.beginPath();
-    ctx.arc(c.x,c.y,5,0,Math.PI*2);
-    ctx.fill();
+function updateMapCurrentCity(){
+  cities.forEach(city => {
+    const node = document.getElementById("node-" + city);
+    node.classList.toggle("current", city === state.currentCity);
+    node.classList.toggle("selected", city === state.selectedCity && city !== state.currentCity);
+  });
+}
 
-    ctx.fillText(c.name, c.x-20, c.y-10);
+function netWorth(){
+  let worth = state.cash;
+  items.forEach(item => {
+    worth += state.inventory[item].qty * state.prices[state.currentCity][item];
+  });
+  return worth;
+}
+
+function generateCityEvents(){
+  state.cityEvents = {};
+  cities.forEach(city => state.cityEvents[city] = []);
+
+  const outbreakCity = cities[randomInt(0, cities.length - 1)];
+  const outbreakItem = proteinItems[randomInt(0, proteinItems.length - 1)];
+  state.cityEvents[outbreakCity].push({
+    type: "outbreak",
+    item: outbreakItem,
+    text: `Ecological outbreak hit ${outbreakItem.toLowerCase()} in ${outbreakCity}. Supply tightened hard.`
   });
 
-  // draw travel line
-  if(from !== null){
-    ctx.strokeStyle = "blue";
-    ctx.beginPath();
-    ctx.moveTo(cities[from].x, cities[from].y);
-    ctx.lineTo(cities[to].x, cities[to].y);
-    ctx.stroke();
+  const sneakerCity = cities[randomInt(0, cities.length - 1)];
+  state.cityEvents[sneakerCity].push({
+    type: "sneaker",
+    item: "Rare Sneakers",
+    text: `Rare sneakers landed in ${sneakerCity}. Pairs got taken fast and demand stayed high.`
+  });
 
-    // blue dot
-    ctx.fillStyle = "blue";
-    ctx.beginPath();
-    ctx.arc(cities[to].x, cities[to].y,6,0,Math.PI*2);
-    ctx.fill();
+  const techCity = cities[randomInt(0, cities.length - 1)];
+  state.cityEvents[techCity].push({
+    type: "electronics",
+    item: "Electronics",
+    text: `Electronics shortage rumor spread through ${techCity}. Buyers started paying up.`
+  });
+
+  const proteinCrashCity = cities[randomInt(0, cities.length - 1)];
+  const proteinCrashItem = proteinItems[randomInt(0, proteinItems.length - 1)];
+  state.cityEvents[proteinCrashCity].push({
+    type: "oversupply",
+    item: proteinCrashItem,
+    text: `${proteinCrashItem} oversupply flooded ${proteinCrashCity}. Sellers started undercutting each other.`
+  });
+
+  applyCityEventsToPrices();
+}
+
+function applyCityEventsToPrices(){
+  cities.forEach(city => {
+    items.forEach(item => {
+      const oldPrice = state.prices[city][item];
+      const base = basePrices[city][item];
+      const dailySwing = randomInt(-25, 25);
+      const towardBase = Math.round((base - oldPrice) * 0.15);
+      const newPrice = Math.max(20, oldPrice + dailySwing + towardBase);
+      state.trends[city][item] = newPrice > oldPrice ? "Rising" : newPrice < oldPrice ? "Falling" : "Steady";
+      state.prices[city][item] = newPrice;
+    });
+  });
+
+  cities.forEach(city => {
+    state.cityEvents[city].forEach(ev => {
+      if (ev.type === "outbreak") {
+        state.prices[city][ev.item] += randomInt(65, 140);
+        state.trends[city][ev.item] = "Rising";
+      }
+      if (ev.type === "sneaker") {
+        state.prices[city]["Rare Sneakers"] += randomInt(80, 170);
+        state.trends[city]["Rare Sneakers"] = "Rising";
+      }
+      if (ev.type === "electronics") {
+        state.prices[city]["Electronics"] += randomInt(60, 130);
+        state.trends[city]["Electronics"] = "Rising";
+      }
+      if (ev.type === "oversupply") {
+        state.prices[city][ev.item] = Math.max(20, state.prices[city][ev.item] - randomInt(40, 95));
+        state.trends[city][ev.item] = "Falling";
+      }
+    });
+  });
+}
+
+function generateWalletSituation(force){
+  state.walletChoiceActive = force || Math.random() < 0.35;
+  if (state.walletChoiceActive) {
+    const cash = randomInt(80, 240);
+    state.pendingWallet = { cash };
+  } else {
+    state.pendingWallet = null;
   }
 }
-</script>
 
+function nextDay(){
+  state.day += 1;
+  generateCityEvents();
+  generateWalletSituation(false);
+  applyEmpireDailyEffects();
+}
+
+function applyEmpireDailyEffects(){
+  if (state.empireType === "store") {
+    const daily = 1500;
+    state.cash += daily;
+    log(`🏪 Store income hit today: +${fmt(daily)}.`, "good");
+  }
+  if (state.empireType === "fleet") {
+    const daily = randomInt(1000, 2800);
+    state.cash += daily;
+    log(`🚚 Fleet routes came in: +${fmt(daily)}.`, "good");
+  }
+}
+
+function checkMilestones(){
+  const worth = netWorth();
+  if (worth >= 1000000 && !state.empireChosen) {
+    document.getElementById("choiceOverlay").style.display = "flex";
+  }
+  if (worth >= 100000000 && !state.gameWon) {
+    state.gameWon = true;
+    document.getElementById("winOverlay").style.display = "flex";
+    beep(880, 0.25, "square", 0.04);
+    setTimeout(() => beep(1175, 0.35, "square", 0.04), 180);
+  }
+}
+
+function chooseEmpire(type){
+  state.empireChosen = true;
+  state.empireType = type;
+  document.getElementById("choiceOverlay").style.display = "none";
+  if (type === "store") {
+    log(`🏪 You opened a store. Daily income is steadier now.`, "good");
+  } else {
+    log(`🚚 You built a fleet. Upside is bigger, but road risk rises too.`, "good");
+  }
+  beep(660, 0.18, "square", 0.03);
+  renderAll();
+}
+
+function renderStats(){
+  document.getElementById("dayStat").textContent = state.day;
+  document.getElementById("cashStat").textContent = fmt(state.cash);
+  document.getElementById("cityStat").textContent = state.currentCity;
+  document.getElementById("selectedStat").textContent = state.selectedCity;
+  document.getElementById("worthStat").textContent = fmt(netWorth());
+  document.getElementById("empireStat").textContent = state.empireType ? state.empireType.toUpperCase() : "None";
+}
+
+function renderCityButtons(){
+  const list = document.getElementById("cityList");
+  list.innerHTML = "";
+  cities.forEach(city => {
+    const btn = document.createElement("button");
+    btn.className = "cityBtn" + (city === state.selectedCity ? " active" : "");
+    btn.textContent = city + (city === state.currentCity ? " • CURRENT" : "");
+    btn.onclick = () => {
+      if (state.isTraveling) return;
+      state.selectedCity = city;
+      renderAll();
+      beep(500, 0.06, "square", 0.02);
+      log(`Selected <span class="gold">${city}</span>.`);
+    };
+    list.appendChild(btn);
+  });
+}
+
+function renderTravelButton(){
+  const btn = document.getElementById("travelBtn");
+  if (state.isTraveling){
+    btn.textContent = "Traveling...";
+    btn.disabled = true;
+  } else if (state.selectedCity === state.currentCity){
+    btn.textContent = "Already Here";
+    btn.disabled = true;
+  } else {
+    btn.textContent = "Travel to " + state.selectedCity;
+    btn.disabled = false;
+  }
+}
+
+function renderSelectedCityInfo(){
+  const city = state.selectedCity;
+  const events = state.cityEvents[city] || [];
+  const text = events.length ? events.map(e => e.text).join(" ") : `No major rumor is dominating ${city} today.`;
+  document.getElementById("selectedCityInfo").innerHTML =
+    `<strong>${city}</strong> <span class="pill">Scout before you move</span><br>${text}`;
+}
+
+function renderMarket(){
+  const rows = document.getElementById("marketRows");
+  rows.innerHTML = "";
+  const city = state.selectedCity;
+
+  items.forEach(item => {
+    const canTrade = city === state.currentCity;
+    const trend = state.trends[city][item];
+    const cls = trend === "Rising" ? "good" : trend === "Falling" ? "bad" : "";
+    const row = document.createElement("div");
+    row.className = "marketRow";
+    row.innerHTML = `
+      <div>
+        <strong>${item}</strong><br>
+        <span class="small">${city} • ${fmt(state.prices[city][item])} • <span class="${cls}">${trend}</span></span>
+      </div>
+      <div class="actions">
+        ${canTrade ? `<button class="buyBtn" data-buy="${item}">Buy 1</button>` : ``}
+        ${canTrade ? `<button class="sellBtn" data-sell="${item}">Sell 1</button>` : ``}
+      </div>
+    `;
+    rows.appendChild(row);
+  });
+
+  document.querySelectorAll("[data-buy]").forEach(btn => {
+    btn.onclick = () => buyItem(btn.dataset.buy);
+  });
+  document.querySelectorAll("[data-sell]").forEach(btn => {
+    btn.onclick = () => sellItem(btn.dataset.sell);
+  });
+}
+
+function renderInventory(){
+  const rows = document.getElementById("inventoryRows");
+  rows.innerHTML = "";
+  items.forEach(item => {
+    const inv = state.inventory[item];
+    const localPrice = state.prices[state.currentCity][item];
+    const pnl = inv.qty > 0 ? (localPrice - inv.avg) * inv.qty : 0;
+    const pnlClass = pnl > 0 ? "good" : pnl < 0 ? "bad" : "";
+    const pnlText = inv.qty > 0 ? `${pnl >= 0 ? "+" : "-"}${fmt(Math.abs(pnl))}` : "$0";
+
+    const row = document.createElement("div");
+    row.className = "invRow";
+    row.innerHTML = `
+      <div>
+        <strong>${item}</strong><br>
+        <span class="small">Qty: ${inv.qty} • Avg Buy: ${inv.qty ? fmt(inv.avg) : "$0"}</span>
+      </div>
+      <div class="${pnlClass}">
+        ${pnlText}
+      </div>
+    `;
+    rows.appendChild(row);
+  });
+}
+
+function renderCityEvents(){
+  const rows = document.getElementById("eventRows");
+  rows.innerHTML = "";
+  cities.forEach(city => {
+    const evs = state.cityEvents[city] || [];
+    const row = document.createElement("div");
+    row.className = "eventRow";
+    row.innerHTML = `
+      <div>
+        <strong>${city}</strong><br>
+        <span class="small">${evs.length ? evs.map(e => e.text).join(" ") : "No major event."}</span>
+      </div>
+    `;
+    rows.appendChild(row);
+  });
+}
+
+function renderWalletChoices(){
+  const rows = document.getElementById("walletRows");
+  rows.innerHTML = "";
+
+  if (!state.walletChoiceActive || !state.pendingWallet) {
+    rows.innerHTML = `<div class="small">No special road choice waiting right now.</div>`;
+    return;
+  }
+
+  const row = document.createElement("div");
+  row.className = "walletRow";
+  row.innerHTML = `
+    <div>
+      <strong>Found Wallet</strong><br>
+      <span class="small">Cash inside: ${fmt(state.pendingWallet.cash)}. Keep it, return it, or turn it in.</span>
+    </div>
+    <div class="actions">
+      <button class="buyBtn" onclick="resolveWallet('keep')">Keep</button>
+      <button class="sellBtn" onclick="resolveWallet('owner')">Return</button>
+      <button class="sellBtn" onclick="resolveWallet('authorities')">Turn In</button>
+    </div>
+  `;
+  rows.appendChild(row);
+}
+
+function resolveWallet(choice){
+  if (!state.walletChoiceActive || !state.pendingWallet) return;
+  const cash = state.pendingWallet.cash;
+  if (choice === "keep") {
+    state.cash += cash;
+    log(`👛 You kept the wallet and pocketed ${fmt(cash)}.`, "bad");
+    beep(220, 0.12, "square", 0.03);
+  } else if (choice === "owner") {
+    const reward = Math.round(cash * 0.55);
+    state.cash += reward;
+    log(`🤝 You returned the wallet and got a reward of ${fmt(reward)}.`, "good");
+    beep(660, 0.12, "triangle", 0.03);
+  } else {
+    const reward = Math.round(cash * 0.25);
+    state.cash += reward;
+    log(`🏛️ You turned the wallet in and received ${fmt(reward)}.`, "good");
+    beep(520, 0.12, "triangle", 0.03);
+  }
+  state.walletChoiceActive = false;
+  state.pendingWallet = null;
+  renderAll();
+  checkMilestones();
+}
+
+function buyItem(item){
+  const price = state.prices[state.currentCity][item];
+  if (state.cash < price){
+    log(`Not enough cash to buy <span class="gold">${item}</span>.`, "bad");
+    beep(180, 0.08, "square", 0.03);
+    return;
+  }
+
+  const inv = state.inventory[item];
+  const totalBefore = inv.avg * inv.qty;
+  inv.qty += 1;
+  inv.avg = (totalBefore + price) / inv.qty;
+  state.cash -= price;
+
+  beep(520, 0.06, "square", 0.02);
+  renderAll();
+  checkMilestones();
+  log(`Bought 1 <span class="gold">${item}</span> for ${fmt(price)} in ${state.currentCity}.`, "good");
+}
+
+function sellItem(item){
+  const inv = state.inventory[item];
+  if (inv.qty <= 0){
+    log(`No <span class="gold">${item}</span> to sell.`, "bad");
+    beep(180, 0.08, "square", 0.03);
+    return;
+  }
+
+  const salePrice = state.prices[state.currentCity][item];
+  const profit = salePrice - inv.avg;
+
+  state.cash += salePrice;
+  inv.qty -= 1;
+  if (inv.qty === 0) inv.avg = 0;
+
+  beep(profit >= 0 ? 720 : 220, 0.08, "square", 0.03);
+  renderAll();
+  checkMilestones();
+
+  if (profit > 0) {
+    log(`Sold 1 <span class="gold">${item}</span> for ${fmt(salePrice)}. Profit: ${fmt(profit)}.`, "good");
+  } else if (profit < 0) {
+    log(`Sold 1 <span class="gold">${item}</span> for ${fmt(salePrice)}. Loss: ${fmt(Math.abs(profit))}.`, "bad");
+  } else {
+    log(`Sold 1 <span class="gold">${item}</span> for break-even at ${fmt(salePrice)}.`);
+  }
+}
+
+function randomTravelEvent(){
+  let fleetRisk = state.empireType === "fleet" ? 0.14 : 0;
+  let roll = Math.random();
+
+  if (roll < 0.18 + fleetRisk) {
+    const cost = randomInt(120, 340);
+    state.cash = Math.max(0, state.cash - cost);
+    log(`🔧 Car broke down on the road. Repairs cost ${fmt(cost)}.`, "bad");
+    beep(160, 0.12, "square", 0.03);
+    return;
+  }
+
+  if (roll < 0.35 + fleetRisk) {
+    const loss = randomInt(100, 260);
+    state.cash = Math.max(0, state.cash - loss);
+    log(`💀 You got hit on the road and lost ${fmt(loss)}.`, "bad");
+    beep(140, 0.12, "square", 0.03);
+    return;
+  }
+
+  if (roll < 0.58) {
+    const gain = randomInt(90, 260);
+    state.cash += gain;
+    log(`🔥 Lucky break on arrival. Gained ${fmt(gain)}.`, "good");
+    beep(760, 0.12, "square", 0.03);
+    return;
+  }
+
+  log(`😐 Quiet road into <span class="gold">${state.currentCity}</span>.`);
+}
+
+function animateTravel(fromCity, toCity){
+  return new Promise(resolve => {
+    const pulse = document.getElementById("travelPulse");
+    const banner = document.getElementById("travelBanner");
+    const path = document.getElementById(routeId(fromCity, toCity));
+
+    banner.style.display = "block";
+    banner.textContent = `Traveling from ${fromCity} to ${toCity}...`;
+
+    if (!path){
+      banner.style.display = "none";
+      resolve();
+      return;
+    }
+
+    const length = path.getTotalLength();
+    let startTime = null;
+    const duration = 1600;
+
+    function frame(ts){
+      if (!startTime) startTime = ts;
+      const progress = Math.min((ts - startTime) / duration, 1);
+      const point = path.getPointAtLength(length * progress);
+      pulse.setAttribute("cx", point.x);
+      pulse.setAttribute("cy", point.y);
+
+      if (progress < 1){
+        requestAnimationFrame(frame);
+      } else {
+        setTimeout(() => {
+          banner.style.display = "none";
+          resolve();
+        }, 150);
+      }
+    }
+    requestAnimationFrame(frame);
+  });
+}
+
+async function travel(){
+  if (state.selectedCity === state.currentCity || state.isTraveling) return;
+
+  const fromCity = state.currentCity;
+  const toCity = state.selectedCity;
+
+  state.isTraveling = true;
+  renderAll();
+  beep(440, 0.08, "square", 0.02);
+
+  await animateTravel(fromCity, toCity);
+
+  state.currentCity = toCity;
+  nextDay();
+  randomTravelEvent();
+
+  state.isTraveling = false;
+  renderAll();
+  checkMilestones();
+}
+
+function bindMapClicks(){
+  document.querySelectorAll(".cityNode").forEach(node => {
+    const city = node.getAttribute("data-city");
+    node.addEventListener("click", () => {
+      if (state.isTraveling) return;
+      state.selectedCity = city;
+      renderAll();
+      beep(500, 0.05, "square", 0.02);
+      log(`Selected <span class="gold">${city}</span> from the map.`);
+    });
+  });
+}
+
+function renderAll(){
+  renderStats();
+  renderCityButtons();
+  updateMapCurrentCity();
+  renderTravelButton();
+  renderSelectedCityInfo();
+  renderMarket();
+  renderInventory();
+  renderCityEvents();
+  renderWalletChoices();
+}
+
+document.getElementById("travelBtn").addEventListener("click", travel);
+document.getElementById("startBtn").addEventListener("click", () => {
+  document.getElementById("introOverlay").style.display = "none";
+  startMusic();
+});
+document.getElementById("musicToggleBtn").addEventListener("click", toggleMusic);
+
+initMarkets();
+bindMapClicks();
+renderAll();
+log(`Run started in <span class="gold">${state.currentCity}</span> with ${fmt(state.cash)}.`, "good");
+</script>
 </body>
 </html>
