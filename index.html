@@ -501,622 +501,164 @@ svg{display:block;width:100%;height:auto}
 </div>
 
 <script>
+
+// ================= STATE =================
 const cities = ["Des Moines","Waterloo","Cedar Falls","Ames"];
 const items = ["Beef","Chicken","Seafood","Rare Sneakers","Electronics"];
-const proteinItems = ["Beef","Chicken","Seafood"];
 
-const basePrices = {
-  "Des Moines": { Beef: 120, Chicken: 70, Seafood: 160, "Rare Sneakers": 300, Electronics: 420 },
-  "Waterloo": { Beef: 95, Chicken: 60, Seafood: 145, "Rare Sneakers": 250, Electronics: 380 },
-  "Cedar Falls": { Beef: 130, Chicken: 75, Seafood: 180, "Rare Sneakers": 340, Electronics: 460 },
-  "Ames": { Beef: 125, Chicken: 72, Seafood: 170, "Rare Sneakers": 320, Electronics: 440 }
-};
-
-const hearsayPool = {
-  "Des Moines": [
-    "Beef buyers look nervous here.",
-    "Electronics may jump tomorrow.",
-    "Chicken could soften overnight."
-  ],
-  "Waterloo": [
-    "Rare sneakers may get scarce.",
-    "Seafood chatter sounds bullish.",
-    "Some sellers are dumping beef."
-  ],
-  "Cedar Falls": [
-    "Electronics talk is getting loud.",
-    "Chicken demand may jump soon.",
-    "Rare sneakers may cool off."
-  ],
-  "Ames": [
-    "Seafood rumors are spreading.",
-    "Beef could swing hard by morning.",
-    "Electronics buyers are circling."
-  ]
-};
-
-const state = {
+let state = {
   day: 1,
   cash: 2500,
   currentCity: "Des Moines",
   selectedCity: "Des Moines",
-  isTraveling: false,
   inventory: {},
   prices: {},
-  trends: {},
-  cityEvents: {},
-  empireChosen: false,
-  empireType: "",
-  gameWon: false,
-  musicOn: true,
-  walletChoiceActive: false,
-  pendingWallet: null
+  gameStarted: false
 };
 
-items.forEach(item => state.inventory[item] = { qty: 0, avg: 0 });
+items.forEach(i => state.inventory[i] = 0);
 
-let audioCtx = null;
-let musicTimer = null;
-let leadStep = 0;
+// ================= BASE PRICES =================
+const basePrices = {
+  "Des Moines": { Beef:120, Chicken:70, Seafood:160, "Rare Sneakers":300, Electronics:420 },
+  "Waterloo": { Beef:95, Chicken:60, Seafood:145, "Rare Sneakers":250, Electronics:380 },
+  "Cedar Falls": { Beef:130, Chicken:75, Seafood:180, "Rare Sneakers":340, Electronics:460 },
+  "Ames": { Beef:125, Chicken:72, Seafood:170, "Rare Sneakers":320, Electronics:440 }
+};
 
-// tutorial
-let currentSlide = 0;
-let slides = [];
-let dots = [];
-
-function initTutorial(){
-  slides = Array.from(document.querySelectorAll(".slide"));
-  const dotsWrap = document.getElementById("dots");
-  dotsWrap.innerHTML = "";
-  slides.forEach((_, i) => {
-    const d = document.createElement("span");
-    d.className = "dot" + (i === 0 ? " active" : "");
-    dotsWrap.appendChild(d);
-  });
-  dots = Array.from(document.querySelectorAll(".dot"));
-  updateTutorialButtons();
-
-  const slidesWrap = document.getElementById("slides");
-  let startX = 0;
-  slidesWrap.addEventListener("touchstart", e => {
-    startX = e.touches[0].clientX;
-  });
-  slidesWrap.addEventListener("touchend", e => {
-    const endX = e.changedTouches[0].clientX;
-    if (startX - endX > 50) nextSlide();
-    if (endX - startX > 50) prevSlide();
-  });
-}
-
-function showSlide(i){
-  slides.forEach((s, idx) => s.classList.toggle("active", idx === i));
-  dots.forEach((d, idx) => d.classList.toggle("active", idx === i));
-  currentSlide = i;
-  updateTutorialButtons();
-}
-
-function nextSlide(){
-  if (currentSlide < slides.length - 1) showSlide(currentSlide + 1);
-}
-function prevSlide(){
-  if (currentSlide > 0) showSlide(currentSlide - 1);
-}
-function updateTutorialButtons(){
-  document.getElementById("prevSlideBtn").style.visibility = currentSlide === 0 ? "hidden" : "visible";
-  const last = currentSlide === slides.length - 1;
-  document.getElementById("nextSlideBtn").classList.toggle("hidden", last);
-  document.getElementById("startGameBtn").classList.toggle("hidden", !last);
-}
-function startGame(){
-  ensureAudio();
-  document.getElementById("tutorialOverlay").classList.add("hidden");
-  startMusic();
-}
-
-function showTab(id, btn){
-  document.querySelectorAll('.tabPanel').forEach(tab => tab.classList.remove('active'));
-  document.querySelectorAll('.tabBtn').forEach(tab => tab.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  btn.classList.add('active');
-}
-
-function fmt(n){ return "$" + Math.round(n).toLocaleString(); }
-function randomInt(min,max){ return Math.floor(Math.random() * (max - min + 1)) + min; }
-
-function log(msg, cls=""){
-  const div = document.createElement("div");
-  div.className = "entry " + cls;
-  div.innerHTML = msg;
-  document.getElementById("log").prepend(div);
-}
-
-function ensureAudio(){
-  if (!audioCtx) {
-    const Ctx = window.AudioContext || window.webkitAudioContext;
-    if (Ctx) audioCtx = new Ctx();
-  }
-  if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
-  return audioCtx;
-}
-
-function beep(freq=440, duration=0.12, type="square", volume=0.03){
-  if (!state.musicOn) return;
-  const ctx = ensureAudio();
-  if (!ctx) return;
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type = type;
-  osc.frequency.value = freq;
-  gain.gain.value = volume;
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-  osc.start();
-  gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
-  osc.stop(ctx.currentTime + duration);
-}
-
-function startMusic(){
-  if (!state.musicOn || musicTimer) return;
-  ensureAudio();
-  const melody = [220, 247, 262, 294, 262, 247, 220, 196];
-  musicTimer = setInterval(() => {
-    if (!state.musicOn) return;
-    beep(melody[leadStep % melody.length], 0.18, "square", 0.022);
-    setTimeout(() => beep(melody[(leadStep+2) % melody.length] / 2, 0.16, "triangle", 0.012), 90);
-    leadStep++;
-  }, 320);
-}
-
-function stopMusic(){
-  if (musicTimer) clearInterval(musicTimer);
-  musicTimer = null;
-}
-
-function toggleMusic(){
-  state.musicOn = !state.musicOn;
-  document.getElementById("musicToggleBtn").textContent = "Music: " + (state.musicOn ? "ON" : "OFF");
-  if (state.musicOn) startMusic();
-  else stopMusic();
-}
-
-function routeId(a,b){
-  const ids = [`road-${a}-${b}`, `road-${b}-${a}`];
-  return ids.find(id => document.getElementById(id));
-}
-
-function netWorth(){
-  let worth = state.cash;
-  items.forEach(item => worth += state.inventory[item].qty * state.prices[state.currentCity][item]);
-  return worth;
-}
-
+// ================= INIT =================
 function initMarkets(){
-  cities.forEach(city => {
+  cities.forEach(city=>{
     state.prices[city] = {};
-    state.trends[city] = {};
-    items.forEach(item => {
+    items.forEach(item=>{
       state.prices[city][item] = basePrices[city][item];
-      state.trends[city][item] = "Steady";
-    });
-  });
-  generateCityEvents();
-  generateWalletSituation(false);
-}
-
-function generateCityEvents(){
-  state.cityEvents = {};
-  cities.forEach(city => state.cityEvents[city] = []);
-
-  const outbreakCity = cities[randomInt(0, cities.length - 1)];
-  const outbreakItem = proteinItems[randomInt(0, proteinItems.length - 1)];
-  state.cityEvents[outbreakCity].push({ type:"outbreak", item:outbreakItem, text:`Ecological outbreak hit ${outbreakItem.toLowerCase()} in ${outbreakCity}. Supply tightened hard.` });
-
-  const sneakerCity = cities[randomInt(0, cities.length - 1)];
-  state.cityEvents[sneakerCity].push({ type:"sneaker", item:"Rare Sneakers", text:`Rare sneakers landed in ${sneakerCity}. Pairs got taken fast and demand stayed high.` });
-
-  const techCity = cities[randomInt(0, cities.length - 1)];
-  state.cityEvents[techCity].push({ type:"electronics", item:"Electronics", text:`Electronics shortage rumor spread through ${techCity}. Buyers started paying up.` });
-
-  const proteinCrashCity = cities[randomInt(0, cities.length - 1)];
-  const proteinCrashItem = proteinItems[randomInt(0, proteinItems.length - 1)];
-  state.cityEvents[proteinCrashCity].push({ type:"oversupply", item:proteinCrashItem, text:`${proteinCrashItem} oversupply flooded ${proteinCrashCity}. Sellers started undercutting each other.` });
-
-  applyCityEventsToPrices();
-}
-
-function applyCityEventsToPrices(){
-  cities.forEach(city => {
-    items.forEach(item => {
-      const oldPrice = state.prices[city][item];
-      const base = basePrices[city][item];
-      const dailySwing = randomInt(-25, 25);
-      const towardBase = Math.round((base - oldPrice) * 0.15);
-      const newPrice = Math.max(20, oldPrice + dailySwing + towardBase);
-      state.trends[city][item] = newPrice > oldPrice ? "Rising" : newPrice < oldPrice ? "Falling" : "Steady";
-      state.prices[city][item] = newPrice;
-    });
-  });
-
-  cities.forEach(city => {
-    state.cityEvents[city].forEach(ev => {
-      if (ev.type === "outbreak") {
-        state.prices[city][ev.item] += randomInt(65, 140);
-        state.trends[city][ev.item] = "Rising";
-      }
-      if (ev.type === "sneaker") {
-        state.prices[city]["Rare Sneakers"] += randomInt(80, 170);
-        state.trends[city]["Rare Sneakers"] = "Rising";
-      }
-      if (ev.type === "electronics") {
-        state.prices[city]["Electronics"] += randomInt(60, 130);
-        state.trends[city]["Electronics"] = "Rising";
-      }
-      if (ev.type === "oversupply") {
-        state.prices[city][ev.item] = Math.max(20, state.prices[city][ev.item] - randomInt(40, 95));
-        state.trends[city][ev.item] = "Falling";
-      }
     });
   });
 }
 
-function generateWalletSituation(force){
-  state.walletChoiceActive = force || Math.random() < 0.35;
-  state.pendingWallet = state.walletChoiceActive ? { cash: randomInt(80, 240) } : null;
-}
-
-function applyEmpireDailyEffects(){
-  if (state.empireType === "store") {
-    const daily = 1500;
-    state.cash += daily;
-    log(`🏪 Store income hit today: +${fmt(daily)}.`, "good");
-  }
-  if (state.empireType === "fleet") {
-    const daily = randomInt(1000, 2800);
-    state.cash += daily;
-    log(`🚚 Fleet routes came in: +${fmt(daily)}.`, "good");
-  }
-}
-
-function nextDay(){
-  state.day += 1;
-  generateCityEvents();
-  generateWalletSituation(false);
-  applyEmpireDailyEffects();
-}
-
-function checkMilestones(){
-  const worth = netWorth();
-  if (worth >= 1000000 && !state.empireChosen) {
-    document.getElementById("choiceOverlay").classList.remove("hidden");
-  }
-  if (worth >= 100000000 && !state.gameWon) {
-    state.gameWon = true;
-    document.getElementById("winOverlay").classList.remove("hidden");
-  }
-}
-
-function chooseEmpire(type){
-  state.empireChosen = true;
-  state.empireType = type;
-  document.getElementById("choiceOverlay").classList.add("hidden");
-  log(type === "store" ? "🏪 You opened a store." : "🚚 You built a fleet.", "good");
-  renderAll();
-}
-
-function renderStats(){
-  document.getElementById("dayStat").textContent = state.day;
-  document.getElementById("cashStat").textContent = fmt(state.cash);
-  document.getElementById("cityStat").textContent = state.currentCity;
-  document.getElementById("selectedStat").textContent = state.selectedCity;
-  document.getElementById("worthStat").textContent = fmt(netWorth());
-  document.getElementById("empireStat").textContent = state.empireType ? state.empireType.toUpperCase() : "None";
-}
-
-function updateMapCurrentCity(){
-  cities.forEach(city => {
-    const node = document.getElementById("node-" + city);
-    node.classList.toggle("current", city === state.currentCity);
-    node.classList.toggle("selected", city === state.selectedCity && city !== state.currentCity);
-  });
-}
-
-function renderCityButtons(){
-  const list = document.getElementById("cityList");
-  list.innerHTML = "";
-  cities.forEach(city => {
-    const btn = document.createElement("button");
-    btn.className = "btn btnSecondary cityBtn" + (city === state.selectedCity ? " active" : "");
-    btn.textContent = city + (city === state.currentCity ? " • CURRENT" : "");
-    btn.onclick = () => {
-      if (state.isTraveling) return;
-      state.selectedCity = city;
-      renderAll();
-      log(`Selected <strong>${city}</strong>.`);
-    };
-    list.appendChild(btn);
-  });
-}
-
-function renderTravelButton(){
-  const btn = document.getElementById("travelBtn");
-  if (state.isTraveling){
-    btn.textContent = "Traveling...";
-    btn.disabled = true;
-  } else if (state.selectedCity === state.currentCity){
-    btn.textContent = "Already Here";
-    btn.disabled = true;
-  } else {
-    btn.textContent = "Travel to " + state.selectedCity;
-    btn.disabled = false;
-  }
-}
-
-function renderSelectedCityInfo(){
-  const city = state.selectedCity;
-  const events = state.cityEvents[city] || [];
-  const text = events.length ? events.map(e => e.text).join(" ") : `No major rumor is dominating ${city} today.`;
-  document.getElementById("selectedCityInfo").innerHTML = `<strong>${city}</strong> <span class="pill">Scout before you move</span><br>${text}`;
-}
-
-function renderMarket(){
-  const rows = document.getElementById("marketRows");
-  rows.innerHTML = "";
-  const city = state.selectedCity;
-
-  items.forEach(item => {
-    const canTrade = city === state.currentCity;
-    const trend = state.trends[city][item];
-    const cls = trend === "Rising" ? "good" : trend === "Falling" ? "bad" : "";
-    const row = document.createElement("div");
-    row.className = "marketRow";
-    row.innerHTML = `
-      <div style="flex:1">
-        <strong>${item}</strong><br>
-        <span class="small">${city} • ${fmt(state.prices[city][item])} • <span class="${cls}">${trend}</span></span>
-      </div>
-      <div class="actions">
-        ${canTrade ? `<button class="btn btnSecondary" data-buy="${item}">Buy</button>` : ``}
-        ${canTrade ? `<button class="btn btnSecondary" data-sell="${item}">Sell</button>` : ``}
-      </div>
-    `;
-    rows.appendChild(row);
-  });
-
-  document.querySelectorAll("[data-buy]").forEach(btn => btn.onclick = () => buyItem(btn.dataset.buy));
-  document.querySelectorAll("[data-sell]").forEach(btn => btn.onclick = () => sellItem(btn.dataset.sell));
-}
-
-function renderInventory(){
-  const rows = document.getElementById("inventoryRows");
-  rows.innerHTML = "";
-  items.forEach(item => {
-    const inv = state.inventory[item];
-    const localPrice = state.prices[state.currentCity][item];
-    const pnl = inv.qty > 0 ? (localPrice - inv.avg) * inv.qty : 0;
-    const pnlClass = pnl > 0 ? "good" : pnl < 0 ? "bad" : "";
-    const row = document.createElement("div");
-    row.className = "invRow";
-    row.innerHTML = `
-      <div style="flex:1">
-        <strong>${item}</strong><br>
-        <span class="small">Qty: ${inv.qty} • Avg: ${inv.qty ? fmt(inv.avg) : "$0"}</span>
-      </div>
-      <div class="${pnlClass}">${inv.qty ? (pnl >= 0 ? "+" : "-") + fmt(Math.abs(pnl)) : "$0"}</div>
-    `;
-    rows.appendChild(row);
-  });
-}
-
-function renderCityEvents(){
-  const rows = document.getElementById("eventRows");
-  rows.innerHTML = "";
-  cities.forEach(city => {
-    const evs = state.cityEvents[city] || [];
-    const row = document.createElement("div");
-    row.className = "eventRow";
-    row.innerHTML = `<div><strong>${city}</strong><br><span class="small">${evs.length ? evs.map(e => e.text).join(" ") : "No major event."}</span></div>`;
-    rows.appendChild(row);
-  });
-}
-
-function renderHearsay(){
-  const rows = document.getElementById("hearsayRows");
-  rows.innerHTML = "";
-  cities.forEach(city => {
-    const rumors = hearsayPool[city];
-    const rumor = rumors[(state.day + city.length) % rumors.length];
-    const row = document.createElement("div");
-    row.className = "hearsayRow";
-    row.innerHTML = `<div><strong>${city}</strong><br><span class="small">${rumor}</span></div>`;
-    rows.appendChild(row);
-  });
-}
-
-function renderWalletChoices(){
-  const rows = document.getElementById("walletRows");
-  rows.innerHTML = "";
-
-  if (!state.walletChoiceActive || !state.pendingWallet) {
-    rows.innerHTML = `<div class="small">No special road choice waiting right now.</div>`;
-    return;
-  }
-
-  const row = document.createElement("div");
-  row.className = "walletRow";
-  row.innerHTML = `
-    <div style="flex:1">
-      <strong>Found Wallet</strong><br>
-      <span class="small">Cash inside: ${fmt(state.pendingWallet.cash)}.</span>
-    </div>
-    <div class="actions">
-      <button class="btn btnSecondary" onclick="resolveWallet('keep')">Keep</button>
-      <button class="btn btnSecondary" onclick="resolveWallet('owner')">Return</button>
-      <button class="btn btnSecondary" onclick="resolveWallet('authorities')">Turn In</button>
-    </div>
-  `;
-  rows.appendChild(row);
-}
-
-function resolveWallet(choice){
-  if (!state.walletChoiceActive || !state.pendingWallet) return;
-  const cash = state.pendingWallet.cash;
-  if (choice === "keep") state.cash += cash, log(`👛 Kept the wallet: +${fmt(cash)}.`, "bad");
-  else if (choice === "owner") state.cash += Math.round(cash * 0.55), log(`🤝 Returned wallet for reward.`, "good");
-  else state.cash += Math.round(cash * 0.25), log(`🏛️ Turned wallet in.`, "good");
-
-  state.walletChoiceActive = false;
-  state.pendingWallet = null;
-  renderAll();
-  checkMilestones();
-}
-
-function buyItem(item){
-  const price = state.prices[state.currentCity][item];
-  if (state.cash < price) return log(`Not enough cash to buy <strong>${item}</strong>.`, "bad");
-  const inv = state.inventory[item];
-  const totalBefore = inv.avg * inv.qty;
-  inv.qty += 1;
-  inv.avg = (totalBefore + price) / inv.qty;
-  state.cash -= price;
-  renderAll();
-  checkMilestones();
-  log(`Bought 1 <strong>${item}</strong> for ${fmt(price)}.`, "good");
-}
-
-function sellItem(item){
-  const inv = state.inventory[item];
-  if (inv.qty <= 0) return log(`No <strong>${item}</strong> to sell.`, "bad");
-  const salePrice = state.prices[state.currentCity][item];
-  const profit = salePrice - inv.avg;
-  state.cash += salePrice;
-  inv.qty -= 1;
-  if (!inv.qty) inv.avg = 0;
-  renderAll();
-  checkMilestones();
-  log(
-    profit > 0
-      ? `Sold 1 <strong>${item}</strong> for ${fmt(salePrice)}. Profit ${fmt(profit)}.`
-      : profit < 0
-      ? `Sold 1 <strong>${item}</strong> for ${fmt(salePrice)}. Loss ${fmt(Math.abs(profit))}.`
-      : `Sold 1 <strong>${item}</strong> at break-even.`,
-    profit >= 0 ? "good" : "bad"
-  );
-}
-
-function randomTravelEvent(){
-  const fleetRisk = state.empireType === "fleet" ? 0.14 : 0;
-  const roll = Math.random();
-
-  if (roll < 0.18 + fleetRisk) {
-    const cost = randomInt(120, 340);
-    state.cash = Math.max(0, state.cash - cost);
-    return log(`🔧 Car broke down. Repairs cost ${fmt(cost)}.`, "bad");
-  }
-  if (roll < 0.35 + fleetRisk) {
-    const loss = randomInt(100, 260);
-    state.cash = Math.max(0, state.cash - loss);
-    return log(`💀 Hit on the road. Lost ${fmt(loss)}.`, "bad");
-  }
-  if (roll < 0.58) {
-    const gain = randomInt(90, 260);
-    state.cash += gain;
-    return log(`🔥 Lucky break. Gained ${fmt(gain)}.`, "good");
-  }
-  log(`😐 Quiet road into <strong>${state.currentCity}</strong>.`);
-}
-
-function animateTravel(fromCity, toCity){
-  return new Promise(resolve => {
-    const pulse = document.getElementById("travelPulse");
-    const banner = document.getElementById("travelBanner");
-    const path = document.getElementById(routeId(fromCity, toCity));
-
-    banner.style.display = "block";
-    banner.textContent = `Traveling from ${fromCity} to ${toCity}...`;
-
-    if (!path){
-      banner.style.display = "none";
-      resolve();
-      return;
-    }
-
-    const length = path.getTotalLength();
-    let startTime = null;
-    const duration = 1500;
-
-    function frame(ts){
-      if (!startTime) startTime = ts;
-      const progress = Math.min((ts - startTime) / duration, 1);
-      const point = path.getPointAtLength(length * progress);
-      pulse.setAttribute("cx", point.x);
-      pulse.setAttribute("cy", point.y);
-      if (progress < 1) requestAnimationFrame(frame);
-      else setTimeout(() => { banner.style.display = "none"; resolve(); }, 120);
-    }
-    requestAnimationFrame(frame);
-  });
-}
-
-async function travel(){
-  if (state.selectedCity === state.currentCity || state.isTraveling) return;
-  const fromCity = state.currentCity;
-  const toCity = state.selectedCity;
-  state.isTraveling = true;
-  renderAll();
-  await animateTravel(fromCity, toCity);
-  state.currentCity = toCity;
-  nextDay();
-  randomTravelEvent();
-  state.isTraveling = false;
-  renderAll();
-  checkMilestones();
-}
-
-function stayHere(){
-  if (state.isTraveling) return;
-  nextDay();
-  log(`🕰️ Stayed in <strong>${state.currentCity}</strong> and let another day roll over.`);
-  renderAll();
-  checkMilestones();
-}
-
-function bindMapClicks(){
-  document.querySelectorAll(".cityNode").forEach(node => {
-    const city = node.getAttribute("data-city");
-    node.addEventListener("click", () => {
-      if (state.isTraveling) return;
-      state.selectedCity = city;
-      renderAll();
-      log(`Selected <strong>${city}</strong> from the map.`);
+// ================= PRICE MOVEMENT =================
+function updatePrices(){
+  cities.forEach(city=>{
+    items.forEach(item=>{
+      let swing = Math.floor(Math.random()*60 - 30);
+      state.prices[city][item] = Math.max(20, state.prices[city][item] + swing);
     });
   });
 }
 
-function renderAll(){
-  renderStats();
-  renderCityButtons();
-  updateMapCurrentCity();
-  renderTravelButton();
-  renderSelectedCityInfo();
+// ================= RENDER =================
+function render(){
+  document.getElementById("dayStat").innerText = state.day;
+  document.getElementById("cashStat").innerText = "$"+state.cash;
+  document.getElementById("cityStat").innerText = state.currentCity;
+
   renderMarket();
   renderInventory();
-  renderCityEvents();
-  renderHearsay();
-  renderWalletChoices();
 }
 
-document.getElementById("travelBtn").addEventListener("click", travel);
-document.getElementById("stayBtn").addEventListener("click", stayHere);
-document.getElementById("musicToggleBtn").addEventListener("click", toggleMusic);
-document.getElementById("prevSlideBtn").addEventListener("click", prevSlide);
-document.getElementById("nextSlideBtn").addEventListener("click", nextSlide);
-document.getElementById("startGameBtn").addEventListener("click", startGame);
+// ================= MARKET =================
+function renderMarket(){
+  let el = document.getElementById("marketRows");
+  el.innerHTML = "";
 
-initTutorial();
+  items.forEach(item=>{
+    let price = state.prices[state.currentCity][item];
+
+    let row = document.createElement("div");
+    row.innerHTML = `
+      <strong>${item}</strong> - $${price}
+      <button onclick="buy('${item}')">Buy</button>
+      <button onclick="sell('${item}')">Sell</button>
+    `;
+    el.appendChild(row);
+  });
+}
+
+// ================= INVENTORY =================
+function renderInventory(){
+  let el = document.getElementById("inventoryRows");
+  el.innerHTML = "";
+
+  items.forEach(item=>{
+    let row = document.createElement("div");
+    row.innerHTML = `${item}: ${state.inventory[item]}`;
+    el.appendChild(row);
+  });
+}
+
+// ================= BUY =================
+function buy(item){
+  let price = state.prices[state.currentCity][item];
+  if(state.cash < price) return alert("Not enough cash");
+
+  state.cash -= price;
+  state.inventory[item] += 1;
+
+  render();
+}
+
+// ================= SELL =================
+function sell(item){
+  if(state.inventory[item] <= 0) return;
+
+  let price = state.prices[state.currentCity][item];
+
+  state.cash += price;
+  state.inventory[item] -= 1;
+
+  render();
+}
+
+// ================= TRAVEL =================
+function travel(){
+  let city = prompt("Enter city: "+cities.join(", "));
+  if(!cities.includes(city)) return;
+
+  state.currentCity = city;
+  state.day++;
+  updatePrices();
+
+  render();
+}
+
+// ================= STAY =================
+function stayHere(){
+  state.day++;
+  updatePrices();
+  render();
+}
+
+// ================= TUTORIAL =================
+let slide = 0;
+
+function nextSlide(){
+  let slides = document.querySelectorAll(".slide");
+  if(slide < slides.length-1){
+    slides[slide].classList.remove("active");
+    slide++;
+    slides[slide].classList.add("active");
+  }
+}
+
+function prevSlide(){
+  let slides = document.querySelectorAll(".slide");
+  if(slide > 0){
+    slides[slide].classList.remove("active");
+    slide--;
+    slides[slide].classList.add("active");
+  }
+}
+
+function startGame(){
+  document.getElementById("tutorialOverlay").style.display="none";
+  state.gameStarted = true;
+  render();
+}
+
+// ================= START =================
 initMarkets();
-bindMapClicks();
-renderAll();
-log(`Run started in <strong>${state.currentCity}</strong> with ${fmt(state.cash)}.`, "good");
+render();
+
 </script>
 </body>
 </html>
