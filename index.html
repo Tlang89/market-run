@@ -14,22 +14,27 @@
     --muted:#b8b0a1;
     --gold:#c8a45c;
     --blue:#77c2ff;
+    --purple:#9a7cff;
     --line:#2e2e37;
     --good:#7fc97f;
     --bad:#c75b5b;
-    --purple:#9a7cff;
   }
-  *{box-sizing:border-box}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   body{
     margin:0;
-    font-family:Arial, Helvetica, sans-serif;
+    font-family:Arial,Helvetica,sans-serif;
     background:linear-gradient(180deg,#09090c,#14141a 48%,#101015);
     color:var(--text);
   }
-  .wrap{max-width:1220px;margin:0 auto;padding:16px}
+  .wrap{
+    max-width:1200px;
+    margin:0 auto;
+    padding:16px;
+    padding-bottom:40px;
+  }
   h1,h2,h3,p{margin-top:0}
   .sub,.small{color:var(--muted);line-height:1.45}
-  .introOverlay,.choiceOverlay,.winOverlay{
+  .overlay{
     position:fixed;
     inset:0;
     background:rgba(5,5,8,.95);
@@ -39,8 +44,8 @@
     padding:20px;
     z-index:9999;
   }
-  .choiceOverlay,.winOverlay{display:none}
-  .introCard,.choiceCard,.winCard{
+  .hidden{display:none}
+  .overlayCard{
     width:min(860px,100%);
     background:var(--panel);
     border:1px solid var(--line);
@@ -86,8 +91,7 @@
   }
   .heroCar:before,.heroCar:after{
     content:""; position:absolute; bottom:-6px; width:10px; height:10px; border-radius:50%;
-    background:#111;
-    border:2px solid #777;
+    background:#111; border:2px solid #777;
   }
   .heroCar:before{left:6px}
   .heroCar:after{right:6px}
@@ -99,16 +103,19 @@
   .heroTag{
     position:absolute; left:20px; top:62px; color:#d9d1bf; font-size:14px;
   }
-  .startBtn,.travelBtn,.cityBtn,.buyBtn,.sellBtn,.choiceBtn,.musicBtn{
-    border:none; border-radius:12px; padding:10px 12px; font-weight:700; cursor:pointer;
+  .btn{
+    border:none;
+    border-radius:14px;
+    padding:12px 14px;
+    font-weight:700;
+    cursor:pointer;
+    min-height:44px;
+    font-size:15px;
   }
-  .startBtn,.travelBtn,.choiceBtn{
-    background:var(--gold); color:#111;
-  }
-  .travelBtn,.startBtn{width:100%; margin-top:12px}
-  .cityBtn,.buyBtn,.sellBtn,.musicBtn{
-    background:var(--panel2); color:var(--text);
-  }
+  .btnPrimary{background:var(--gold);color:#111}
+  .btnSecondary{background:var(--panel2);color:var(--text)}
+  .full{width:100%}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
   .choiceRow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
   .choiceBox{
     background:var(--panel2);
@@ -117,7 +124,10 @@
     padding:14px;
   }
   .stats{
-    display:grid; grid-template-columns:repeat(6,1fr); gap:10px; margin-bottom:14px;
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:10px;
+    margin-bottom:14px;
   }
   .card,.panel{
     background:var(--panel);
@@ -126,15 +136,26 @@
     padding:12px;
   }
   .label{
-    color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.08em;
+    color:var(--muted);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
   }
   .value{
-    color:var(--gold); font-size:22px; font-weight:700; margin-top:6px;
+    color:var(--gold);
+    font-size:22px;
+    font-weight:700;
+    margin-top:6px;
   }
   .grid{
-    display:grid; grid-template-columns:1.25fr 1fr; gap:14px;
+    display:grid;
+    grid-template-columns:1.25fr 1fr;
+    gap:14px;
   }
-  .panel h2{margin:0 0 10px 0;color:var(--gold)}
+  .panel h2{
+    margin:0 0 10px 0;
+    color:var(--gold);
+  }
   .mapWrap{
     background:linear-gradient(180deg,#0d1118,#131925);
     border:1px solid var(--line);
@@ -155,7 +176,11 @@
   .cityCore.current{fill:#24314b;stroke:var(--blue)}
   .cityCore.selected{fill:#2c2644;stroke:var(--purple)}
   .cityLabel{
-    fill:var(--text); font-size:13px; font-weight:700; pointer-events:none; user-select:none;
+    fill:var(--text);
+    font-size:13px;
+    font-weight:700;
+    pointer-events:none;
+    user-select:none;
   }
   .travelPulse{
     fill:var(--blue);
@@ -172,17 +197,25 @@
     font-weight:700;
   }
   .cityList{
-    display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:10px;
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+    margin-bottom:10px;
   }
   .marketRow,.invRow,.eventRow,.walletRow{
     display:flex;
     justify-content:space-between;
-    align-items:center;
+    align-items:flex-start;
     gap:10px;
     padding:10px 0;
     border-bottom:1px solid var(--line);
   }
-  .actions{display:flex;gap:6px;flex-wrap:wrap}
+  .actions{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+    justify-content:flex-end;
+  }
   .log{
     max-height:340px;
     overflow:auto;
@@ -199,7 +232,6 @@
   .good{color:var(--good)}
   .bad{color:var(--bad)}
   .gold{color:var(--gold)}
-  .purple{color:var(--purple)}
   .pill{
     display:inline-block;
     padding:3px 8px;
@@ -223,8 +255,8 @@
 </head>
 <body>
 
-<div id="introOverlay" class="introOverlay">
-  <div class="introCard">
+<div id="introOverlay" class="overlay">
+  <div class="overlayCard">
     <div class="heroArt">
       <div class="heroTitle">MARKET RUN</div>
       <div class="heroTag">16-bit inspired road gamble • city markets • empire dream</div>
@@ -242,34 +274,34 @@
       Your dream goal is <span class="gold">$100,000,000</span> in net worth. At <span class="gold">$1,000,000</span>, you choose your empire path: <span class="gold">Store</span> or <span class="gold">Fleet</span>.
     </p>
     <div class="musicRow">
-      <button class="musicBtn" id="musicToggleBtn">Music: ON</button>
-      <span class="small">retro 16-bit inspired sound built in</span>
+      <button class="btn btnSecondary" id="musicToggleBtn">Music: ON</button>
+      <span class="small">tap start to unlock retro sounds on phone</span>
     </div>
-    <button id="startBtn" class="startBtn">Enter the Market</button>
+    <button id="startBtn" class="btn btnPrimary full">Enter the Market</button>
   </div>
 </div>
 
-<div id="choiceOverlay" class="choiceOverlay">
-  <div class="choiceCard">
+<div id="choiceOverlay" class="overlay hidden">
+  <div class="overlayCard">
     <h2 class="gold">Empire Unlock</h2>
     <p class="sub">You crossed <span class="gold">$1,000,000</span>. Choose your path.</p>
     <div class="choiceRow">
       <div class="choiceBox">
         <h3>Open a Store</h3>
         <p class="small">Steadier daily income, safer growth, stronger local pricing.</p>
-        <button class="choiceBtn" onclick="chooseEmpire('store')">Choose Store</button>
+        <button class="btn btnPrimary full" onclick="chooseEmpire('store')">Choose Store</button>
       </div>
       <div class="choiceBox">
         <h3>Build a Fleet</h3>
         <p class="small">Higher upside across cities, but breakdown risk grows too.</p>
-        <button class="choiceBtn" onclick="chooseEmpire('fleet')">Choose Fleet</button>
+        <button class="btn btnPrimary full" onclick="chooseEmpire('fleet')">Choose Fleet</button>
       </div>
     </div>
   </div>
 </div>
 
-<div id="winOverlay" class="winOverlay">
-  <div class="winCard">
+<div id="winOverlay" class="overlay hidden">
+  <div class="overlayCard">
     <h2 class="gold">Dream Realized</h2>
     <p>You reached <span class="gold">$100,000,000</span> in net worth.</p>
     <p class="sub">You turned a risky road hustle into a full empire.</p>
@@ -281,30 +313,12 @@
   <div class="sub">High-risk strategy. Every day is a new city gamble.</div>
 
   <div class="stats">
-    <div class="card">
-      <div class="label">Day</div>
-      <div class="value" id="dayStat">1</div>
-    </div>
-    <div class="card">
-      <div class="label">Cash</div>
-      <div class="value" id="cashStat">$2,500</div>
-    </div>
-    <div class="card">
-      <div class="label">Current City</div>
-      <div class="value" id="cityStat">Des Moines</div>
-    </div>
-    <div class="card">
-      <div class="label">Selected City</div>
-      <div class="value" id="selectedStat">Des Moines</div>
-    </div>
-    <div class="card">
-      <div class="label">Net Worth</div>
-      <div class="value" id="worthStat">$2,500</div>
-    </div>
-    <div class="card">
-      <div class="label">Empire</div>
-      <div class="value" id="empireStat">None</div>
-    </div>
+    <div class="card"><div class="label">Day</div><div class="value" id="dayStat">1</div></div>
+    <div class="card"><div class="label">Cash</div><div class="value" id="cashStat">$2,500</div></div>
+    <div class="card"><div class="label">Current City</div><div class="value" id="cityStat">Des Moines</div></div>
+    <div class="card"><div class="label">Selected City</div><div class="value" id="selectedStat">Des Moines</div></div>
+    <div class="card"><div class="label">Net Worth</div><div class="value" id="worthStat">$2,500</div></div>
+    <div class="card"><div class="label">Empire</div><div class="value" id="empireStat">None</div></div>
   </div>
 
   <div class="grid">
@@ -326,19 +340,16 @@
               <circle id="node-Des Moines" class="cityCore" cx="160" cy="190" r="13"></circle>
               <text class="cityLabel" x="104" y="225">Des Moines</text>
             </g>
-
             <g class="cityNode" data-city="Waterloo">
               <circle class="cityPulse" cx="365" cy="120" r="24"></circle>
               <circle id="node-Waterloo" class="cityCore" cx="365" cy="120" r="13"></circle>
               <text class="cityLabel" x="330" y="92">Waterloo</text>
             </g>
-
             <g class="cityNode" data-city="Cedar Falls">
               <circle class="cityPulse" cx="490" cy="108" r="24"></circle>
               <circle id="node-Cedar Falls" class="cityCore" cx="490" cy="108" r="13"></circle>
               <text class="cityLabel" x="454" y="80">Cedar Falls</text>
             </g>
-
             <g class="cityNode" data-city="Ames">
               <circle class="cityPulse" cx="290" cy="90" r="24"></circle>
               <circle id="node-Ames" class="cityCore" cx="290" cy="90" r="13"></circle>
@@ -347,12 +358,11 @@
 
             <circle id="travelPulse" class="travelPulse" cx="-100" cy="-100" r="8"></circle>
           </svg>
-
           <div id="travelBanner" class="travelBanner"></div>
         </div>
 
         <div class="cityList" id="cityList"></div>
-        <button id="travelBtn" class="travelBtn">Travel</button>
+        <button id="travelBtn" class="btn btnPrimary full">Travel</button>
       </div>
 
       <div class="panel">
@@ -438,6 +448,7 @@ function ensureAudio(){
     const Ctx = window.AudioContext || window.webkitAudioContext;
     if (Ctx) audioCtx = new Ctx();
   }
+  if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
   return audioCtx;
 }
 
@@ -595,12 +606,8 @@ function applyCityEventsToPrices(){
 
 function generateWalletSituation(force){
   state.walletChoiceActive = force || Math.random() < 0.35;
-  if (state.walletChoiceActive) {
-    const cash = randomInt(80, 240);
-    state.pendingWallet = { cash };
-  } else {
-    state.pendingWallet = null;
-  }
+  if (state.walletChoiceActive) state.pendingWallet = { cash: randomInt(80, 240) };
+  else state.pendingWallet = null;
 }
 
 function nextDay(){
@@ -626,11 +633,11 @@ function applyEmpireDailyEffects(){
 function checkMilestones(){
   const worth = netWorth();
   if (worth >= 1000000 && !state.empireChosen) {
-    document.getElementById("choiceOverlay").style.display = "flex";
+    document.getElementById("choiceOverlay").classList.remove("hidden");
   }
   if (worth >= 100000000 && !state.gameWon) {
     state.gameWon = true;
-    document.getElementById("winOverlay").style.display = "flex";
+    document.getElementById("winOverlay").classList.remove("hidden");
     beep(880, 0.25, "square", 0.04);
     setTimeout(() => beep(1175, 0.35, "square", 0.04), 180);
   }
@@ -639,12 +646,9 @@ function checkMilestones(){
 function chooseEmpire(type){
   state.empireChosen = true;
   state.empireType = type;
-  document.getElementById("choiceOverlay").style.display = "none";
-  if (type === "store") {
-    log(`🏪 You opened a store. Daily income is steadier now.`, "good");
-  } else {
-    log(`🚚 You built a fleet. Upside is bigger, but road risk rises too.`, "good");
-  }
+  document.getElementById("choiceOverlay").classList.add("hidden");
+  if (type === "store") log(`🏪 You opened a store. Daily income is steadier now.`, "good");
+  else log(`🚚 You built a fleet. Upside is bigger, but road risk rises too.`, "good");
   beep(660, 0.18, "square", 0.03);
   renderAll();
 }
@@ -663,13 +667,13 @@ function renderCityButtons(){
   list.innerHTML = "";
   cities.forEach(city => {
     const btn = document.createElement("button");
-    btn.className = "cityBtn" + (city === state.selectedCity ? " active" : "");
+    btn.className = "btn btnSecondary cityBtn" + (city === state.selectedCity ? " active" : "");
     btn.textContent = city + (city === state.currentCity ? " • CURRENT" : "");
     btn.onclick = () => {
       if (state.isTraveling) return;
       state.selectedCity = city;
       renderAll();
-      beep(500, 0.06, "square", 0.02);
+      beep(500, 0.05, "square", 0.02);
       log(`Selected <span class="gold">${city}</span>.`);
     };
     list.appendChild(btn);
@@ -710,24 +714,20 @@ function renderMarket(){
     const row = document.createElement("div");
     row.className = "marketRow";
     row.innerHTML = `
-      <div>
+      <div style="flex:1">
         <strong>${item}</strong><br>
         <span class="small">${city} • ${fmt(state.prices[city][item])} • <span class="${cls}">${trend}</span></span>
       </div>
       <div class="actions">
-        ${canTrade ? `<button class="buyBtn" data-buy="${item}">Buy 1</button>` : ``}
-        ${canTrade ? `<button class="sellBtn" data-sell="${item}">Sell 1</button>` : ``}
+        ${canTrade ? `<button class="btn btnSecondary" data-buy="${item}">Buy 1</button>` : ``}
+        ${canTrade ? `<button class="btn btnSecondary" data-sell="${item}">Sell 1</button>` : ``}
       </div>
     `;
     rows.appendChild(row);
   });
 
-  document.querySelectorAll("[data-buy]").forEach(btn => {
-    btn.onclick = () => buyItem(btn.dataset.buy);
-  });
-  document.querySelectorAll("[data-sell]").forEach(btn => {
-    btn.onclick = () => sellItem(btn.dataset.sell);
-  });
+  document.querySelectorAll("[data-buy]").forEach(btn => btn.onclick = () => buyItem(btn.dataset.buy));
+  document.querySelectorAll("[data-sell]").forEach(btn => btn.onclick = () => sellItem(btn.dataset.sell));
 }
 
 function renderInventory(){
@@ -743,13 +743,11 @@ function renderInventory(){
     const row = document.createElement("div");
     row.className = "invRow";
     row.innerHTML = `
-      <div>
+      <div style="flex:1">
         <strong>${item}</strong><br>
         <span class="small">Qty: ${inv.qty} • Avg Buy: ${inv.qty ? fmt(inv.avg) : "$0"}</span>
       </div>
-      <div class="${pnlClass}">
-        ${pnlText}
-      </div>
+      <div class="${pnlClass}">${pnlText}</div>
     `;
     rows.appendChild(row);
   });
@@ -784,14 +782,14 @@ function renderWalletChoices(){
   const row = document.createElement("div");
   row.className = "walletRow";
   row.innerHTML = `
-    <div>
+    <div style="flex:1">
       <strong>Found Wallet</strong><br>
       <span class="small">Cash inside: ${fmt(state.pendingWallet.cash)}. Keep it, return it, or turn it in.</span>
     </div>
     <div class="actions">
-      <button class="buyBtn" onclick="resolveWallet('keep')">Keep</button>
-      <button class="sellBtn" onclick="resolveWallet('owner')">Return</button>
-      <button class="sellBtn" onclick="resolveWallet('authorities')">Turn In</button>
+      <button class="btn btnSecondary" onclick="resolveWallet('keep')">Keep</button>
+      <button class="btn btnSecondary" onclick="resolveWallet('owner')">Return</button>
+      <button class="btn btnSecondary" onclick="resolveWallet('authorities')">Turn In</button>
     </div>
   `;
   rows.appendChild(row);
@@ -828,13 +826,11 @@ function buyItem(item){
     beep(180, 0.08, "square", 0.03);
     return;
   }
-
   const inv = state.inventory[item];
   const totalBefore = inv.avg * inv.qty;
   inv.qty += 1;
   inv.avg = (totalBefore + price) / inv.qty;
   state.cash -= price;
-
   beep(520, 0.06, "square", 0.02);
   renderAll();
   checkMilestones();
@@ -848,10 +844,8 @@ function sellItem(item){
     beep(180, 0.08, "square", 0.03);
     return;
   }
-
   const salePrice = state.prices[state.currentCity][item];
   const profit = salePrice - inv.avg;
-
   state.cash += salePrice;
   inv.qty -= 1;
   if (inv.qty === 0) inv.avg = 0;
@@ -860,13 +854,9 @@ function sellItem(item){
   renderAll();
   checkMilestones();
 
-  if (profit > 0) {
-    log(`Sold 1 <span class="gold">${item}</span> for ${fmt(salePrice)}. Profit: ${fmt(profit)}.`, "good");
-  } else if (profit < 0) {
-    log(`Sold 1 <span class="gold">${item}</span> for ${fmt(salePrice)}. Loss: ${fmt(Math.abs(profit))}.`, "bad");
-  } else {
-    log(`Sold 1 <span class="gold">${item}</span> for break-even at ${fmt(salePrice)}.`);
-  }
+  if (profit > 0) log(`Sold 1 <span class="gold">${item}</span> for ${fmt(salePrice)}. Profit: ${fmt(profit)}.`, "good");
+  else if (profit < 0) log(`Sold 1 <span class="gold">${item}</span> for ${fmt(salePrice)}. Loss: ${fmt(Math.abs(profit))}.`, "bad");
+  else log(`Sold 1 <span class="gold">${item}</span> for break-even at ${fmt(salePrice)}.`);
 }
 
 function randomTravelEvent(){
@@ -880,7 +870,6 @@ function randomTravelEvent(){
     beep(160, 0.12, "square", 0.03);
     return;
   }
-
   if (roll < 0.35 + fleetRisk) {
     const loss = randomInt(100, 260);
     state.cash = Math.max(0, state.cash - loss);
@@ -888,7 +877,6 @@ function randomTravelEvent(){
     beep(140, 0.12, "square", 0.03);
     return;
   }
-
   if (roll < 0.58) {
     const gain = randomInt(90, 260);
     state.cash += gain;
@@ -896,7 +884,6 @@ function randomTravelEvent(){
     beep(760, 0.12, "square", 0.03);
     return;
   }
-
   log(`😐 Quiet road into <span class="gold">${state.currentCity}</span>.`);
 }
 
@@ -926,14 +913,8 @@ function animateTravel(fromCity, toCity){
       pulse.setAttribute("cx", point.x);
       pulse.setAttribute("cy", point.y);
 
-      if (progress < 1){
-        requestAnimationFrame(frame);
-      } else {
-        setTimeout(() => {
-          banner.style.display = "none";
-          resolve();
-        }, 150);
-      }
+      if (progress < 1) requestAnimationFrame(frame);
+      else setTimeout(() => { banner.style.display = "none"; resolve(); }, 150);
     }
     requestAnimationFrame(frame);
   });
@@ -987,7 +968,8 @@ function renderAll(){
 
 document.getElementById("travelBtn").addEventListener("click", travel);
 document.getElementById("startBtn").addEventListener("click", () => {
-  document.getElementById("introOverlay").style.display = "none";
+  ensureAudio();
+  document.getElementById("introOverlay").classList.add("hidden");
   startMusic();
 });
 document.getElementById("musicToggleBtn").addEventListener("click", toggleMusic);
