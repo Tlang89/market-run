@@ -1,110 +1,439 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Market Run</title>
-
 <style>
-body {
-  background:#111;
-  color:#fff;
-  font-family:Arial;
-  text-align:center;
-}
-
-.city {
-  background:#222;
-  margin:10px;
-  padding:15px;
-  border-radius:10px;
-  cursor:pointer;
-}
-
-button {
-  padding:10px;
-  margin-top:10px;
-  background:gold;
-  border:none;
-  border-radius:8px;
-}
-
-#log {
-  margin-top:20px;
-  background:#000;
-  padding:10px;
-  border-radius:10px;
-}
+  :root{
+    --bg:#0d0d0f;
+    --panel:#17171c;
+    --panel2:#202028;
+    --text:#f3efe4;
+    --muted:#b8b0a1;
+    --gold:#c8a45c;
+    --blue:#77c2ff;
+    --line:#2e2e37;
+    --good:#7fc97f;
+    --bad:#c75b5b;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:Arial, Helvetica, sans-serif;
+    background:linear-gradient(180deg,#0b0b0e,#15151b 45%,#111116);
+    color:var(--text);
+  }
+  .wrap{
+    max-width:980px;
+    margin:0 auto;
+    padding:16px;
+  }
+  h1{
+    margin:0 0 6px 0;
+    color:var(--gold);
+    text-align:center;
+  }
+  .sub{
+    text-align:center;
+    color:var(--muted);
+    margin-bottom:16px;
+  }
+  .stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    margin-bottom:14px;
+  }
+  .card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:12px;
+  }
+  .label{
+    color:var(--muted);
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+  }
+  .value{
+    color:var(--gold);
+    font-size:28px;
+    font-weight:700;
+    margin-top:6px;
+  }
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:14px;
+    margin-bottom:14px;
+  }
+  .panel h2{
+    margin:0 0 10px 0;
+    color:var(--gold);
+  }
+  .small{color:var(--muted);font-size:12px}
+  .mapWrap{
+    background:linear-gradient(180deg,#0d1118,#131925);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:10px;
+    margin-bottom:12px;
+  }
+  svg{width:100%;height:auto;display:block}
+  .road{
+    stroke:#334155;
+    stroke-width:4;
+    fill:none;
+    opacity:.95;
+  }
+  .cityNode{
+    cursor:pointer;
+  }
+  .cityPulse{
+    fill:rgba(119,194,255,.08);
+    stroke:rgba(119,194,255,.5);
+    stroke-width:2;
+    pointer-events:none;
+  }
+  .cityCore{
+    fill:#1d2637;
+    stroke:var(--gold);
+    stroke-width:2;
+  }
+  .cityCore.current{
+    fill:#24314b;
+    stroke:var(--blue);
+  }
+  .cityLabel{
+    fill:var(--text);
+    font-size:13px;
+    font-weight:700;
+    pointer-events:none;
+    user-select:none;
+  }
+  .travelPulse{
+    fill:var(--blue);
+    filter:drop-shadow(0 0 8px rgba(119,194,255,.9));
+  }
+  .travelBanner{
+    display:none;
+    margin-top:10px;
+    padding:10px 12px;
+    border-radius:12px;
+    background:#111924;
+    border:1px solid #29415f;
+    color:#cfe6ff;
+    font-weight:700;
+  }
+  .cityList{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+  }
+  .cityBtn{
+    background:var(--panel2);
+    color:var(--text);
+    border:none;
+    border-radius:12px;
+    padding:12px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .cityBtn.active{
+    outline:2px solid var(--gold);
+  }
+  .travelBtn{
+    width:100%;
+    border:none;
+    border-radius:12px;
+    padding:12px;
+    font-weight:700;
+    cursor:pointer;
+    background:var(--gold);
+    color:#111;
+    margin-top:10px;
+  }
+  .travelBtn:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+  }
+  .log{
+    max-height:280px;
+    overflow:auto;
+    background:#101015;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:10px;
+  }
+  .entry{
+    padding:8px 6px;
+    border-bottom:1px solid #24242c;
+    line-height:1.35;
+  }
+  .good{color:var(--good)}
+  .bad{color:var(--bad)}
+  .gold{color:var(--gold)}
+  @media (max-width:700px){
+    .stats{grid-template-columns:1fr}
+    .cityList{grid-template-columns:1fr}
+  }
 </style>
 </head>
-
 <body>
+<div class="wrap">
+  <h1>Market Run</h1>
+  <div class="sub">Tap a city, then travel. The road pulse is the experience.</div>
 
-<h1>Market Run</h1>
+  <div class="stats">
+    <div class="card">
+      <div class="label">Day</div>
+      <div class="value" id="dayStat">1</div>
+    </div>
+    <div class="card">
+      <div class="label">Cash</div>
+      <div class="value" id="cashStat">$2,500</div>
+    </div>
+    <div class="card">
+      <div class="label">Current City</div>
+      <div class="value" id="cityStat">Des Moines</div>
+    </div>
+  </div>
 
-<p>Day: <span id="day">1</span></p>
-<p>Cash: $<span id="cash">2500</span></p>
-<p>City: <span id="city">Des Moines</span></p>
+  <div class="panel">
+    <h2>Travel Map</h2>
+    <div class="small">Select a city, then press travel to see the road pulse move there.</div>
 
-<h2>Choose City</h2>
+    <div class="mapWrap">
+      <svg viewBox="0 0 900 300">
+        <path id="road-Des Moines-Waterloo" class="road" d="M160 190 C230 180, 300 165, 365 120" />
+        <path id="road-Des Moines-Ames" class="road" d="M160 190 C205 150, 245 120, 290 90" />
+        <path id="road-Waterloo-Cedar Falls" class="road" d="M365 120 C410 112, 445 110, 490 108" />
+        <path id="road-Ames-Cedar Falls" class="road" d="M290 90 C360 82, 430 88, 490 108" />
+        <path id="road-Ames-Waterloo" class="road" d="M290 90 C315 105, 338 113, 365 120" />
 
-<div class="city" onclick="selectCity('Des Moines')">Des Moines</div>
-<div class="city" onclick="selectCity('Waterloo')">Waterloo</div>
-<div class="city" onclick="selectCity('Cedar Falls')">Cedar Falls</div>
-<div class="city" onclick="selectCity('Ames')">Ames</div>
+        <g class="cityNode" data-city="Des Moines">
+          <circle class="cityPulse" cx="160" cy="190" r="24"></circle>
+          <circle id="node-Des Moines" class="cityCore" cx="160" cy="190" r="13"></circle>
+          <text class="cityLabel" x="104" y="225">Des Moines</text>
+        </g>
 
-<div id="info"></div>
-<div id="log"></div>
+        <g class="cityNode" data-city="Waterloo">
+          <circle class="cityPulse" cx="365" cy="120" r="24"></circle>
+          <circle id="node-Waterloo" class="cityCore" cx="365" cy="120" r="13"></circle>
+          <text class="cityLabel" x="330" y="92">Waterloo</text>
+        </g>
+
+        <g class="cityNode" data-city="Cedar Falls">
+          <circle class="cityPulse" cx="490" cy="108" r="24"></circle>
+          <circle id="node-Cedar Falls" class="cityCore" cx="490" cy="108" r="13"></circle>
+          <text class="cityLabel" x="454" y="80">Cedar Falls</text>
+        </g>
+
+        <g class="cityNode" data-city="Ames">
+          <circle class="cityPulse" cx="290" cy="90" r="24"></circle>
+          <circle id="node-Ames" class="cityCore" cx="290" cy="90" r="13"></circle>
+          <text class="cityLabel" x="270" y="62">Ames</text>
+        </g>
+
+        <circle id="travelPulse" class="travelPulse" cx="-100" cy="-100" r="8"></circle>
+      </svg>
+
+      <div id="travelBanner" class="travelBanner"></div>
+    </div>
+
+    <div class="cityList" id="cityList"></div>
+    <button class="travelBtn" id="travelBtn">Travel</button>
+  </div>
+
+  <div class="panel">
+    <h2>Event Log</h2>
+    <div class="log" id="log"></div>
+  </div>
+</div>
 
 <script>
+const cities = ["Des Moines", "Waterloo", "Cedar Falls", "Ames"];
 
-let cash = 2500
-let day = 1
-let currentCity = "Des Moines"
+const nodeCoords = {
+  "Des Moines": {x:160, y:190},
+  "Waterloo": {x:365, y:120},
+  "Cedar Falls": {x:490, y:108},
+  "Ames": {x:290, y:90}
+};
 
-function log(msg){
-  document.getElementById("log").innerHTML =
-  msg + "<br>" + document.getElementById("log").innerHTML
+const state = {
+  day: 1,
+  cash: 2500,
+  currentCity: "Des Moines",
+  selectedCity: "Des Moines",
+  isTraveling: false
+};
+
+function fmt(n){
+  return "$" + Math.round(n).toLocaleString();
 }
 
-function selectCity(city){
-  document.getElementById("info").innerHTML =
-  "<h3>"+city+"</h3>" +
-  "<button onclick='travel(\""+city+"\")'>Travel Here</button>"
+function log(msg, cls=""){
+  const div = document.createElement("div");
+  div.className = "entry " + cls;
+  div.innerHTML = msg;
+  document.getElementById("log").prepend(div);
 }
 
-function travel(city){
-
-  if(city === currentCity){
-    alert("You're already there")
-    return
-  }
-
-  currentCity = city
-  day++
-
-  let event = Math.random()
-
-  if(event < 0.3){
-    let loss = Math.floor(Math.random()*300)
-    cash -= loss
-    log("💀 Mugged! Lost $" + loss)
-  }
-  else if(event < 0.6){
-    let gain = Math.floor(Math.random()*300)
-    cash += gain
-    log("🔥 Lucky deal! Gained $" + gain)
-  }
-  else{
-    log("😐 Quiet trip.")
-  }
-
-  document.getElementById("day").innerText = day
-  document.getElementById("cash").innerText = cash
-  document.getElementById("city").innerText = city
+function renderStats(){
+  document.getElementById("dayStat").textContent = state.day;
+  document.getElementById("cashStat").textContent = fmt(state.cash);
+  document.getElementById("cityStat").textContent = state.currentCity;
 }
 
+function renderCityButtons(){
+  const list = document.getElementById("cityList");
+  list.innerHTML = "";
+  cities.forEach(city => {
+    const btn = document.createElement("button");
+    btn.className = "cityBtn" + (city === state.selectedCity ? " active" : "");
+    btn.textContent = city + (city === state.currentCity ? " • CURRENT" : "");
+    btn.onclick = () => {
+      if (state.isTraveling) return;
+      state.selectedCity = city;
+      renderAll();
+      log(`Selected <span class="gold">${city}</span>.`);
+    };
+    list.appendChild(btn);
+  });
+}
+
+function updateMapCurrentCity(){
+  cities.forEach(city => {
+    const node = document.getElementById("node-" + city);
+    node.classList.toggle("current", city === state.currentCity);
+  });
+}
+
+function renderTravelButton(){
+  const btn = document.getElementById("travelBtn");
+  if (state.selectedCity === state.currentCity){
+    btn.textContent = "Already Here";
+    btn.disabled = true;
+  } else if (state.isTraveling){
+    btn.textContent = "Traveling...";
+    btn.disabled = true;
+  } else {
+    btn.textContent = "Travel to " + state.selectedCity;
+    btn.disabled = false;
+  }
+}
+
+function routeId(a, b){
+  const ids = [
+    `road-${a}-${b}`,
+    `road-${b}-${a}`
+  ];
+  return ids.find(id => document.getElementById(id));
+}
+
+function randomEvent(){
+  const r = Math.random();
+  if (r < 0.33){
+    const loss = Math.floor(Math.random() * 250);
+    state.cash -= loss;
+    log(`💀 Mugged on the way to <span class="gold">${state.currentCity}</span>. Lost ${fmt(loss)}.`, "bad");
+  } else if (r < 0.66){
+    const gain = Math.floor(Math.random() * 300);
+    state.cash += gain;
+    log(`🔥 Lucky deal in <span class="gold">${state.currentCity}</span>. Gained ${fmt(gain)}.`, "good");
+  } else {
+    log(`😐 Quiet trip into <span class="gold">${state.currentCity}</span>.`);
+  }
+}
+
+function animateTravel(fromCity, toCity){
+  return new Promise(resolve => {
+    const pulse = document.getElementById("travelPulse");
+    const banner = document.getElementById("travelBanner");
+    const path = document.getElementById(routeId(fromCity, toCity));
+
+    banner.style.display = "block";
+    banner.textContent = `Traveling from ${fromCity} to ${toCity}...`;
+
+    if (!path){
+      banner.style.display = "none";
+      resolve();
+      return;
+    }
+
+    const length = path.getTotalLength();
+    let startTime = null;
+    const duration = 1400;
+
+    function frame(ts){
+      if (!startTime) startTime = ts;
+      const progress = Math.min((ts - startTime) / duration, 1);
+      const point = path.getPointAtLength(length * progress);
+      pulse.setAttribute("cx", point.x);
+      pulse.setAttribute("cy", point.y);
+
+      if (progress < 1){
+        requestAnimationFrame(frame);
+      } else {
+        setTimeout(() => {
+          banner.style.display = "none";
+          resolve();
+        }, 150);
+      }
+    }
+
+    requestAnimationFrame(frame);
+  });
+}
+
+async function travel(){
+  if (state.selectedCity === state.currentCity || state.isTraveling) return;
+
+  const fromCity = state.currentCity;
+  const toCity = state.selectedCity;
+
+  state.isTraveling = true;
+  renderAll();
+
+  await animateTravel(fromCity, toCity);
+
+  state.currentCity = toCity;
+  state.day += 1;
+
+  randomEvent();
+
+  state.isTraveling = false;
+  renderAll();
+}
+
+function bindMapClicks(){
+  document.querySelectorAll(".cityNode").forEach(node => {
+    const city = node.getAttribute("data-city");
+    node.addEventListener("click", () => {
+      if (state.isTraveling) return;
+      state.selectedCity = city;
+      renderAll();
+      log(`Selected <span class="gold">${city}</span> from the map.`);
+    });
+  });
+}
+
+function renderAll(){
+  renderStats();
+  renderCityButtons();
+  updateMapCurrentCity();
+  renderTravelButton();
+}
+
+document.getElementById("travelBtn").addEventListener("click", travel);
+
+bindMapClicks();
+renderAll();
+log(`Run started in <span class="gold">${state.currentCity}</span> with ${fmt(state.cash)}.`, "good");
 </script>
-
 </body>
 </html>
