@@ -397,9 +397,18 @@ svg{
     <div class="stat"><div class="label">Current City</div><div class="value" id="cityStat">Des Moines</div></div>
     <div class="stat"><div class="label">Selected City</div><div class="value" id="selectedStat">Des Moines</div></div>
     <div class="stat"><div class="label">Net Worth</div><div class="value" id="worthStat">$2,500</div></div>
-    <div class="stat"><div class="label">Empire</div><div class="value" id="empireStat">None</div></div>
-  </div>
+    <div class="stat"><div class="label">Empire</div><div class="value" id="empireStat">None</div>
+   
+<div class="stat">
+  <div class="label">Bank</div>
+  <div class="value" id="bankStat">$0</div>
+</div>
 
+<div class="stat">
+  <div class="label">Debt</div>
+  <div class="value" id="debtStat">$0</div>
+</div>
+</div>      
   <div class="utility">
     <button id="saveBtn" class="btn btnSecondary">Save</button>
     <button id="loadBtn" class="btn btnSecondary">Load</button>
@@ -951,6 +960,8 @@ function renderStats(){
   document.getElementById("selectedStat").textContent = state.selectedCity;
   document.getElementById("worthStat").textContent = fmt(netWorth());
   document.getElementById("empireStat").textContent = state.empireType ? state.empireType.toUpperCase() : "None";
+ document.getElementById("bankStat").textContent = fmt(state.bank || 0);
+document.getElementById("debtStat").textContent = fmt(state.debt || 0); 
 }
 
 function updateMapState(){
