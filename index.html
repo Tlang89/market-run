@@ -570,7 +570,16 @@ svg{
       <div id="hearsayRows" class="scroll"></div>
     </div>
   </div>
+<div class="panel">
+  <h3>📦 Storage</h3>
 
+  <div id="storageDisplay" class="small">Empty</div>
+
+  <div class="row">
+    <button class="btn" onclick="storeItem(selectedItem(), 1)">Store 1</button>
+    <button class="btn" onclick="takeFromStorage(selectedItem(), 1)">Take 1</button>
+  </div>
+</div>
   <div id="tab-inventory" class="tabPanel">
     <div class="panel">
       <h2>INVENTORY</h2>
@@ -1497,7 +1506,82 @@ function repayDebt(amount) {
   }
 
   renderAll();
-}  
+} // ===== STORAGE SYSTEM =====
+
+function getCityStorage(city) {
+  if (!state.storage) state.storage = {};
+
+  if (!state.storage[city]) {
+    state.storage[city] = {};
+  }
+
+  return state.storage[city];
+}
+
+function storeItem(item, qty) {
+  if (!item || qty <= 0) return;
+
+  const inv = state.inventory[item];
+  if (!inv || inv.qty < qty) {
+    log("❌ Not enough inventory to store.", "bad");
+    return;
+  }
+
+  const cityStore = getCityStorage(state.currentCity);
+
+  if (!cityStore[item]) {
+    cityStore[item] = { qty: 0, avg: inv.avg || 0 };
+  }
+
+  cityStore[item].qty += qty;
+  cityStore[item].avg = inv.avg || cityStore[item].avg || 0;
+
+  inv.qty -= qty;
+
+  if (inv.qty <= 0) {
+    delete state.inventory[item];
+  }
+
+  log(`📦 Stored ${qty} ${item} in ${state.currentCity}.`, "good");
+  renderAll();
+}
+
+function takeFromStorage(item, qty) {
+  if (!item || qty <= 0) return;
+
+  const cityStore = getCityStorage(state.currentCity);
+  const stored = cityStore[item];
+
+  if (!stored || stored.qty < qty) {
+    log("❌ Not enough in city storage.", "bad");
+    return;
+  }
+
+  if (!state.inventory[item]) {
+    state.inventory[item] = { qty: 0, avg: stored.avg || 0 };
+  }
+
+  state.inventory[item].qty += qty;
+  state.inventory[item].avg = stored.avg || state.inventory[item].avg || 0;
+
+  stored.qty -= qty;
+
+  if (stored.qty <= 0) {
+    delete cityStore[item];
+  }
+
+  log(`📦 Pulled ${qty} ${item} from ${state.currentCity} storage.`, "neutral");
+  renderAll();
+}
+
+function storageSummary(city) {
+  const cityStore = getCityStorage(city);
+  const entries = Object.entries(cityStore);
+
+  if (!entries.length) return "Empty";
+
+  return entries.map(([name, data]) => `${name}: ${data.qty}`).join(" • ");
+} 
 </script>
 </body>
 </html>
