@@ -1151,14 +1151,17 @@ function resolveWallet(choice){
   const cash = state.pendingWallet.cash;
   if (choice === "keep") {
     state.cash += cash;
+    showMoneyPop(cash);
     log(`👛 Kept the wallet: +${fmt(cash)}.`, "bad");
   } else if (choice === "owner") {
     const reward = Math.round(cash * 0.55);
     state.cash += reward;
+    showMoneyPop(reward);
     log(`🤝 Returned wallet for reward: +${fmt(reward)}.`, "good");
   } else {
     const reward = Math.round(cash * 0.25);
     state.cash += reward;
+    showMoneyPop(reward);
     log(`🏛️ Turned wallet in: +${fmt(reward)}.`, "good");
   }
   state.walletChoiceActive = false;
