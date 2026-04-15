@@ -1349,9 +1349,9 @@ function resetGame(){
 
 document.getElementById("travelBtn").addEventListener("click", travel);
 document.getElementById("stayBtn").addEventListener("click", stayHere);
-document.getElementById("prevSlideBtn").addEventListener("click", () => { initAudio(); playClick(); prevSlide(); });
-document.getElementById("nextSlideBtn").addEventListener("click", () => { initAudio(); playClick(); nextSlide(); });
-document.getElementById("startGameBtn").addEventListener("click", () => { initAudio(); playClick(); startGame(); });
+document.getElementById("prevSlideBtn").addEventListener("click", () => { forceAudioUnlock(); initAudio(); playClick(); prevSlide(); });
+document.getElementById("nextSlideBtn").addEventListener("click", () => { forceAudioUnlock(); initAudio(); playClick(); nextSlide(); });
+document.getElementById("startGameBtn").addEventListener("click", () => { forceAudioUnlock(); initAudio(); playClick(); startGame(); });
 document.getElementById("saveBtn").addEventListener("click", saveGameManual);
 document.getElementById("loadBtn").addEventListener("click", loadGame);
 document.getElementById("resetBtn").addEventListener("click", resetGame);
