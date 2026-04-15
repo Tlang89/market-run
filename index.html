@@ -1359,70 +1359,7 @@ initMarkets();
 bindMapClicks();
 renderAll();
 log(`Run started in <strong>${state.currentCity}</strong> with ${fmt(state.cash)}.`, "good");
-// ========================================
-// SIMPLE SOUND SYSTEM (SAFE VERSION)
-// ========================================
 
-let audioUnlocked = false;
-let audioCtx = null;
-
-function unlockAudio() {
-  if (audioUnlocked) return;
-
-  try {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === "suspended") {
-      audioCtx.resume();
-    }
-    audioUnlocked = true;
-  } catch (e) {
-    console.log("Audio failed");
-  }
-}
-
-// simple click sound
-function playClickSound() {
-  if (!audioUnlocked || !audioCtx) return;
-
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-
-  osc.type = "square";
-  osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-
-  gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.08);
-
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-
-  osc.start();
-  osc.stop(audioCtx.currentTime + 0.08);
-}
-
-// buy sound (ka-ching feel)
-function playBuySound() {
-  if (!audioUnlocked || !audioCtx) return;
-
-  playClickSound();
-
-  setTimeout(() => {
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-
-    osc.type = "square";
-    osc.frequency.setValueAtTime(900, audioCtx.currentTime);
-
-    gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.1);
-
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-
-    osc.start();
-    osc.stop(audioCtx.currentTime + 0.1);
-  }, 60);
-}
 </script>
 </body>
 </html>
