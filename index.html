@@ -1387,6 +1387,19 @@ function showMoneyPop(amount) {
     el.remove();
   }, 600);
 }
+// 🔊 FORCE AUDIO UNLOCK FOR iPHONE
+function forceAudioUnlock() {
+  try {
+    initAudio();
+    if (audioCtx && audioCtx.state === "suspended") {
+      audioCtx.resume();
+    }
+  } catch (e) {}
+}
+
+document.addEventListener("touchstart", forceAudioUnlock, { once: true });
+document.addEventListener("touchend", forceAudioUnlock, { once: true });
+document.addEventListener("click", forceAudioUnlock, { once: true });  
 </script>
 </body>
 </html>
