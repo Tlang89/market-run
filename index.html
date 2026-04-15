@@ -406,6 +406,19 @@ svg{
     <button id="resetBtn" class="btn btnDanger">Reset</button>
     <button id="muteBtn" class="btn btnSecondary">Mute: Off</button>
   </div>
+  <div class="row">
+  <button onclick="borrowMoney(500)" class="btn">💸 Borrow $500</button>
+  <button onclick="borrowMoney(2000)" class="btn">💸 Borrow $2,000</button>
+</div>
+
+<div class="row">
+  <button onclick="deposit(500)" class="btn">🏦 Deposit $500</button>
+  <button onclick="withdraw(500)" class="btn">🏦 Withdraw $500</button>
+</div>
+
+<div class="row">
+  <button onclick="repayDebt(500)" class="btn">💰 Repay $500</button>
+</div>
 
   <div class="tabs">
     <button class="btn btnSecondary tabBtn active" onclick="showTab('tab-map', this)">Map</button>
