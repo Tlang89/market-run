@@ -1359,7 +1359,31 @@ initMarkets();
 bindMapClicks();
 renderAll();
 log(`Run started in <strong>${state.currentCity}</strong> with ${fmt(state.cash)}.`, "good");
+function showMoneyPop(amount) {
+  const el = document.createElement("div");
+  el.textContent = `+$${amount}`;
+  el.style.position = "fixed";
+  el.style.left = "50%";
+  el.style.top = "50%";
+  el.style.transform = "translate(-50%, -50%)";
+  el.style.color = "#00ff88";
+  el.style.fontSize = "22px";
+  el.style.fontWeight = "bold";
+  el.style.pointerEvents = "none";
+  el.style.zIndex = "9999";
+  el.style.transition = "all 0.6s ease";
 
+  document.body.appendChild(el);
+
+  setTimeout(() => {
+    el.style.top = "30%";
+    el.style.opacity = "0";
+  }, 50);
+
+  setTimeout(() => {
+    el.remove();
+  }, 600);
+}
 </script>
 </body>
 </html>
