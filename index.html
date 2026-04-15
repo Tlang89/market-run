@@ -1428,7 +1428,74 @@ function forceAudioUnlock() {
 
 document.addEventListener("touchstart", forceAudioUnlock, { once: true });
 document.addEventListener("touchend", forceAudioUnlock, { once: true });
-document.addEventListener("click", forceAudioUnlock, { once: true });  
+document.addEventListener("click", forceAudioUnlock, { once: true });
+function borrowMoney(amount) {
+  if (!state.debt) state.debt = 0;
+  if (!state.debtDueDay) state.debtDueDay = 0;
+
+  const owed = Math.floor(amount * 1.4);
+
+  state.cash += amount;
+  state.debt += owed;
+  state.debtDueDay = state.day + 3;
+
+  log(`💸 Borrowed $${amount}. You owe $${owed} by day ${state.debtDueDay}.`, "bad");
+  renderAll();
+}
+
+function deposit(amount) {
+  if (!state.bank) state.bank = 0;
+
+  if (state.cash < amount) {
+    log("❌ Not enough cash.", "bad");
+    return;
+  }
+
+  state.cash -= amount;
+  state.bank += amount;
+
+  log(`🏦 Deposited $${amount}.`, "good");
+  renderAll();
+}
+
+function withdraw(amount) {
+  if (!state.bank) state.bank = 0;
+
+  if (state.bank < amount) {
+    log("❌ Not enough in bank.", "bad");
+    return;
+  }
+
+  state.bank -= amount;
+  state.cash += amount;
+
+  log(`🏦 Withdrew $${amount}.`, "neutral");
+  renderAll();
+}
+
+function repayDebt(amount) {
+  if (!state.debt || state.debt <= 0) {
+    log("✅ No debt.", "good");
+    return;
+  }
+
+  if (state.cash < amount) {
+    log("❌ Not enough cash.", "bad");
+    return;
+  }
+
+  state.cash -= amount;
+  state.debt -= amount;
+
+  if (state.debt <= 0) {
+    state.debt = 0;
+    log("🔥 Debt cleared. You're free.", "good");
+  } else {
+    log(`💰 Paid $${amount}. Remaining debt: $${state.debt}`, "neutral");
+  }
+
+  renderAll();
+}  
 </script>
 </body>
 </html>
