@@ -531,7 +531,7 @@ button,input,select{font:inherit}
       • Use the bank and manage debt
       <br><br>
       <strong>Goal:</strong><br>
-      Reach $20,000 net worth before Day 30
+      Reach $1,000,000 net worth before Day 365
     </p>
     <div class="startRow">
       <button id="startGameBtn">Start With Sound</button>
@@ -654,7 +654,7 @@ button,input,select{font:inherit}
         <h2>Status</h2>
         <div class="smallBox" id="selectedInfo">Selected item: Sneakers</div>
         <div class="smallBox" id="storageInfo">Storage: Empty</div>
-        <div class="smallBox" id="goalInfo">Goal: Reach $20,000 by Day 30.</div>
+        <div class="smallBox" id="goalInfo">Goal: Reach $1,000,000 by Day 365.</div>
 
         <div class="sub" style="margin-top:2px;">Health</div>
         <div class="healthBarWrap"><div class="healthBar" id="healthBar"></div></div>
@@ -716,8 +716,8 @@ const CITY_UPDATES = {
 
 const state = {
   day: 1,
-  maxDay: 30,
-  goal: 20000,
+  maxDay: 365,
+  goal: 1000000,
   cash: 2500,
   bank: 0,
   debt: 0,
@@ -1225,28 +1225,41 @@ function cityMessage(city){
   return randomFrom(CITY_UPDATES[city] || ["The city feels quiet."]);
 }
 
+function getDifficultyScale(){
+  return 1 + ((state.day - 1) / (state.maxDay - 1)) * 2.2;
+}
+
 function applyDebtInterest(){
   if (state.debt > 0) {
-    const add = Math.max(25, Math.round(state.debt * 0.05));
+    const scale = getDifficultyScale();
+    const add = Math.max(25, Math.round(state.debt * (0.02 + scale * 0.015)));
     state.debt += add;
     logLine(`📈 Debt pressure hit. Interest added ${fmt(add)}.`);
+  }
+
+  const dailyCost = Math.round(20 + getDifficultyScale() * 18);
+  const hit = Math.min(state.cash, dailyCost);
+  state.cash -= hit;
+  if (hit > 0) {
+    logLine(`🧾 Daily living cost. Paid ${fmt(hit)}.`);
   }
 }
 
 function randomEvent(){
   state.pendingFight = false;
   const roll = Math.random();
+  const scale = getDifficultyScale();
 
-  if (roll < 0.12) {
-    const found = 80 + Math.floor(Math.random() * 180);
+  if (roll < 0.10) {
+    const found = Math.round((80 + Math.random() * 180) * Math.min(1.8, 0.9 + scale * 0.25));
     state.cash += found;
     soundSell();
     logLine(`👛 Found a wallet. Pocketed ${fmt(found)}.`);
     popup(`Found ${fmt(found)}`);
     return;
   }
-  if (roll < 0.22) {
-    const fee = 70 + Math.floor(Math.random() * 130);
+  if (roll < 0.21) {
+    const fee = Math.round((70 + Math.random() * 130) * scale);
     const hit = Math.min(state.cash, fee);
     state.cash -= hit;
     soundError();
@@ -1255,14 +1268,14 @@ function randomEvent(){
     return;
   }
   if (roll < 0.33) {
-    const damage = 8 + Math.floor(Math.random() * 12);
+    const damage = Math.round((8 + Math.random() * 12) * Math.min(2, 0.9 + scale * 0.35));
     state.pendingFight = true;
     applyDamage(damage, "Mob boss sent thugs to remind you who runs this route");
     logLine("👥 Thugs are still nearby. Fight Back is live.");
     return;
   }
-  if (roll < 0.43) {
-    const penalty = 90 + Math.floor(Math.random() * 150);
+  if (roll < 0.45) {
+    const penalty = Math.round((90 + Math.random() * 150) * scale);
     const hit = Math.min(state.cash, penalty);
     state.cash -= hit;
     soundError();
@@ -1270,30 +1283,30 @@ function randomEvent(){
     popup(`-${fmt(hit)}`);
     return;
   }
-  if (roll < 0.54) {
+  if (roll < 0.57) {
     const boostGood = randomFrom(GOODS);
-    const add = 45 + Math.floor(Math.random() * 90);
+    const add = Math.round((45 + Math.random() * 90) * Math.min(2.3, 1 + scale * 0.35));
     state.market[boostGood.name] += add;
     logLine(`📢 Street rumor: ${boostGood.name} demand jumped in ${state.currentCity}.`);
     popup(`${boostGood.name} up`);
     return;
   }
-  if (roll < 0.64) {
+  if (roll < 0.67) {
     const dropGood = randomFrom(GOODS);
-    const down = 20 + Math.floor(Math.random() * 50);
+    const down = Math.round((20 + Math.random() * 50) * Math.min(1.9, 0.95 + scale * 0.28));
     state.market[dropGood.name] = Math.max(20, state.market[dropGood.name] - down);
     logLine(`📦 A flood of ${dropGood.name} hit the block. Prices softened.`);
     return;
   }
-  if (roll < 0.74) {
-    const found = 120 + Math.floor(Math.random() * 220);
+  if (roll < 0.76) {
+    const found = Math.round((120 + Math.random() * 220) * Math.min(2, 1 + scale * 0.25));
     state.bank += found;
     logLine(`🏦 You found access to a hidden bank stash. Bank +${fmt(found)}.`);
     popup(`Bank +${fmt(found)}`);
     return;
   }
-  if (roll < 0.84) {
-    const damage = 10 + Math.floor(Math.random() * 15);
+  if (roll < 0.88) {
+    const damage = Math.round((10 + Math.random() * 15) * Math.min(2.1, 1 + scale * 0.3));
     applyDamage(damage, "Street trouble got physical");
     return;
   }
@@ -1323,7 +1336,7 @@ function checkGameState(){
   if (state.day > state.maxDay) {
     state.gameOver = true;
     if (getNetWorth() >= state.goal) {
-      logLine(`🏆 Day 30 closed and you still cleared the goal with ${fmt(getNetWorth())}.`);
+      logLine(`🏆 Day 365 closed and you still cleared the goal with ${fmt(getNetWorth())}.`);
     } else {
       logLine(`⌛ Time ran out. Final net worth: ${fmt(getNetWorth())}.`);
     }
