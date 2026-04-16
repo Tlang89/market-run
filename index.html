@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 <title>Market Run Iowa — Compact Boxed</title>
 <style>
 :root{
@@ -22,12 +22,6 @@
 *{
   box-sizing:border-box;
   -webkit-tap-highlight-color:transparent;
-button, .actionBtn, .cityBtn, .tabBtn, .rowItem {
-    touch-action: manipulation;
-    user-select: none;
-    -webkit-user-select: none;
-    font-size: 16px;
-}
 }
 html,body{
   margin:0;
@@ -628,7 +622,7 @@ button,input,select{font:inherit}
     <div class="stat"><div class="label">Worth</div><div class="value" id="worthStat">$2,500</div></div>
   </div>
 
-  <div class="eventBar" id="eventBar">Welcome to Market Run Iowa.</div>
+  <div class="eventBar" id="eventBar">Welcome to Market Run Iowa. Markets now boom, flood, and spike.</div>
 
   <div class="board">
     <section class="panel marketPanel">
@@ -817,11 +811,12 @@ const state = {
   market: {},
   inventory: {},
   cityStorage: {},
-  logLines: ["Welcome to Market Run Iowa."],
+  logLines: ["Welcome to Market Run Iowa. Markets now boom, flood, and spike."],
   muted: false,
   capacity: 12,
   pendingFight: false,
-  gameOver: false
+  gameOver: false,
+  marketStates: {}
 };
 
 let audioCtx = null;
@@ -926,15 +921,53 @@ function getStorage(city){
   return state.cityStorage[city];
 }
 
+function getDailyMarketState(){
+  const roll = Math.random();
+  if (roll < 0.44) return "normal";
+  if (roll < 0.59) return "cheap";
+  if (roll < 0.73) return "booming";
+  if (roll < 0.86) return "flooded";
+  return "shortage";
+}
+
+function getStateMultiplier(stateName){
+  const ranges = {
+    normal: [0.90, 1.12],
+    cheap: [0.55, 0.82],
+    booming: [1.30, 1.85],
+    flooded: [0.35, 0.62],
+    shortage: [1.55, 2.25]
+  };
+  const range = ranges[stateName] || ranges.normal;
+  return range[0] + Math.random() * (range[1] - range[0]);
+}
+
+function getMarketStateLabel(stateName){
+  const labels = {
+    normal: "steady",
+    cheap: "discounted",
+    booming: "booming",
+    flooded: "flooded",
+    shortage: "shortage"
+  };
+  return labels[stateName] || stateName;
+}
+
 function generateMarket(city){
   state.market = {};
+  state.marketStates[city] = {};
+
   GOODS.forEach(good => {
     const cityMult = CITY_RULES[city][good.name] || 1;
-    const swing = 0.72 + Math.random() * 0.75;
-    let price = good.base * cityMult * swing;
-    if (Math.random() < 0.12) price *= 1.8;
-    if (Math.random() < 0.10) price *= 0.58;
-    state.market[good.name] = Math.max(20, Math.round(price));
+    const cityFlavor = 0.80 + Math.random() * 0.55;
+    const stateName = getDailyMarketState();
+    const stateMult = getStateMultiplier(stateName);
+
+    let price = good.base * cityMult * cityFlavor * stateMult;
+    price = Math.max(20, Math.round(price));
+
+    state.market[good.name] = price;
+    state.marketStates[city][good.name] = stateName;
   });
 }
 
@@ -974,6 +1007,23 @@ function applyDamage(amount, source){
   checkGameState();
 }
 
+function buildMarketAlert(){
+  const states = state.marketStates[state.currentCity] || {};
+  const strong = Object.entries(states)
+    .filter(([, s]) => s !== "normal")
+    .sort((a, b) => {
+      const order = { shortage: 4, booming: 3, flooded: 2, cheap: 1, normal: 0 };
+      return (order[b[1]] || 0) - (order[a[1]] || 0);
+    })
+    .slice(0, 2);
+
+  if (!strong.length) {
+    return `${state.currentCity}: market is steady today.`;
+  }
+
+  return strong.map(([name, stateName]) => `${name} is ${getMarketStateLabel(stateName)}`).join(" • ");
+}
+
 function renderStats(){
   document.getElementById("dayStat").textContent = state.day;
   document.getElementById("cashStat").textContent = fmt(state.cash);
@@ -985,11 +1035,12 @@ function renderStats(){
 
   document.getElementById("marketSub").textContent =
     state.selectedCity === state.currentCity
-      ? `Street prices in ${state.currentCity}. Selected: ${state.selectedGood}`
+      ? `${buildMarketAlert()}`
       : `Travel target selected: ${state.selectedCity}`;
 
+  const selectedState = (state.marketStates[state.currentCity] || {})[state.selectedGood] || "normal";
   document.getElementById("selectedInfo").textContent =
-    `Selected item: ${state.selectedGood} • Price ${fmt(state.market[state.selectedGood] || 0)}`;
+    `Selected item: ${state.selectedGood} • ${getMarketStateLabel(selectedState)} • Price ${fmt(state.market[state.selectedGood] || 0)}`;
 
   const store = getStorage(state.currentCity);
   const entries = Object.entries(store).filter(([,v]) => v.qty > 0);
@@ -1039,7 +1090,7 @@ function renderMarket(){
     rows.push(`
       <div class="rowItem${active}" data-good="${good.name}">
         <div class="itemName">${good.icon} ${good.name}</div>
-        <div class="${trendClass}">${getTrendArrow(price, good.base)}</div>
+        <div class="${trendClass}">${getTrendArrow(price, good.base)} ${getMarketStateLabel(((state.marketStates[state.currentCity] || {})[good.name]) || "normal")}</div>
         <div>${fmt(price)}</div>
       </div>
     `);
@@ -1612,14 +1663,7 @@ function bindUI(){
     renderStats();
   });
 }
-let lastTouchEnd = 0;
-document.addEventListener("touchend", function (event) {
-  const now = Date.now();
-  if (now - lastTouchEnd <= 300) {
-    event.preventDefault();
-  }
-  lastTouchEnd = now;
-}, { passive: false });
+
 generateMarket(state.currentCity);
 bindTabs();
 bindUI();
