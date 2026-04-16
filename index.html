@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Market Run Iowa — Clean Classic</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Market Run Iowa — Compact Boxed</title>
 <style>
 :root{
   --bg:#070b12;
@@ -15,126 +15,137 @@
   --gold:#d7b26b;
   --gold2:#b7914d;
   --blue:#8cc6ff;
-  --blue2:#60a9ff;
   --red:#b75858;
   --green:#69c18c;
   --shadow:rgba(0,0,0,.35);
 }
-*{box-sizing:border-box}
-html,body{margin:0;padding:0}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;height:100%;overflow:hidden}
 body{
   background:
     radial-gradient(circle at top, rgba(255,255,255,.05), transparent 26%),
     linear-gradient(180deg,#0a1019,#050811 65%);
   color:var(--text);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family:Georgia,"Times New Roman",serif;
 }
-button, input, select { font: inherit; }
+button,select,input{font:inherit}
 .app{
-  max-width:1360px;
+  height:100dvh;
+  max-width:1280px;
   margin:0 auto;
-  padding:12px;
+  padding:10px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
 }
 .topbar{
   display:grid;
   grid-template-columns:repeat(7,1fr);
-  gap:8px;
-  margin-bottom:10px;
+  gap:6px;
+  flex:0 0 auto;
 }
 .stat{
+  min-height:62px;
   background:linear-gradient(180deg,#131b2b,#0f1623);
   border:1px solid var(--line);
   border-radius:12px;
-  padding:10px 12px;
-  min-height:74px;
+  padding:8px 10px;
   box-shadow:0 8px 18px var(--shadow), inset 0 0 0 1px rgba(255,255,255,.02);
 }
 .label{
-  font-size:12px;
+  font-size:10px;
   text-transform:uppercase;
   letter-spacing:.12em;
   color:#c9bda7;
-  margin-bottom:8px;
+  margin-bottom:6px;
 }
 .value{
-  font-size:18px;
+  font-size:16px;
   font-weight:700;
   color:var(--gold);
+  white-space:nowrap;
 }
 .eventBar{
-  margin-bottom:10px;
-  background:linear-gradient(180deg,#1a2435,#111927);
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:14px 16px;
-  min-height:62px;
+  flex:0 0 auto;
+  min-height:54px;
   display:flex;
   align-items:center;
-  font-size:18px;
-  color:#f7f0dd;
+  padding:10px 14px;
+  background:linear-gradient(180deg,#1a2638,#121b29);
+  border:1px solid rgba(140,198,255,.22);
+  border-radius:12px;
   box-shadow:0 8px 18px var(--shadow), inset 0 0 0 1px rgba(255,255,255,.02);
+  font-size:15px;
 }
-.mainGrid{
+.board{
+  flex:1 1 auto;
+  min-height:0;
   display:grid;
-  grid-template-columns:1.12fr .7fr 1fr;
-  gap:10px;
-  align-items:start;
+  grid-template-columns:1.05fr .75fr .95fr;
+  gap:8px;
 }
 .panel{
+  min-height:0;
   background:linear-gradient(180deg,#111a29,#0c1420);
   border:1px solid var(--line);
   border-radius:14px;
-  padding:12px;
+  padding:10px;
   box-shadow:0 8px 18px var(--shadow), inset 0 0 0 1px rgba(255,255,255,.02);
+  display:flex;
+  flex-direction:column;
 }
 .panel h2{
   margin:0 0 4px 0;
-  font-size:18px;
+  font-size:17px;
   color:var(--gold);
   letter-spacing:.04em;
 }
 .sub{
   color:var(--muted);
-  font-size:13px;
-  margin-bottom:10px;
-  line-height:1.35;
+  font-size:12px;
+  margin-bottom:8px;
+  line-height:1.3;
 }
-.list,
-.smallList{
+.list,.feed,.mapWrap{
   border:1px solid rgba(255,255,255,.06);
   border-radius:10px;
   background:rgba(0,0,0,.14);
-  overflow:hidden;
 }
-.list{ min-height:360px; }
-.smallList{ min-height:200px; }
-.rowHead, .rowItem{
+.list{
+  flex:1 1 auto;
+  min-height:0;
+  overflow:auto;
+}
+.rowHead,.rowItem{
   display:grid;
-  grid-template-columns:1.55fr .8fr .7fr;
+  grid-template-columns:1.55fr .72fr .7fr;
   gap:8px;
   align-items:center;
-  padding:10px 12px;
+  padding:9px 10px;
 }
 .rowHead{
-  font-size:12px;
+  position:sticky;
+  top:0;
+  z-index:2;
+  font-size:11px;
   text-transform:uppercase;
   letter-spacing:.1em;
   color:#b8c2d8;
-  background:rgba(255,255,255,.03);
+  background:rgba(14,20,32,.98);
   border-bottom:1px solid rgba(255,255,255,.06);
 }
 .rowItem{
   border-top:1px solid rgba(255,255,255,.05);
   cursor:pointer;
-  transition:background .16s ease, transform .12s ease, box-shadow .16s ease;
+  transition:background .16s ease, box-shadow .16s ease, transform .08s ease;
 }
-.rowItem:hover{ background:rgba(255,255,255,.03); }
+.rowItem:hover{background:rgba(255,255,255,.03)}
 .rowItem.active{
   background:rgba(140,198,255,.1);
   box-shadow:inset 0 0 0 1px rgba(140,198,255,.35);
 }
 .rowItem.flash{
-  background:rgba(215,178,107,.2) !important;
+  background:rgba(215,178,107,.22)!important;
   box-shadow:inset 0 0 0 1px rgba(215,178,107,.45);
 }
 .itemName{
@@ -143,15 +154,11 @@ button, input, select { font: inherit; }
   gap:8px;
   font-weight:700;
 }
-.up{ color:var(--green); }
-.down{ color:var(--red); }
-.flat{ color:var(--muted); }
+.up{color:var(--green)}
+.down{color:var(--red)}
+.flat{color:var(--muted)}
 
-.actionsPanel{
-  display:grid;
-  gap:8px;
-}
-.actionRow2{
+.actions{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:8px;
@@ -160,20 +167,17 @@ button, input, select { font: inherit; }
   width:100%;
   border:none;
   border-radius:10px;
-  padding:12px 10px;
+  padding:11px 8px;
   background:linear-gradient(180deg,#d8b770,#bc9856);
   color:#1b150a;
-  font-size:16px;
+  font-size:15px;
   font-weight:700;
   cursor:pointer;
   box-shadow:0 4px 10px rgba(0,0,0,.25), inset 0 0 0 1px rgba(255,255,255,.14);
   transition:transform .08s ease, filter .12s ease, opacity .12s ease;
 }
-.actionBtn:hover{ filter:brightness(1.04); }
-.actionBtn:active{
-  transform:scale(.97);
-  filter:brightness(1.12);
-}
+.actionBtn:hover{filter:brightness(1.05)}
+.actionBtn:active{transform:scale(.97);filter:brightness(1.12)}
 .secondary{
   background:linear-gradient(180deg,#263148,#192335);
   color:var(--text);
@@ -192,18 +196,52 @@ button, input, select { font: inherit; }
   cursor:not-allowed;
   filter:grayscale(.2);
 }
-.divider{ height:8px; }
+.choiceBanner{
+  margin-top:8px;
+  padding:8px 10px;
+  border:1px solid rgba(215,178,107,.22);
+  border-radius:10px;
+  background:rgba(215,178,107,.07);
+  color:var(--text);
+  font-size:13px;
+  min-height:48px;
+}
+.tabs{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-bottom:8px;
+}
+.tabBtn{
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:linear-gradient(180deg,#273249,#1a2437);
+  color:var(--text);
+  padding:10px 8px;
+  font-weight:700;
+  cursor:pointer;
+}
+.tabBtn.active{
+  border-color:var(--gold);
+  box-shadow:inset 0 0 0 1px rgba(215,178,107,.45);
+}
+.tabPane{
+  display:none;
+  flex:1 1 auto;
+  min-height:0;
+  overflow:hidden;
+  flex-direction:column;
+}
+.tabPane.active{display:flex}
 
 .mapWrap{
-  height:370px;
-  border:1px solid rgba(255,255,255,.06);
-  border-radius:12px;
+  flex:1 1 auto;
+  min-height:230px;
   overflow:hidden;
   background:
     radial-gradient(circle at 20% 24%, rgba(255,255,255,.02), transparent 18%),
     radial-gradient(circle at 72% 18%, rgba(255,255,255,.02), transparent 15%),
     linear-gradient(180deg,#101722,#171f2b);
-  margin-top:8px;
 }
 #iowaMap{
   display:block;
@@ -214,7 +252,7 @@ button, input, select { font: inherit; }
 .hill2{fill:#101620}
 .hill3{fill:#0d1219}
 .iowa{fill:#202736;stroke:#47546a;stroke-width:3}
-.cityRoute{stroke:rgba(120,199,255,.42);stroke-width:4}
+.cityRoute{stroke:rgba(120,199,255,.34);stroke-width:4}
 .cityPulse{
   fill:rgba(120,199,255,0.15);
   stroke:rgba(120,199,255,0.55);
@@ -222,11 +260,11 @@ button, input, select { font: inherit; }
   animation:pulse 2.1s infinite ease-in-out;
 }
 @keyframes pulse{
-  0%{ transform:scale(1); opacity:.85; transform-origin:center; }
-  50%{ transform:scale(1.22); opacity:.18; transform-origin:center; }
-  100%{ transform:scale(1); opacity:.85; transform-origin:center; }
+  0%{transform:scale(1);opacity:.82;transform-origin:center}
+  50%{transform:scale(1.2);opacity:.2;transform-origin:center}
+  100%{transform:scale(1);opacity:.82;transform-origin:center}
 }
-.cityCore{fill:#1f2a39;stroke:var(--gold);stroke-width:2;transition:filter .2s ease, fill .2s ease}
+.cityCore{fill:#1f2a39;stroke:var(--gold);stroke-width:2;transition:filter .2s ease,fill .2s ease}
 .cityCore.current{
   fill:#2c5178;
   stroke:#8cc6ff;
@@ -245,15 +283,15 @@ button, input, select { font: inherit; }
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:8px;
-  margin-top:10px;
+  margin-top:8px;
 }
 .cityBtn{
   border:1px solid var(--line);
   border-radius:10px;
   background:linear-gradient(180deg,#273249,#1a2437);
   color:var(--text);
-  padding:11px 10px;
-  font-size:15px;
+  padding:10px 8px;
+  font-size:14px;
   font-weight:700;
   cursor:pointer;
 }
@@ -264,7 +302,7 @@ button, input, select { font: inherit; }
 .cityBtn.current::after{
   content:" • current";
   color:var(--gold);
-  font-size:12px;
+  font-size:11px;
 }
 .healthBarWrap{
   height:14px;
@@ -273,7 +311,7 @@ button, input, select { font: inherit; }
   border:1px solid rgba(255,255,255,.08);
   border-radius:999px;
   overflow:hidden;
-  margin-top:8px;
+  margin-top:6px;
 }
 .healthBar{
   height:100%;
@@ -281,36 +319,34 @@ button, input, select { font: inherit; }
   background:linear-gradient(90deg,#6eb987,#57d07d);
   transition:width .25s ease;
 }
-.healthLow{ background:linear-gradient(90deg,#be8746,#d3a05a); }
-.healthDanger{ background:linear-gradient(90deg,#a34545,#d85f5f); }
-
+.healthLow{background:linear-gradient(90deg,#be8746,#d3a05a)}
+.healthDanger{background:linear-gradient(90deg,#a34545,#d85f5f)}
 .feed{
-  min-height:150px;
-  max-height:220px;
+  flex:1 1 auto;
+  min-height:0;
   overflow:auto;
-  border:1px solid rgba(255,255,255,.06);
-  border-radius:10px;
-  background:rgba(0,0,0,.14);
-  padding:10px;
+  padding:8px 10px;
 }
 .feedLine{
-  font-size:14px;
-  line-height:1.4;
+  font-size:13px;
+  line-height:1.35;
   padding:5px 0;
   border-top:1px solid rgba(255,255,255,.05);
 }
-.feedLine:first-child{ border-top:none; }
-
-.footerNote{
-  margin-top:10px;
+.feedLine:first-child{border-top:none}
+.smallBox{
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:10px;
+  background:rgba(0,0,0,.14);
+  padding:9px 10px;
   font-size:13px;
   color:var(--muted);
+  margin-bottom:8px;
 }
-
 .popup{
   position:fixed;
   left:50%;
-  bottom:22px;
+  bottom:18px;
   transform:translateX(-50%);
   background:rgba(6,10,16,.96);
   color:var(--gold);
@@ -320,26 +356,124 @@ button, input, select { font: inherit; }
   font-weight:700;
   box-shadow:0 10px 20px rgba(0,0,0,.35);
   animation:popupMove .8s ease forwards;
-  z-index:999;
+  z-index:9999;
 }
 @keyframes popupMove{
-  0%{opacity:0; transform:translateX(-50%) translateY(15px);}
-  20%{opacity:1;}
-  100%{opacity:0; transform:translateX(-50%) translateY(-18px);}
+  0%{opacity:0; transform:translateX(-50%) translateY(15px)}
+  20%{opacity:1}
+  100%{opacity:0; transform:translateX(-50%) translateY(-18px)}
+}
+.intro{
+  position:fixed;
+  inset:0;
+  background:rgba(5,8,15,.97);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:99999;
+  padding:18px;
+}
+.introBox{
+  width:min(460px,100%);
+  text-align:center;
+  padding:22px 18px;
+  border:1px solid rgba(215,178,107,.65);
+  border-radius:16px;
+  background:linear-gradient(180deg,#0f1827,#0a1019);
+  box-shadow:0 0 30px rgba(0,0,0,.6);
+}
+.introBox h1{
+  color:var(--gold);
+  margin:0 0 10px 0;
+  font-size:28px;
+}
+.introBox p{
+  font-size:15px;
+  line-height:1.5;
+  color:#ddd;
+  margin:0;
+}
+.startRow{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:16px;
+}
+#startGameBtn,#startMutedBtn{
+  padding:12px 14px;
+  border:none;
+  border-radius:10px;
+  font-weight:700;
+  font-size:16px;
+  cursor:pointer;
+}
+#startGameBtn{
+  background:linear-gradient(180deg,#d7b26b,#b7914d);
+  color:#1b150a;
+}
+#startMutedBtn{
+  background:linear-gradient(180deg,#273249,#1a2437);
+  color:var(--text);
 }
 
-@media (max-width:1060px){
-  .topbar{ grid-template-columns:repeat(3,1fr); }
-  .mainGrid{ grid-template-columns:1fr; }
-  .list{ min-height:240px; }
-  .mapWrap{ height:320px; }
+@media (max-width:980px){
+  .app{padding:8px}
+  .topbar{grid-template-columns:repeat(4,1fr)}
+  .board{
+    grid-template-columns:1fr;
+    grid-template-rows:auto auto 1fr;
+  }
+  .panel{min-height:0}
+  .mapPanel{order:3}
+  .actionPanel{order:2}
+  .marketPanel{order:1}
+  .marketPanel,.actionPanel,.mapPanel{
+    height:calc((100dvh - 160px)/3);
+    min-height:170px;
+  }
+  .mapWrap{min-height:150px}
 }
 @media (max-width:640px){
-  .topbar{ grid-template-columns:repeat(2,1fr); }
+  .topbar{grid-template-columns:repeat(3,1fr)}
+  .stat{min-height:56px;padding:7px 8px}
+  .label{font-size:9px}
+  .value{font-size:14px}
+  .eventBar{min-height:48px;font-size:13px;padding:8px 10px}
+  .marketPanel,.actionPanel,.mapPanel{
+    height:calc((100dvh - 150px)/3);
+    min-height:160px;
+  }
+  .actions{grid-template-columns:1fr 1fr}
+  .actionBtn{padding:10px 6px;font-size:13px}
+  .cityBtn{font-size:13px;padding:9px 6px}
+  .introBox h1{font-size:24px}
+  .introBox p{font-size:14px}
 }
 </style>
 </head>
 <body>
+<div id="introScreen" class="intro">
+  <div class="introBox">
+    <h1>Market Run Iowa</h1>
+    <p>
+      Build your money. Move city to city. Stay ahead.
+      <br><br>
+      • Buy low, sell high<br>
+      • Travel between cities<br>
+      • Watch for cops, mob pressure, and random events<br>
+      • Keep your health up<br>
+      • Use the bank and manage debt
+      <br><br>
+      <strong>Goal:</strong><br>
+      Reach $20,000 net worth before Day 30
+    </p>
+    <div class="startRow">
+      <button id="startGameBtn">Start With Sound</button>
+      <button id="startMutedBtn">Start Muted</button>
+    </div>
+  </div>
+</div>
+
 <div class="app">
   <div class="topbar">
     <div class="stat"><div class="label">Day</div><div class="value" id="dayStat">1</div></div>
@@ -348,170 +482,120 @@ button, input, select { font: inherit; }
     <div class="stat"><div class="label">Debt</div><div class="value" id="debtStat">$0</div></div>
     <div class="stat"><div class="label">Health</div><div class="value" id="healthStat">100</div></div>
     <div class="stat"><div class="label">City</div><div class="value" id="cityStat">Des Moines</div></div>
-    <div class="stat"><div class="label">Goal</div><div class="value" id="goalStat">$20,000</div></div>
+    <div class="stat"><div class="label">Worth</div><div class="value" id="worthStat">$2,500</div></div>
   </div>
 
   <div class="eventBar" id="eventBar">Welcome to Market Run Iowa.</div>
 
-  <div class="mainGrid">
-    <section class="panel">
+  <div class="board">
+    <section class="panel marketPanel">
       <h2>Market</h2>
       <div class="sub" id="marketSub">Street prices in your current city. Select a product.</div>
       <div id="marketRows" class="list"></div>
-
-      <div class="divider"></div>
-
-      <h2>Iowa Map</h2>
-      <div class="sub">Pick your next city. Travel costs money and can trigger trouble.</div>
-      <div class="mapWrap">
-        <svg viewBox="0 0 980 520" id="iowaMap">
-          <path class="hill1" d="M0 355 Q120 300 240 338 T480 326 T720 348 T980 318 L980 520 L0 520 Z"></path>
-          <path class="hill2" d="M0 388 Q140 342 260 375 T520 370 T760 394 T980 364 L980 520 L0 520 Z"></path>
-          <path class="hill3" d="M0 420 Q150 390 300 420 T600 412 T980 404 L980 520 L0 520 Z"></path>
-
-          <path class="iowa" d="M120 95
-            L785 95
-            L810 118
-            L925 122
-            L905 330
-            L870 355
-            L860 410
-            L785 448
-            L700 446
-            L620 435
-            L560 450
-            L500 430
-            L430 448
-            L360 430
-            L290 438
-            L200 412
-            L155 360
-            L130 290
-            L105 240
-            L120 210
-            L105 180
-            L120 95 Z"></path>
-
-          <line class="cityRoute" x1="480" y1="300" x2="690" y2="152"></line>
-          <line class="cityRoute" x1="480" y1="300" x2="736" y2="146"></line>
-          <line class="cityRoute" x1="480" y1="300" x2="520" y2="230"></line>
-
-          <g class="cityNode" data-city="Des Moines">
-            <circle class="cityPulse" cx="480" cy="300" r="24"></circle>
-            <circle id="node-Des Moines" class="cityCore current" cx="480" cy="300" r="13"></circle>
-            <text class="cityLabel" x="425" y="336">Des Moines</text>
-          </g>
-
-          <g class="cityNode" data-city="Waterloo">
-            <circle class="cityPulse" cx="690" cy="152" r="24"></circle>
-            <circle id="node-Waterloo" class="cityCore" cx="690" cy="152" r="13"></circle>
-            <text class="cityLabel" x="652" y="126">Waterloo</text>
-          </g>
-
-          <g class="cityNode" data-city="Cedar Falls">
-            <circle class="cityPulse" cx="736" cy="146" r="24"></circle>
-            <circle id="node-Cedar Falls" class="cityCore" cx="736" cy="146" r="13"></circle>
-            <text class="cityLabel" x="690" y="114">Cedar Falls</text>
-          </g>
-
-          <g class="cityNode" data-city="Ames">
-            <circle class="cityPulse" cx="520" cy="230" r="24"></circle>
-            <circle id="node-Ames" class="cityCore" cx="520" cy="230" r="13"></circle>
-            <text class="cityLabel" x="505" y="202">Ames</text>
-          </g>
-
-          <circle id="travelDot" cx="-100" cy="-100" r="8"></circle>
-        </svg>
-      </div>
-
-      <div class="cityGrid">
-        <button class="cityBtn active current" data-city="Des Moines">Des Moines</button>
-        <button class="cityBtn" data-city="Waterloo">Waterloo</button>
-        <button class="cityBtn" data-city="Cedar Falls">Cedar Falls</button>
-        <button class="cityBtn" data-city="Ames">Ames</button>
-      </div>
     </section>
 
-    <section class="panel">
+    <section class="panel actionPanel">
       <h2>Actions</h2>
-      <div class="sub">Buy low. Move smart. Survive pressure. Hit the goal by Day 30.</div>
+      <div class="sub">Tap once. See it happen.</div>
 
-      <div class="actionsPanel">
-        <div class="actionRow2">
-          <button class="actionBtn" id="buyBtn">Buy 1 →</button>
-          <button class="actionBtn" id="sellBtn">← Sell 1</button>
-        </div>
+      <div class="actions">
+        <button class="actionBtn" id="buyBtn">Buy 1</button>
+        <button class="actionBtn" id="sellBtn">Sell 1</button>
+        <button class="actionBtn secondary" id="storeBtn">Store 1</button>
+        <button class="actionBtn secondary" id="takeBtn">Take 1</button>
 
-        <div class="actionRow2">
-          <button class="actionBtn secondary" id="storeBtn">Store 1</button>
-          <button class="actionBtn secondary" id="takeBtn">Take 1</button>
-        </div>
+        <button class="actionBtn" id="travelBtn">Travel</button>
+        <button class="actionBtn secondary" id="stayBtn">Stay</button>
 
-        <div class="divider"></div>
+        <button class="actionBtn" id="borrow500Btn">Borrow 500</button>
+        <button class="actionBtn danger" id="repay500Btn">Repay 500</button>
 
-        <div class="actionRow2">
-          <button class="actionBtn" id="travelBtn">Travel</button>
-          <button class="actionBtn secondary" id="stayBtn">Stay</button>
-        </div>
+        <button class="actionBtn secondary" id="deposit500Btn">Deposit 500</button>
+        <button class="actionBtn secondary" id="withdraw500Btn">Withdraw 500</button>
 
-        <div class="actionRow2">
-          <button class="actionBtn heal" id="hospitalBtn">Hospital</button>
-          <button class="actionBtn danger" id="fightBtn">Fight Back</button>
-        </div>
+        <button class="actionBtn heal" id="hospitalBtn">Hospital</button>
+        <button class="actionBtn danger" id="fightBtn">Fight Back</button>
 
-        <div class="divider"></div>
+        <button class="actionBtn secondary" id="saveBtn">Save</button>
+        <button class="actionBtn secondary" id="loadBtn">Load</button>
 
-        <div class="actionRow2">
-          <button class="actionBtn" id="borrow500Btn">Borrow 500</button>
-          <button class="actionBtn secondary" id="deposit500Btn">Deposit 500</button>
-        </div>
-
-        <div class="actionRow2">
-          <button class="actionBtn secondary" id="withdraw500Btn">Withdraw 500</button>
-          <button class="actionBtn danger" id="repay500Btn">Repay 500</button>
-        </div>
-
-        <div class="divider"></div>
-
-        <div class="actionRow2">
-          <button class="actionBtn secondary" id="saveBtn">Save</button>
-          <button class="actionBtn secondary" id="loadBtn">Load</button>
-        </div>
-
-        <div class="actionRow2">
-          <button class="actionBtn danger" id="resetBtn">Reset</button>
-          <button class="actionBtn secondary" id="muteBtn">Sound: On</button>
-        </div>
+        <button class="actionBtn secondary" id="muteBtn">Sound: On</button>
+        <button class="actionBtn danger" id="resetBtn">Reset</button>
       </div>
 
-      <div class="footerNote">
-        Goal: Reach <strong>$20,000 net worth</strong> by <strong>Day 30</strong>. Net worth = cash + bank + inventory value - debt.
-      </div>
+      <div class="choiceBanner" id="choiceBanner">No active threat right now.</div>
     </section>
 
-    <section class="panel">
-      <h2>Inventory</h2>
-      <div class="sub" id="inventoryCap">Capacity 0 / 12</div>
-      <div id="inventoryRows" class="smallList"></div>
+    <section class="panel mapPanel">
+      <div class="tabs">
+        <button class="tabBtn active" data-tab="tab-map">Map</button>
+        <button class="tabBtn" data-tab="tab-status">Status</button>
+      </div>
 
-      <div class="divider"></div>
+      <div class="tabPane active" id="tab-map">
+        <h2>Iowa Map</h2>
+        <div class="sub">Pick your next city.</div>
+        <div class="mapWrap">
+          <svg viewBox="0 0 980 520" id="iowaMap">
+            <path class="hill1" d="M0 355 Q120 300 240 338 T480 326 T720 348 T980 318 L980 520 L0 520 Z"></path>
+            <path class="hill2" d="M0 388 Q140 342 260 375 T520 370 T760 394 T980 364 L980 520 L0 520 Z"></path>
+            <path class="hill3" d="M0 420 Q150 390 300 420 T600 412 T980 404 L980 520 L0 520 Z"></path>
 
-      <h2>Storage</h2>
-      <div class="sub">Current city stash.</div>
-      <div id="storageRows" class="smallList"></div>
+            <path class="iowa" d="M120 95 L785 95 L810 118 L925 122 L905 330 L870 355 L860 410 L785 448 L700 446 L620 435 L560 450 L500 430 L430 448 L360 430 L290 438 L200 412 L155 360 L130 290 L105 240 L120 210 L105 180 L120 95 Z"></path>
 
-      <div class="divider"></div>
+            <line class="cityRoute" x1="480" y1="300" x2="690" y2="152"></line>
+            <line class="cityRoute" x1="480" y1="300" x2="736" y2="146"></line>
+            <line class="cityRoute" x1="480" y1="300" x2="520" y2="230"></line>
 
-      <h2>Health</h2>
-      <div class="sub">Fights, mob pressure, police trouble, and street events can hurt you.</div>
-      <div class="healthBarWrap"><div class="healthBar" id="healthBar"></div></div>
-      <div class="footerNote" id="healthNote">Solid shape.</div>
+            <g class="cityNode" data-city="Des Moines">
+              <circle class="cityPulse" cx="480" cy="300" r="24"></circle>
+              <circle id="node-Des Moines" class="cityCore current" cx="480" cy="300" r="13"></circle>
+              <text class="cityLabel" x="425" y="336">Des Moines</text>
+            </g>
 
-      <div class="divider"></div>
+            <g class="cityNode" data-city="Waterloo">
+              <circle class="cityPulse" cx="690" cy="152" r="24"></circle>
+              <circle id="node-Waterloo" class="cityCore" cx="690" cy="152" r="13"></circle>
+              <text class="cityLabel" x="652" y="126">Waterloo</text>
+            </g>
 
-      <h2>Street Feed</h2>
-      <div class="sub">Recent action.</div>
-      <div id="eventRows" class="feed"></div>
+            <g class="cityNode" data-city="Cedar Falls">
+              <circle class="cityPulse" cx="736" cy="146" r="24"></circle>
+              <circle id="node-Cedar Falls" class="cityCore" cx="736" cy="146" r="13"></circle>
+              <text class="cityLabel" x="690" y="114">Cedar Falls</text>
+            </g>
+
+            <g class="cityNode" data-city="Ames">
+              <circle class="cityPulse" cx="520" cy="230" r="24"></circle>
+              <circle id="node-Ames" class="cityCore" cx="520" cy="230" r="13"></circle>
+              <text class="cityLabel" x="505" y="202">Ames</text>
+            </g>
+
+            <circle id="travelDot" cx="-100" cy="-100" r="8"></circle>
+          </svg>
+        </div>
+
+        <div class="cityGrid">
+          <button class="cityBtn active current" data-city="Des Moines">Des Moines</button>
+          <button class="cityBtn" data-city="Waterloo">Waterloo</button>
+          <button class="cityBtn" data-city="Cedar Falls">Cedar Falls</button>
+          <button class="cityBtn" data-city="Ames">Ames</button>
+        </div>
+      </div>
+
+      <div class="tabPane" id="tab-status">
+        <h2>Status</h2>
+        <div class="smallBox" id="selectedInfo">Selected item: Sneakers</div>
+        <div class="smallBox" id="storageInfo">Storage: Empty</div>
+        <div class="smallBox" id="goalInfo">Goal: Reach $20,000 by Day 30.</div>
+
+        <div class="sub" style="margin-top:2px;">Health</div>
+        <div class="healthBarWrap"><div class="healthBar" id="healthBar"></div></div>
+        <div class="smallBox" id="healthNote" style="margin-top:8px;">Solid shape.</div>
+
+        <div class="sub" style="margin-top:2px;">Street Feed</div>
+        <div id="eventRows" class="feed"></div>
+      </div>
     </section>
   </div>
 </div>
@@ -593,7 +677,7 @@ function initAudio(){
   }
 }
 
-function tone(freq, duration, type="square", volume=0.04, when=0){
+function tone(freq, duration, type="square", volume=0.05, when=0){
   if (state.muted) return;
   initAudio();
   const now = audioCtx.currentTime + when;
@@ -609,35 +693,34 @@ function tone(freq, duration, type="square", volume=0.04, when=0){
   osc.stop(now + duration + 0.04);
 }
 
-function soundBuy(){ tone(220, 0.08, "square", 0.04); tone(330, 0.11, "triangle", 0.03, 0.05); }
-function soundSell(){ tone(440, 0.08, "triangle", 0.04); tone(660, 0.12, "triangle", 0.03, 0.05); }
-function soundStore(){ tone(180, 0.1, "square", 0.04); }
-function soundTake(){ tone(300, 0.1, "triangle", 0.04); }
-function soundTravel(){ tone(120, 0.2, "sawtooth", 0.03); tone(200, 0.25, "triangle", 0.03, 0.09); }
-function soundArrival(){ tone(520, 0.08, "triangle", 0.04); tone(760, 0.15, "triangle", 0.03, 0.06); }
-function soundError(){ tone(140, 0.12, "square", 0.03); tone(90, 0.18, "square", 0.03, 0.1); }
-function soundHeal(){ tone(330, 0.08, "triangle", 0.03); tone(494, 0.12, "triangle", 0.03, 0.05); tone(660, 0.14, "triangle", 0.03, 0.1); }
-function soundFight(){ tone(170,0.08,"square",0.04); tone(120,0.1,"sawtooth",0.03,0.06); tone(240,0.08,"square",0.03,0.12); }
-function soundClick(){ tone(520, 0.05, "triangle", 0.02); }
+function soundBuy(){ tone(220, 0.08, "square", 0.055); tone(330, 0.11, "triangle", 0.045, 0.05); }
+function soundSell(){ tone(440, 0.08, "triangle", 0.055); tone(660, 0.12, "triangle", 0.04, 0.05); }
+function soundStore(){ tone(180, 0.1, "square", 0.05); }
+function soundTake(){ tone(300, 0.1, "triangle", 0.05); }
+function soundTravel(){ tone(120, 0.22, "sawtooth", 0.045); tone(200, 0.26, "triangle", 0.04, 0.08); }
+function soundArrival(){ tone(520, 0.08, "triangle", 0.05); tone(760, 0.15, "triangle", 0.04, 0.06); }
+function soundError(){ tone(140, 0.12, "square", 0.05); tone(90, 0.18, "square", 0.045, 0.1); }
+function soundHeal(){ tone(330, 0.08, "triangle", 0.045); tone(494, 0.12, "triangle", 0.04, 0.05); tone(660, 0.14, "triangle", 0.035, 0.1); }
+function soundFight(){ tone(170,0.08,"square",0.055); tone(120,0.1,"sawtooth",0.045,0.06); tone(240,0.08,"square",0.04,0.12); }
+function soundClick(){ tone(520, 0.05, "triangle", 0.03); }
 
 function startMusic(){
   if (musicTimer) clearInterval(musicTimer);
   if (state.muted) return;
   initAudio();
   const pattern = [
-    [110, "square"], [165, "triangle"], [147, "square"], [196, "triangle"],
-    [123, "square"], [185, "triangle"], [165, "square"], [220, "triangle"]
+    [110,"square"],[165,"triangle"],[147,"square"],[196,"triangle"],
+    [123,"square"],[185,"triangle"],[165,"square"],[220,"triangle"]
   ];
   let i = 0;
   musicTimer = setInterval(() => {
     if (state.muted || !audioCtx) return;
     const note = pattern[i % pattern.length];
-    tone(note[0], 0.12, note[1], 0.012, 0);
-    if (i % 4 === 2) tone(note[0] / 2, 0.1, "sawtooth", 0.008, 0.02);
+    tone(note[0], 0.14, note[1], 0.018, 0);
+    if (i % 2 === 0) tone(note[0]/2, 0.1, "sawtooth", 0.01, 0.02);
     i++;
-  }, 420);
+  }, 360);
 }
-
 function stopMusic(){
   if (musicTimer) clearInterval(musicTimer);
   musicTimer = null;
@@ -646,7 +729,6 @@ function stopMusic(){
 function fmt(n){
   return `$${Math.round(n).toLocaleString()}`;
 }
-
 function popup(text){
   const el = document.createElement("div");
   el.className = "popup";
@@ -654,38 +736,31 @@ function popup(text){
   document.body.appendChild(el);
   setTimeout(() => el.remove(), 780);
 }
-
 function setEventBar(text){
   document.getElementById("eventBar").textContent = text;
 }
-
 function logLine(text){
   state.logLines.unshift(text);
-  state.logLines = state.logLines.slice(0, 14);
+  state.logLines = state.logLines.slice(0, 16);
   setEventBar(text);
   renderFeed();
 }
-
 function flashActiveRow(){
   const row = document.querySelector(".rowItem.active");
   if (!row) return;
   row.classList.add("flash");
   setTimeout(() => row.classList.remove("flash"), 180);
 }
-
 function randomFrom(arr){
   return arr[Math.floor(Math.random() * arr.length)];
 }
-
 function getTotalInventoryQty(){
   return Object.values(state.inventory).reduce((sum, item) => sum + item.qty, 0);
 }
-
 function getStorage(city){
   if (!state.cityStorage[city]) state.cityStorage[city] = {};
   return state.cityStorage[city];
 }
-
 function generateMarket(city){
   state.market = {};
   GOODS.forEach(good => {
@@ -697,7 +772,6 @@ function generateMarket(city){
     state.market[good.name] = Math.max(20, Math.round(price));
   });
 }
-
 function getTrendClass(price, base){
   if (price > base * 1.1) return "up";
   if (price < base * 0.9) return "down";
@@ -708,22 +782,18 @@ function getTrendArrow(price, base){
   if (price < base * 0.9) return "▼";
   return "•";
 }
-
 function getInventoryValue(){
   return Object.entries(state.inventory).reduce((sum, [name, data]) => {
     const price = state.market[name] || data.avg || 0;
     return sum + price * data.qty;
   }, 0);
 }
-
 function getNetWorth(){
   return state.cash + state.bank + getInventoryValue() - state.debt;
 }
-
 function clampHealth(){
   state.health = Math.max(0, Math.min(100, state.health));
 }
-
 function applyDamage(amount, source){
   state.health -= amount;
   clampHealth();
@@ -733,19 +803,6 @@ function applyDamage(amount, source){
   checkGameState();
 }
 
-function addCash(amount, text){
-  state.cash += amount;
-  logLine(text);
-  popup(`+${fmt(amount)}`);
-}
-
-function loseCash(amount, text){
-  const hit = Math.min(state.cash, amount);
-  state.cash -= hit;
-  logLine(text.replace("{amt}", fmt(hit)));
-  popup(`-${fmt(hit)}`);
-}
-
 function renderStats(){
   document.getElementById("dayStat").textContent = state.day;
   document.getElementById("cashStat").textContent = fmt(state.cash);
@@ -753,31 +810,41 @@ function renderStats(){
   document.getElementById("debtStat").textContent = fmt(state.debt);
   document.getElementById("healthStat").textContent = `${state.health}`;
   document.getElementById("cityStat").textContent = state.currentCity;
-  document.getElementById("goalStat").textContent = `${fmt(getNetWorth())} / ${fmt(state.goal)}`;
+  document.getElementById("worthStat").textContent = fmt(getNetWorth());
 
-  const marketSub = state.selectedCity === state.currentCity
-    ? `Street prices in ${state.currentCity}. Selected item: ${state.selectedGood}`
-    : `Current market: ${state.currentCity}. Destination selected: ${state.selectedCity}.`;
+  document.getElementById("marketSub").textContent =
+    state.selectedCity === state.currentCity
+      ? `Street prices in ${state.currentCity}. Selected: ${state.selectedGood}`
+      : `Travel target selected: ${state.selectedCity}`;
 
-  document.getElementById("marketSub").textContent = marketSub;
-  document.getElementById("inventoryCap").textContent = `Capacity ${getTotalInventoryQty()} / ${state.capacity}`;
+  document.getElementById("selectedInfo").textContent =
+    `Selected item: ${state.selectedGood} • Price ${fmt(state.market[state.selectedGood] || 0)}`;
 
-  const healthBar = document.getElementById("healthBar");
-  healthBar.style.width = `${state.health}%`;
-  healthBar.className = "healthBar";
-  let note = "Solid shape.";
+  const store = getStorage(state.currentCity);
+  const entries = Object.entries(store).filter(([,v]) => v.qty > 0);
+  document.getElementById("storageInfo").textContent =
+    entries.length ? `Storage: ${entries.map(([k,v]) => `${k} ${v.qty}`).join(" • ")}` : "Storage: Empty";
+
+  document.getElementById("goalInfo").textContent =
+    `Goal: ${fmt(getNetWorth())} / ${fmt(state.goal)} by Day ${state.maxDay}.`;
+
+  const hb = document.getElementById("healthBar");
+  hb.style.width = `${state.health}%`;
+  hb.className = "healthBar";
+  let healthText = "Solid shape.";
   if (state.health <= 50) {
-    healthBar.classList.add("healthLow");
-    note = "You’re getting worn down.";
+    hb.classList.add("healthLow");
+    healthText = "You’re getting worn down.";
   }
   if (state.health <= 25) {
-    healthBar.classList.remove("healthLow");
-    healthBar.classList.add("healthDanger");
-    note = "Health is dangerous. Hospital recommended.";
+    hb.classList.remove("healthLow");
+    hb.classList.add("healthDanger");
+    healthText = "Health is dangerous. Hospital recommended.";
   }
-  document.getElementById("healthNote").textContent = note;
-
+  document.getElementById("healthNote").textContent = healthText;
   document.getElementById("muteBtn").textContent = state.muted ? "Sound: Off" : "Sound: On";
+  document.getElementById("choiceBanner").textContent =
+    state.pendingFight ? "Active threat: thugs are nearby. Fight Back is live." : "No active threat right now.";
 
   const notHere = state.selectedCity !== state.currentCity || state.gameOver;
   document.getElementById("buyBtn").disabled = notHere;
@@ -789,11 +856,9 @@ function renderStats(){
   document.getElementById("hospitalBtn").disabled = state.gameOver;
   document.getElementById("fightBtn").disabled = !state.pendingFight || state.gameOver;
 }
-
 function renderMarket(){
   const box = document.getElementById("marketRows");
   const rows = [`<div class="rowHead"><div>Item</div><div>Trend</div><div>Price</div></div>`];
-
   GOODS.forEach(good => {
     const price = state.market[good.name];
     const trendClass = getTrendClass(price, good.base);
@@ -806,7 +871,6 @@ function renderMarket(){
       </div>
     `);
   });
-
   box.innerHTML = rows.join("");
   box.querySelectorAll(".rowItem").forEach(el => {
     el.addEventListener("click", () => {
@@ -817,75 +881,26 @@ function renderMarket(){
     });
   });
 }
-
-function renderInventory(){
-  const box = document.getElementById("inventoryRows");
-  const items = Object.entries(state.inventory).filter(([,data]) => data.qty > 0);
-  if (!items.length) {
-    box.innerHTML = `<div class="rowHead"><div>Item</div><div>Qty</div><div>Avg</div></div>
-    <div class="rowItem"><div class="itemName">Empty</div><div>0</div><div>—</div></div>`;
-    return;
-  }
-  let html = `<div class="rowHead"><div>Item</div><div>Qty</div><div>Avg</div></div>`;
-  items.forEach(([name, data]) => {
-    const good = GOODS.find(g => g.name === name);
-    html += `
-      <div class="rowItem">
-        <div class="itemName">${good ? good.icon : "📦"} ${name}</div>
-        <div>${data.qty}</div>
-        <div>${fmt(data.avg)}</div>
-      </div>
-    `;
-  });
-  box.innerHTML = html;
-}
-
-function renderStorage(){
-  const box = document.getElementById("storageRows");
-  const items = Object.entries(getStorage(state.currentCity)).filter(([,data]) => data.qty > 0);
-  if (!items.length) {
-    box.innerHTML = `<div class="rowHead"><div>Item</div><div>Qty</div><div>Avg</div></div>
-    <div class="rowItem"><div class="itemName">Empty</div><div>0</div><div>—</div></div>`;
-    return;
-  }
-  let html = `<div class="rowHead"><div>Item</div><div>Qty</div><div>Avg</div></div>`;
-  items.forEach(([name, data]) => {
-    const good = GOODS.find(g => g.name === name);
-    html += `
-      <div class="rowItem">
-        <div class="itemName">${good ? good.icon : "📦"} ${name}</div>
-        <div>${data.qty}</div>
-        <div>${fmt(data.avg || 0)}</div>
-      </div>
-    `;
-  });
-  box.innerHTML = html;
-}
-
 function renderFeed(){
   const box = document.getElementById("eventRows");
   box.innerHTML = state.logLines.map(line => `<div class="feedLine">${line}</div>`).join("");
 }
-
 function renderMap(){
   document.querySelectorAll(".cityBtn").forEach(btn => {
     btn.classList.toggle("active", btn.dataset.city === state.selectedCity);
     btn.classList.toggle("current", btn.dataset.city === state.currentCity);
   });
   document.querySelectorAll(".cityCore").forEach(node => {
-    node.classList.remove("current", "selected");
+    node.classList.remove("current","selected");
   });
   const currentNode = document.getElementById(`node-${state.currentCity}`);
   if (currentNode) currentNode.classList.add("current");
   const selectedNode = document.getElementById(`node-${state.selectedCity}`);
   if (selectedNode && state.selectedCity !== state.currentCity) selectedNode.classList.add("selected");
 }
-
 function renderAll(){
   renderStats();
   renderMarket();
-  renderInventory();
-  renderStorage();
   renderFeed();
   renderMap();
 }
@@ -894,7 +909,6 @@ function buyOne(){
   if (state.gameOver) return;
   soundBuy();
   flashActiveRow();
-
   const item = state.selectedGood;
   const price = state.market[item];
   if (getTotalInventoryQty() >= state.capacity) {
@@ -907,23 +921,19 @@ function buyOne(){
     logLine("⚠️ Not enough cash.");
     return;
   }
-
   state.cash -= price;
   if (!state.inventory[item]) state.inventory[item] = { qty: 0, avg: 0 };
   const slot = state.inventory[item];
   slot.avg = ((slot.avg * slot.qty) + price) / (slot.qty + 1);
   slot.qty += 1;
-
   popup(`Bought ${item}`);
   logLine(`💸 Bought 1 ${item} for ${fmt(price)}.`);
   renderAll();
 }
-
 function sellOne(){
   if (state.gameOver) return;
   soundSell();
   flashActiveRow();
-
   const item = state.selectedGood;
   const slot = state.inventory[item];
   if (!slot || slot.qty <= 0) {
@@ -931,17 +941,14 @@ function sellOne(){
     logLine(`⚠️ No ${item} to sell.`);
     return;
   }
-
   const price = state.market[item];
   state.cash += price;
   slot.qty -= 1;
   if (slot.qty <= 0) delete state.inventory[item];
-
   popup(`Sold ${item}`);
   logLine(`💰 Sold 1 ${item} for ${fmt(price)}.`);
   renderAll();
 }
-
 function storeOne(){
   if (state.gameOver) return;
   soundStore();
@@ -956,15 +963,12 @@ function storeOne(){
   if (!store[item]) store[item] = { qty: 0, avg: slot.avg };
   store[item].qty += 1;
   store[item].avg = slot.avg;
-
   slot.qty -= 1;
   if (slot.qty <= 0) delete state.inventory[item];
-
   popup(`Stored ${item}`);
   logLine(`📦 Stored 1 ${item} in ${state.currentCity}.`);
   renderAll();
 }
-
 function takeOne(){
   if (state.gameOver) return;
   soundTake();
@@ -980,19 +984,15 @@ function takeOne(){
     logLine("⚠️ Inventory full.");
     return;
   }
-
   if (!state.inventory[item]) state.inventory[item] = { qty: 0, avg: store[item].avg || 0 };
   state.inventory[item].qty += 1;
   state.inventory[item].avg = store[item].avg || state.inventory[item].avg;
-
   store[item].qty -= 1;
   if (store[item].qty <= 0) delete store[item];
-
   popup(`Took ${item}`);
   logLine(`📦 Took 1 ${item} from ${state.currentCity} storage.`);
   renderAll();
 }
-
 function deposit(amount){
   if (state.gameOver) return;
   soundClick();
@@ -1007,7 +1007,6 @@ function deposit(amount){
   popup(`Deposited ${fmt(amount)}`);
   renderAll();
 }
-
 function withdraw(amount){
   if (state.gameOver) return;
   soundClick();
@@ -1022,7 +1021,6 @@ function withdraw(amount){
   popup(`Withdrew ${fmt(amount)}`);
   renderAll();
 }
-
 function borrow(amount){
   if (state.gameOver) return;
   soundClick();
@@ -1032,7 +1030,6 @@ function borrow(amount){
   popup(`Borrowed ${fmt(amount)}`);
   renderAll();
 }
-
 function repay(amount){
   if (state.gameOver) return;
   soundClick();
@@ -1052,7 +1049,6 @@ function repay(amount){
   popup(`Repaid ${fmt(amount)}`);
   renderAll();
 }
-
 function visitHospital(){
   if (state.gameOver) return;
   soundHeal();
@@ -1070,7 +1066,6 @@ function visitHospital(){
   popup(`+${healed} health`);
   renderAll();
 }
-
 function fightBack(){
   if (state.gameOver) return;
   if (!state.pendingFight) {
@@ -1080,26 +1075,26 @@ function fightBack(){
   }
   soundFight();
   state.pendingFight = false;
-
   const roll = Math.random();
   if (roll < 0.45) {
     const damage = 10 + Math.floor(Math.random() * 10);
     applyDamage(damage, "You fought them off");
-    addCash(120 + Math.floor(Math.random() * 140), "👊 You fought back and kept control of the street.");
+    const gain = 120 + Math.floor(Math.random() * 140);
+    state.cash += gain;
+    logLine(`👊 You fought back and kept control. Picked up ${fmt(gain)}.`);
+    popup(`+${fmt(gain)}`);
   } else {
     const damage = 18 + Math.floor(Math.random() * 14);
     state.health -= damage;
     clampHealth();
     const loss = 120 + Math.floor(Math.random() * 220);
     state.cash = Math.max(0, state.cash - loss);
-    soundFight();
     logLine(`🥊 Bad fight. Health -${damage}. Lost ${fmt(loss)}.`);
-    popup(`Fight went bad`);
+    popup("Fight went bad");
   }
   checkGameState();
   renderAll();
 }
-
 function animateTravel(fromCity, toCity, done){
   const a = CITY_POS[fromCity];
   const b = CITY_POS[toCity];
@@ -1113,7 +1108,6 @@ function animateTravel(fromCity, toCity, done){
   dot.setAttribute("cx", a.x);
   dot.setAttribute("cy", a.y);
   dot.style.opacity = 1;
-
   function step(){
     t += 0.03;
     if (t > 1) t = 1;
@@ -1121,20 +1115,17 @@ function animateTravel(fromCity, toCity, done){
     const y = a.y + (b.y - a.y) * t;
     dot.setAttribute("cx", x);
     dot.setAttribute("cy", y);
-    if (t < 1) {
-      requestAnimationFrame(step);
-    } else {
+    if (t < 1) requestAnimationFrame(step);
+    else {
       dot.style.opacity = 0;
       done && done();
     }
   }
   requestAnimationFrame(step);
 }
-
 function cityMessage(city){
   return randomFrom(CITY_UPDATES[city] || ["The city feels quiet."]);
 }
-
 function applyDebtInterest(){
   if (state.debt > 0) {
     const add = Math.max(25, Math.round(state.debt * 0.05));
@@ -1142,7 +1133,6 @@ function applyDebtInterest(){
     logLine(`📈 Debt pressure hit. Interest added ${fmt(add)}.`);
   }
 }
-
 function randomEvent(){
   state.pendingFight = false;
   const roll = Math.random();
@@ -1155,29 +1145,31 @@ function randomEvent(){
     popup(`Found ${fmt(found)}`);
     return;
   }
-
   if (roll < 0.22) {
     const fee = 70 + Math.floor(Math.random() * 130);
-    loseCash(fee, `🚔 Speeding ticket. Paid {amt}.`);
+    const hit = Math.min(state.cash, fee);
+    state.cash -= hit;
     soundError();
+    logLine(`🚔 Speeding ticket. Paid ${fmt(hit)}.`);
+    popup(`-${fmt(hit)}`);
     return;
   }
-
   if (roll < 0.33) {
     const damage = 8 + Math.floor(Math.random() * 12);
     state.pendingFight = true;
     applyDamage(damage, "Mob boss sent thugs to remind you who runs this route");
-    logLine("👥 Thugs are still nearby. You can hit Fight Back now.");
+    logLine("👥 Thugs are still nearby. Fight Back is live.");
     return;
   }
-
   if (roll < 0.43) {
     const penalty = 90 + Math.floor(Math.random() * 150);
-    loseCash(penalty, `🚨 Police stop. Lost {amt} handling the trouble.`);
+    const hit = Math.min(state.cash, penalty);
+    state.cash -= hit;
     soundError();
+    logLine(`🚨 Police stop. Lost ${fmt(hit)} handling the trouble.`);
+    popup(`-${fmt(hit)}`);
     return;
   }
-
   if (roll < 0.54) {
     const boostGood = randomFrom(GOODS);
     const add = 45 + Math.floor(Math.random() * 90);
@@ -1186,7 +1178,6 @@ function randomEvent(){
     popup(`${boostGood.name} up`);
     return;
   }
-
   if (roll < 0.64) {
     const dropGood = randomFrom(GOODS);
     const down = 20 + Math.floor(Math.random() * 50);
@@ -1194,7 +1185,6 @@ function randomEvent(){
     logLine(`📦 A flood of ${dropGood.name} hit the block. Prices softened.`);
     return;
   }
-
   if (roll < 0.74) {
     const found = 120 + Math.floor(Math.random() * 220);
     state.bank += found;
@@ -1202,19 +1192,15 @@ function randomEvent(){
     popup(`Bank +${fmt(found)}`);
     return;
   }
-
   if (roll < 0.84) {
     const damage = 10 + Math.floor(Math.random() * 15);
     applyDamage(damage, "Street trouble got physical");
     return;
   }
-
   logLine(`📍 ${state.currentCity}: ${cityMessage(state.currentCity)}`);
 }
-
 function checkGameState(){
   if (state.gameOver) return;
-
   if (state.health <= 0) {
     state.gameOver = true;
     soundError();
@@ -1222,7 +1208,6 @@ function checkGameState(){
     renderAll();
     return;
   }
-
   if (getNetWorth() >= state.goal) {
     state.gameOver = true;
     soundArrival();
@@ -1230,18 +1215,13 @@ function checkGameState(){
     renderAll();
     return;
   }
-
   if (state.day > state.maxDay) {
     state.gameOver = true;
-    if (getNetWorth() >= state.goal) {
-      logLine(`🏆 Day 30 closed out and you still cleared the goal with ${fmt(getNetWorth())}.`);
-    } else {
-      logLine(`⌛ Time ran out. Final net worth: ${fmt(getNetWorth())}.`);
-    }
+    if (getNetWorth() >= state.goal) logLine(`🏆 Day 30 closed and you still cleared the goal with ${fmt(getNetWorth())}.`);
+    else logLine(`⌛ Time ran out. Final net worth: ${fmt(getNetWorth())}.`);
     renderAll();
   }
 }
-
 function advanceDay(){
   state.day += 1;
   generateMarket(state.currentCity);
@@ -1249,7 +1229,6 @@ function advanceDay(){
   randomEvent();
   checkGameState();
 }
-
 function travel(){
   if (state.gameOver) return;
   soundClick();
@@ -1260,13 +1239,11 @@ function travel(){
   const from = state.currentCity;
   const to = state.selectedCity;
   const cost = 100;
-
   if (state.cash < cost) {
     soundError();
     logLine("⚠️ Not enough cash to travel.");
     return;
   }
-
   logLine(`🗺️ Traveling to ${to}... Cost ${fmt(cost)}.`);
   animateTravel(from, to, () => {
     state.cash -= cost;
@@ -1277,7 +1254,6 @@ function travel(){
     renderAll();
   });
 }
-
 function stay(){
   if (state.gameOver) return;
   soundClick();
@@ -1285,16 +1261,14 @@ function stay(){
   advanceDay();
   renderAll();
 }
-
 function saveGame(){
   soundClick();
-  localStorage.setItem("marketRunIowaClassic", JSON.stringify(state));
+  localStorage.setItem("marketRunIowaCompact", JSON.stringify(state));
   logLine("💾 Game saved.");
 }
-
 function loadGame(){
   soundClick();
-  const raw = localStorage.getItem("marketRunIowaClassic");
+  const raw = localStorage.getItem("marketRunIowaCompact");
   if (!raw) {
     soundError();
     logLine("⚠️ No saved game found.");
@@ -1305,33 +1279,39 @@ function loadGame(){
   renderAll();
   logLine("📂 Game loaded.");
 }
-
 function resetGame(){
   soundClick();
-  localStorage.removeItem("marketRunIowaClassic");
+  localStorage.removeItem("marketRunIowaCompact");
   location.reload();
 }
 
+function bindTabs(){
+  document.querySelectorAll(".tabBtn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      soundClick();
+      document.querySelectorAll(".tabBtn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".tabPane").forEach(p => p.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById(btn.dataset.tab).classList.add("active");
+    });
+  });
+}
 function bindUI(){
   document.getElementById("buyBtn").addEventListener("click", buyOne);
   document.getElementById("sellBtn").addEventListener("click", sellOne);
   document.getElementById("storeBtn").addEventListener("click", storeOne);
   document.getElementById("takeBtn").addEventListener("click", takeOne);
-
   document.getElementById("travelBtn").addEventListener("click", travel);
   document.getElementById("stayBtn").addEventListener("click", stay);
   document.getElementById("hospitalBtn").addEventListener("click", visitHospital);
   document.getElementById("fightBtn").addEventListener("click", fightBack);
-
   document.getElementById("borrow500Btn").addEventListener("click", () => borrow(500));
+  document.getElementById("repay500Btn").addEventListener("click", () => repay(500));
   document.getElementById("deposit500Btn").addEventListener("click", () => deposit(500));
   document.getElementById("withdraw500Btn").addEventListener("click", () => withdraw(500));
-  document.getElementById("repay500Btn").addEventListener("click", () => repay(500));
-
   document.getElementById("saveBtn").addEventListener("click", saveGame);
   document.getElementById("loadBtn").addEventListener("click", loadGame);
   document.getElementById("resetBtn").addEventListener("click", resetGame);
-
   document.getElementById("muteBtn").addEventListener("click", () => {
     soundClick();
     state.muted = !state.muted;
@@ -1348,7 +1328,6 @@ function bindUI(){
       renderStats();
     });
   });
-
   document.querySelectorAll(".cityNode").forEach(node => {
     node.addEventListener("click", () => {
       soundClick();
@@ -1358,15 +1337,23 @@ function bindUI(){
     });
   });
 
-  const unlockAudio = () => {
+  document.getElementById("startGameBtn").addEventListener("click", () => {
+    state.muted = false;
     initAudio();
     startMusic();
-  };
-  document.body.addEventListener("click", unlockAudio, { once: true });
-  document.body.addEventListener("touchstart", unlockAudio, { once: true });
+    soundArrival();
+    document.getElementById("introScreen").style.display = "none";
+    renderStats();
+  });
+  document.getElementById("startMutedBtn").addEventListener("click", () => {
+    state.muted = true;
+    document.getElementById("introScreen").style.display = "none";
+    renderStats();
+  });
 }
 
 generateMarket(state.currentCity);
+bindTabs();
 bindUI();
 renderAll();
 </script>
