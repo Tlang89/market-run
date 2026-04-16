@@ -2,447 +2,369 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-<title>Market Run Iowa</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Market Run Iowa — Clean Classic</title>
 <style>
 :root{
-  --bg:#0b0d12;
-  --panel:#1a1d25;
-  --panel2:#232734;
-  --panel3:#12151c;
-  --line:#3a4250;
-  --text:#f2ede2;
-  --muted:#b7af9f;
-  --gold:#c9a35f;
-  --blue:#78c7ff;
-  --green:#78d089;
-  --red:#d87070;
-  --purple:#a68cff;
-  --road:#6f7e95;
-  --interstate:#2f8b57;
-  --highway:#d3bb58;
+  --bg:#070b12;
+  --panel:#101826;
+  --panel2:#151f31;
+  --line:#33435f;
+  --text:#f3eee1;
+  --muted:#98a5be;
+  --gold:#d7b26b;
+  --gold2:#b7914d;
+  --blue:#8cc6ff;
+  --blue2:#60a9ff;
+  --red:#b75858;
+  --green:#69c18c;
+  --shadow:rgba(0,0,0,.35);
 }
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{
-  margin:0;
-  padding:0;
-  background:linear-gradient(180deg,#090b10,#12161d 60%,#0b0d12);
-  color:var(--text);
-  font-family:"Courier New", monospace;
-}
-body{overflow-x:hidden}
-h1,h2,h3,p{margin:0 0 8px 0}
-.small,.sub{color:var(--muted);line-height:1.35}
-
-.overlay{
-  position:fixed;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:16px;
-  background:rgba(0,0,0,.88);
-  z-index:9999;
-}
-.hidden{display:none}
-
-.card{
-  width:min(900px,100%);
-  background:var(--panel);
-  border:3px solid var(--line);
-  border-radius:12px;
-  box-shadow:0 0 0 2px #0c0e14 inset, 0 18px 40px rgba(0,0,0,.45);
-  padding:16px;
-}
-
-.hero{
-  height:120px;
-  border:2px solid var(--line);
-  border-radius:10px;
-  margin-bottom:12px;
-  position:relative;
-  overflow:hidden;
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
   background:
-    radial-gradient(circle at 20% 30%, rgba(120,199,255,.18), transparent 20%),
-    radial-gradient(circle at 80% 20%, rgba(166,140,255,.14), transparent 18%),
-    linear-gradient(180deg,#1d2230,#121721 62%,#0d1118);
+    radial-gradient(circle at top, rgba(255,255,255,.05), transparent 26%),
+    linear-gradient(180deg,#0a1019,#050811 65%);
+  color:var(--text);
+  font-family: Georgia, "Times New Roman", serif;
 }
-.hero:before{
-  content:"";
-  position:absolute;
-  left:0;right:0;bottom:0;
-  height:34px;
-  background:linear-gradient(180deg,#1a1d24,#10131a);
-  border-top:2px solid #2a3340;
-}
-.hero:after{
-  content:"";
-  position:absolute;
-  left:0;right:0;bottom:14px;
-  height:4px;
-  background:repeating-linear-gradient(90deg,transparent 0 18px,#d8be6a 18px 34px);
-}
-.heroTitle{
-  position:absolute;
-  top:12px;left:14px;
-  color:var(--gold);
-  font-size:28px;
-  font-weight:700;
-  letter-spacing:1px;
-  text-shadow:2px 2px 0 #000;
-}
-.heroTag{
-  position:absolute;
-  top:46px;left:16px;
-  color:#d6d0c5;
-  font-size:12px;
-}
-
-.wrap{
-  max-width:980px;
+button, input, select { font: inherit; }
+.app{
+  max-width:1360px;
   margin:0 auto;
-  padding:10px;
-  padding-bottom:24px;
+  padding:12px;
 }
 .topbar{
   display:grid;
-  grid-template-columns:repeat(2,1fr);
+  grid-template-columns:repeat(7,1fr);
   gap:8px;
   margin-bottom:10px;
 }
-.stat,.panel{
-  background:var(--panel);
-  border:3px solid var(--line);
-  border-radius:10px;
-  box-shadow:0 0 0 2px #0d1016 inset;
+.stat{
+  background:linear-gradient(180deg,#131b2b,#0f1623);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:10px 12px;
+  min-height:74px;
+  box-shadow:0 8px 18px var(--shadow), inset 0 0 0 1px rgba(255,255,255,.02);
 }
-.stat{padding:10px}
 .label{
-  color:var(--muted);
-  font-size:10px;
+  font-size:12px;
   text-transform:uppercase;
-  letter-spacing:.08em;
+  letter-spacing:.12em;
+  color:#c9bda7;
+  margin-bottom:8px;
 }
 .value{
-  color:var(--gold);
   font-size:18px;
   font-weight:700;
-  margin-top:4px;
+  color:var(--gold);
 }
-.utility{
+.eventBar{
+  margin-bottom:10px;
+  background:linear-gradient(180deg,#1a2435,#111927);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:14px 16px;
+  min-height:62px;
+  display:flex;
+  align-items:center;
+  font-size:18px;
+  color:#f7f0dd;
+  box-shadow:0 8px 18px var(--shadow), inset 0 0 0 1px rgba(255,255,255,.02);
+}
+.mainGrid{
+  display:grid;
+  grid-template-columns:1.12fr .7fr 1fr;
+  gap:10px;
+  align-items:start;
+}
+.panel{
+  background:linear-gradient(180deg,#111a29,#0c1420);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:12px;
+  box-shadow:0 8px 18px var(--shadow), inset 0 0 0 1px rgba(255,255,255,.02);
+}
+.panel h2{
+  margin:0 0 4px 0;
+  font-size:18px;
+  color:var(--gold);
+  letter-spacing:.04em;
+}
+.sub{
+  color:var(--muted);
+  font-size:13px;
+  margin-bottom:10px;
+  line-height:1.35;
+}
+.list,
+.smallList{
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:10px;
+  background:rgba(0,0,0,.14);
+  overflow:hidden;
+}
+.list{ min-height:360px; }
+.smallList{ min-height:200px; }
+.rowHead, .rowItem{
+  display:grid;
+  grid-template-columns:1.55fr .8fr .7fr;
+  gap:8px;
+  align-items:center;
+  padding:10px 12px;
+}
+.rowHead{
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  color:#b8c2d8;
+  background:rgba(255,255,255,.03);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.rowItem{
+  border-top:1px solid rgba(255,255,255,.05);
+  cursor:pointer;
+  transition:background .16s ease, transform .12s ease, box-shadow .16s ease;
+}
+.rowItem:hover{ background:rgba(255,255,255,.03); }
+.rowItem.active{
+  background:rgba(140,198,255,.1);
+  box-shadow:inset 0 0 0 1px rgba(140,198,255,.35);
+}
+.rowItem.flash{
+  background:rgba(215,178,107,.2) !important;
+  box-shadow:inset 0 0 0 1px rgba(215,178,107,.45);
+}
+.itemName{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-weight:700;
+}
+.up{ color:var(--green); }
+.down{ color:var(--red); }
+.flat{ color:var(--muted); }
+
+.actionsPanel{
+  display:grid;
+  gap:8px;
+}
+.actionRow2{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:8px;
-  margin-bottom:10px;
 }
-.utility2{
-  display:grid;
-  grid-template-columns:1fr 1fr 1fr;
-  gap:8px;
-  margin-bottom:10px;
-}
-.btn{
-  border:3px solid #76643f;
-  background:var(--gold);
-  color:#111;
+.actionBtn{
+  width:100%;
+  border:none;
   border-radius:10px;
-  min-height:42px;
-  padding:10px 12px;
+  padding:12px 10px;
+  background:linear-gradient(180deg,#d8b770,#bc9856);
+  color:#1b150a;
+  font-size:16px;
   font-weight:700;
-  font-family:inherit;
-  font-size:14px;
   cursor:pointer;
-  box-shadow:0 3px 0 #7f6332;
+  box-shadow:0 4px 10px rgba(0,0,0,.25), inset 0 0 0 1px rgba(255,255,255,.14);
+  transition:transform .08s ease, filter .12s ease, opacity .12s ease;
 }
-.btn:active{transform:translateY(1px)}
-.btnSecondary{
-  background:var(--panel2);
+.actionBtn:hover{ filter:brightness(1.04); }
+.actionBtn:active{
+  transform:scale(.97);
+  filter:brightness(1.12);
+}
+.secondary{
+  background:linear-gradient(180deg,#263148,#192335);
   color:var(--text);
-  border-color:#434c5e;
-  box-shadow:0 3px 0 #2b3240;
+  box-shadow:0 4px 10px rgba(0,0,0,.25), inset 0 0 0 1px rgba(255,255,255,.06);
 }
-.btnDanger{
-  background:#5a262a;
-  color:#f2d9dc;
-  border-color:#7b3b40;
-  box-shadow:0 3px 0 #3b171a;
+.danger{
+  background:linear-gradient(180deg,#8e4040,#6d2e2e);
+  color:#fff4f4;
 }
-
-.tabs{
-  display:flex;
-  gap:6px;
-  overflow-x:auto;
-  margin-bottom:10px;
+.heal{
+  background:linear-gradient(180deg,#4b8b63,#34684a);
+  color:#f6fff8;
 }
-.tabBtn{
-  white-space:nowrap;
+.actionBtn:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+  filter:grayscale(.2);
 }
-.tabBtn.active{
-  background:var(--gold);
-  color:#111;
-}
-.tabPanel{display:none}
-.tabPanel.active{display:block}
-
-.panel{
-  padding:10px;
-}
-.panel h2{
-  color:var(--gold);
-  font-size:17px;
-  margin-bottom:6px;
-}
+.divider{ height:8px; }
 
 .mapWrap{
+  height:370px;
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:12px;
+  overflow:hidden;
   background:
     radial-gradient(circle at 20% 24%, rgba(255,255,255,.02), transparent 18%),
     radial-gradient(circle at 72% 18%, rgba(255,255,255,.02), transparent 15%),
-    linear-gradient(180deg,#111722,#171f2b);
-  border:2px solid var(--line);
-  border-radius:10px;
-  padding:8px;
-  margin-bottom:8px;
-  overflow:hidden;
+    linear-gradient(180deg,#101722,#171f2b);
+  margin-top:8px;
 }
-svg{
+#iowaMap{
   display:block;
   width:100%;
-  height:auto;
+  height:100%;
 }
 .hill1{fill:#131924}
 .hill2{fill:#101620}
 .hill3{fill:#0d1219}
 .iowa{fill:#202736;stroke:#47546a;stroke-width:3}
-.countyLine{stroke:rgba(255,255,255,.07);stroke-width:1}
-.routeInterstate{stroke:var(--interstate);stroke-width:6;fill:none}
-.routeHighway{stroke:var(--highway);stroke-width:4;fill:none}
-.cityRoute{stroke:var(--road);stroke-width:4;fill:none;opacity:.9}
-.cityPulse{fill:rgba(120,199,255,.08);stroke:rgba(120,199,255,.4);stroke-width:2}
-.cityCore{fill:#1f2a39;stroke:var(--gold);stroke-width:2}
-.cityCore.current{fill:#26405c;stroke:var(--blue)}
-.cityCore.selected{fill:#3b2b56;stroke:var(--purple)}
+.cityRoute{stroke:rgba(120,199,255,.42);stroke-width:4}
+.cityPulse{
+  fill:rgba(120,199,255,0.15);
+  stroke:rgba(120,199,255,0.55);
+  stroke-width:2;
+  animation:pulse 2.1s infinite ease-in-out;
+}
+@keyframes pulse{
+  0%{ transform:scale(1); opacity:.85; transform-origin:center; }
+  50%{ transform:scale(1.22); opacity:.18; transform-origin:center; }
+  100%{ transform:scale(1); opacity:.85; transform-origin:center; }
+}
+.cityCore{fill:#1f2a39;stroke:var(--gold);stroke-width:2;transition:filter .2s ease, fill .2s ease}
+.cityCore.current{
+  fill:#2c5178;
+  stroke:#8cc6ff;
+  filter:drop-shadow(0 0 8px rgba(120,199,255,.85));
+}
+.cityCore.selected{fill:#3a2d56;stroke:#b798ff}
 .cityLabel{fill:var(--text);font-size:13px;font-weight:700}
-.badge{fill:#21476c;stroke:#8cc6ff;stroke-width:1.2;rx:6;ry:6}
-.badgeText{fill:#fff;font-size:11px;font-weight:700}
-.stateText{fill:rgba(201,163,95,.65);font-size:28px;letter-spacing:3px;font-weight:700}
-.travelDot{fill:var(--blue);filter:drop-shadow(0 0 6px rgba(120,199,255,.95))}
-.travelBanner{
-  display:none;
-  margin-bottom:8px;
-  padding:8px 10px;
-  background:#122132;
-  border:2px solid #31506f;
-  color:#d7eaff;
-  border-radius:8px;
-  font-weight:700;
-  font-size:13px;
+#travelDot{
+  fill:#66aaff;
+  stroke:white;
+  stroke-width:2;
+  opacity:0;
+  filter:drop-shadow(0 0 8px rgba(102,170,255,.9));
 }
 .cityGrid{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:8px;
-  margin-bottom:8px;
+  margin-top:10px;
 }
-.cityBtn.active{outline:2px solid var(--gold)}
-.row{display:flex;gap:8px}
-.row>*{flex:1}
-
-.scroll{
-  max-height:280px;
-  overflow:auto;
-  padding-right:4px;
+.cityBtn{
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:linear-gradient(180deg,#273249,#1a2437);
+  color:var(--text);
+  padding:11px 10px;
+  font-size:15px;
+  font-weight:700;
+  cursor:pointer;
 }
-.log{
-  max-height:330px;
-  overflow:auto;
-  background:var(--panel3);
-  border:2px solid var(--line);
-  border-radius:8px;
-  padding:8px;
+.cityBtn.active{
+  border-color:var(--gold);
+  box-shadow:inset 0 0 0 1px rgba(215,178,107,.45);
 }
-.marketRow,.invRow,.eventRow,.hearsayRow,.walletRow{
-  display:flex;
-  justify-content:space-between;
-  gap:8px;
-  padding:8px 0;
-  border-bottom:1px solid #303847;
+.cityBtn.current::after{
+  content:" • current";
+  color:var(--gold);
+  font-size:12px;
 }
-.actions{
-  display:flex;
-  gap:6px;
-  flex-wrap:wrap;
-}
-.entry{
-  padding:7px 4px;
-  border-bottom:1px solid #252c38;
-  font-size:13px;
-  line-height:1.3;
-}
-.good{color:var(--green)}
-.bad{color:var(--red)}
-.pill{
-  display:inline-block;
-  padding:2px 7px;
+.healthBarWrap{
+  height:14px;
+  width:100%;
+  background:#202938;
+  border:1px solid rgba(255,255,255,.08);
   border-radius:999px;
-  background:#242c38;
+  overflow:hidden;
+  margin-top:8px;
+}
+.healthBar{
+  height:100%;
+  width:100%;
+  background:linear-gradient(90deg,#6eb987,#57d07d);
+  transition:width .25s ease;
+}
+.healthLow{ background:linear-gradient(90deg,#be8746,#d3a05a); }
+.healthDanger{ background:linear-gradient(90deg,#a34545,#d85f5f); }
+
+.feed{
+  min-height:150px;
+  max-height:220px;
+  overflow:auto;
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:10px;
+  background:rgba(0,0,0,.14);
+  padding:10px;
+}
+.feedLine{
+  font-size:14px;
+  line-height:1.4;
+  padding:5px 0;
+  border-top:1px solid rgba(255,255,255,.05);
+}
+.feedLine:first-child{ border-top:none; }
+
+.footerNote{
+  margin-top:10px;
+  font-size:13px;
   color:var(--muted);
-  font-size:11px;
-  margin-left:6px;
 }
-.arrowUp{color:var(--green)}
-.arrowDown{color:var(--red)}
-.arrowFlat{color:var(--muted)}
 
-.slide{display:none}
-.slide.active{display:block}
-.slideBox{
-  background:var(--panel2);
-  border:2px solid var(--line);
+.popup{
+  position:fixed;
+  left:50%;
+  bottom:22px;
+  transform:translateX(-50%);
+  background:rgba(6,10,16,.96);
+  color:var(--gold);
+  padding:10px 15px;
+  border:1px solid rgba(215,178,107,.55);
   border-radius:10px;
-  padding:16px;
-  min-height:170px;
+  font-weight:700;
+  box-shadow:0 10px 20px rgba(0,0,0,.35);
+  animation:popupMove .8s ease forwards;
+  z-index:999;
 }
-.dots{text-align:center;margin-top:10px}
-.dot{
-  display:inline-block;
-  width:8px;height:8px;border-radius:50%;
-  background:#555;margin:0 4px;
-}
-.dot.active{background:var(--gold)}
-.tutorialNav{
-  display:flex;
-  gap:8px;
-  margin-top:12px;
-}
-.tutorialNav .btn{flex:1}
-
-.choiceGrid{
-  display:grid;
-  gap:12px;
-}
-.choiceBox{
-  background:var(--panel2);
-  border:2px solid var(--line);
-  border-radius:10px;
-  padding:12px;
+@keyframes popupMove{
+  0%{opacity:0; transform:translateX(-50%) translateY(15px);}
+  20%{opacity:1;}
+  100%{opacity:0; transform:translateX(-50%) translateY(-18px);}
 }
 
-@media (min-width:740px){
-  .topbar{grid-template-columns:repeat(6,1fr)}
-  .utility{grid-template-columns:1fr 1fr 1fr 1fr}
+@media (max-width:1060px){
+  .topbar{ grid-template-columns:repeat(3,1fr); }
+  .mainGrid{ grid-template-columns:1fr; }
+  .list{ min-height:240px; }
+  .mapWrap{ height:320px; }
+}
+@media (max-width:640px){
+  .topbar{ grid-template-columns:repeat(2,1fr); }
 }
 </style>
 </head>
 <body>
-
-<div id="tutorialOverlay" class="overlay">
-  <div class="card">
-    <div class="hero">
-      <div class="heroTitle">HELP MODE</div>
-      <div class="heroTag">Swipe or tap Next</div>
-    </div>
-
-    <div id="slides">
-      <div class="slide active"><div class="slideBox"><h2>Welcome to Market Run</h2><p class="sub">Build your net worth to <strong>$100,000,000</strong> by trading smart across Iowa.</p></div></div>
-      <div class="slide"><div class="slideBox"><h2>Pick a City</h2><p class="sub">Tap a city on the map. Travel when the opportunity is worth the risk, or stay and let the next day roll over.</p></div></div>
-      <div class="slide"><div class="slideBox"><h2>Watch the Market</h2><p class="sub">Each city prices Beef, Chicken, Seafood, Rare Sneakers, and Electronics differently.</p></div></div>
-      <div class="slide"><div class="slideBox"><h2>Use Hearsay</h2><p class="sub">Rumors hint at what may rise or fall next. Use them as clues, not guarantees.</p></div></div>
-      <div class="slide"><div class="slideBox"><h2>Buy Low, Sell High</h2><p class="sub">Inventory tracks quantity and average buy price. Profit comes from selling above your average.</p></div></div>
-      <div class="slide"><div class="slideBox"><h2>Watch Events</h2><p class="sub">Outbreaks, oversupply, sneaker drops, and shortages can create big swings.</p></div></div>
-      <div class="slide"><div class="slideBox"><h2>Road Risk</h2><p class="sub">Travel can trigger repairs, losses, lucky breaks, or wallet choices.</p></div></div>
-      <div class="slide"><div class="slideBox"><h2>Empire Unlock</h2><p class="sub">At <strong>$1,000,000</strong>, choose <strong>Store</strong> for steadier growth or <strong>Fleet</strong> for bigger upside.</p></div></div>
-      <div class="slide"><div class="slideBox"><h2>Ready?</h2><p class="sub"><strong>Buy low → read clues → move smart → sell high</strong></p></div></div>
-    </div>
-
-    <div id="dots" class="dots"></div>
-
-    <div class="tutorialNav">
-      <button id="prevSlideBtn" class="btn btnSecondary">Back</button>
-      <button id="nextSlideBtn" class="btn">Next</button>
-      <button id="startGameBtn" class="btn hidden">Start Game</button>
-    </div>
-  </div>
-</div>
-
-<div id="choiceOverlay" class="overlay hidden">
-  <div class="card">
-    <h2 style="color:var(--gold)">EMPIRE UNLOCK</h2>
-    <p class="sub">You crossed <strong>$1,000,000</strong>. Choose your path.</p>
-    <div class="choiceGrid">
-      <div class="choiceBox">
-        <h3>Open a Store</h3>
-        <p class="small">Steadier daily income and safer growth.</p>
-        <button class="btn" style="width:100%" onclick="chooseEmpire('store')">Choose Store</button>
-      </div>
-      <div class="choiceBox">
-        <h3>Build a Fleet</h3>
-        <p class="small">Higher upside, but more road risk.</p>
-        <button class="btn" style="width:100%" onclick="chooseEmpire('fleet')">Choose Fleet</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="winOverlay" class="overlay hidden">
-  <div class="card">
-    <h2 style="color:var(--gold)">DREAM REALIZED</h2>
-    <p>You reached <strong>$100,000,000</strong> in net worth.</p>
-  </div>
-</div>
-
-<div class="wrap">
+<div class="app">
   <div class="topbar">
     <div class="stat"><div class="label">Day</div><div class="value" id="dayStat">1</div></div>
     <div class="stat"><div class="label">Cash</div><div class="value" id="cashStat">$2,500</div></div>
-    <div class="stat"><div class="label">Current City</div><div class="value" id="cityStat">Des Moines</div></div>
-    <div class="stat"><div class="label">Selected City</div><div class="value" id="selectedStat">Des Moines</div></div>
-    <div class="stat"><div class="label">Net Worth</div><div class="value" id="worthStat">$2,500</div></div>
-    <div class="stat"><div class="label">Empire</div><div class="value" id="empireStat">None</div>
-   
-<div class="stat">
-  <div class="label">Bank</div>
-  <div class="value" id="bankStat">$0</div>
-</div>
-
-<div class="stat">
-  <div class="label">Debt</div>
-  <div class="value" id="debtStat">$0</div>
-</div>
-</div>      
-  <div class="utility">
-    <button id="saveBtn" class="btn btnSecondary">Save</button>
-    <button id="loadBtn" class="btn btnSecondary">Load</button>
-    <button id="resetBtn" class="btn btnDanger">Reset</button>
-    <button id="muteBtn" class="btn btnSecondary">Mute: Off</button>
-  </div>
-  <div class="row">
-  <button onclick="borrowMoney(500)" class="btn">💸 Borrow $500</button>
-  <button onclick="borrowMoney(2000)" class="btn">💸 Borrow $2,000</button>
-</div>
-
-<div class="row">
-  <button onclick="deposit(500)" class="btn">🏦 Deposit $500</button>
-  <button onclick="withdraw(500)" class="btn">🏦 Withdraw $500</button>
-</div>
-
-<div class="row">
-  <button onclick="repayDebt(500)" class="btn">💰 Repay $500</button>
-</div>
-
-  <div class="tabs">
-    <button class="btn btnSecondary tabBtn active" onclick="showTab('tab-map', this)">Map</button>
-    <button class="btn btnSecondary tabBtn" onclick="showTab('tab-market', this)">Market</button>
-    <button class="btn btnSecondary tabBtn" onclick="showTab('tab-inventory', this)">Inventory</button>
-    <button class="btn btnSecondary tabBtn" onclick="showTab('tab-log', this)">Log</button>
+    <div class="stat"><div class="label">Bank</div><div class="value" id="bankStat">$0</div></div>
+    <div class="stat"><div class="label">Debt</div><div class="value" id="debtStat">$0</div></div>
+    <div class="stat"><div class="label">Health</div><div class="value" id="healthStat">100</div></div>
+    <div class="stat"><div class="label">City</div><div class="value" id="cityStat">Des Moines</div></div>
+    <div class="stat"><div class="label">Goal</div><div class="value" id="goalStat">$20,000</div></div>
   </div>
 
-  <div id="tab-map" class="tabPanel active">
-    <div class="panel">
-      <h2>TRAVEL MAP</h2>
-      <div class="small">Tap a city, then travel or stay.</div>
+  <div class="eventBar" id="eventBar">Welcome to Market Run Iowa.</div>
 
+  <div class="mainGrid">
+    <section class="panel">
+      <h2>Market</h2>
+      <div class="sub" id="marketSub">Street prices in your current city. Select a product.</div>
+      <div id="marketRows" class="list"></div>
+
+      <div class="divider"></div>
+
+      <h2>Iowa Map</h2>
+      <div class="sub">Pick your next city. Travel costs money and can trigger trouble.</div>
       <div class="mapWrap">
-        <svg viewBox="0 0 980 520">
+        <svg viewBox="0 0 980 520" id="iowaMap">
           <path class="hill1" d="M0 355 Q120 300 240 338 T480 326 T720 348 T980 318 L980 520 L0 520 Z"></path>
           <path class="hill2" d="M0 388 Q140 342 260 375 T520 370 T760 394 T980 364 L980 520 L0 520 Z"></path>
           <path class="hill3" d="M0 420 Q150 390 300 420 T600 412 T980 404 L980 520 L0 520 Z"></path>
@@ -450,1138 +372,1003 @@ svg{
           <path class="iowa" d="M120 95
             L785 95
             L810 118
-            L840 126
-            L835 160
-            L848 188
-            L834 219
-            L848 250
-            L832 279
-            L798 312
-            L770 330
-            L764 355
-            L735 368
-            L700 365
-            L668 382
-            L621 378
-            L582 392
-            L536 383
-            L492 392
-            L444 381
-            L396 389
-            L348 378
-            L305 384
-            L262 369
-            L219 374
-            L182 360
-            L153 336
-            L145 308
-            L127 280
-            L130 242
-            L118 213
-            L130 180
-            L120 150
-            L132 124 Z"></path>
+            L925 122
+            L905 330
+            L870 355
+            L860 410
+            L785 448
+            L700 446
+            L620 435
+            L560 450
+            L500 430
+            L430 448
+            L360 430
+            L290 438
+            L200 412
+            L155 360
+            L130 290
+            L105 240
+            L120 210
+            L105 180
+            L120 95 Z"></path>
 
-          <path class="countyLine" d="M210 108 L215 364"></path>
-          <path class="countyLine" d="M300 102 L304 380"></path>
-          <path class="countyLine" d="M395 100 L398 388"></path>
-          <path class="countyLine" d="M490 99 L491 392"></path>
-          <path class="countyLine" d="M585 99 L580 386"></path>
-          <path class="countyLine" d="M680 97 L668 380"></path>
-          <path class="countyLine" d="M136 170 L835 171"></path>
-          <path class="countyLine" d="M126 247 L842 245"></path>
-          <path class="countyLine" d="M150 321 L785 322"></path>
-
-          <path class="routeInterstate" d="M540 105 C538 160,538 210,538 260 C538 310,536 345,536 395"></path>
-          <path class="routeInterstate" d="M150 277 C270 275,360 274,520 274 C640 274,720 272,835 272"></path>
-          <path class="routeInterstate" d="M700 166 C676 175,650 187,624 205"></path>
-          <path class="routeInterstate" d="M140 126 C132 175,130 225,128 330"></path>
-          <path class="routeHighway" d="M120 106 C340 106,560 106,840 106"></path>
-          <path class="routeHighway" d="M120 395 C365 394,610 394,840 394"></path>
-
-          <rect class="badge" x="522" y="190" width="34" height="22"></rect>
-          <text class="badgeText" x="531" y="205">I-35</text>
-          <rect class="badge" x="430" y="262" width="34" height="22"></rect>
-          <text class="badgeText" x="439" y="277">I-80</text>
-          <rect class="badge" x="624" y="178" width="42" height="22"></rect>
-          <text class="badgeText" x="631" y="193">I-380</text>
-          <rect class="badge" x="112" y="205" width="38" height="22"></rect>
-          <text class="badgeText" x="120" y="220">I-29</text>
-
-          <text class="stateText" x="366" y="208">IOWA</text>
-
-          <path id="route-Des Moines-Ames" class="cityRoute" d="M442 290 C450 265,458 236,470 210"></path>
-          <path id="route-Ames-Waterloo" class="cityRoute" d="M470 210 C530 190,605 168,690 152"></path>
-          <path id="route-Waterloo-Cedar Falls" class="cityRoute" d="M690 152 C706 150,720 148,736 146"></path>
-          <path id="route-Des Moines-Waterloo" class="cityRoute" d="M442 290 C520 235,606 180,690 152"></path>
-          <path id="route-Ames-Cedar Falls" class="cityRoute" d="M470 210 C565 178,652 156,736 146"></path>
+          <line class="cityRoute" x1="480" y1="300" x2="690" y2="152"></line>
+          <line class="cityRoute" x1="480" y1="300" x2="736" y2="146"></line>
+          <line class="cityRoute" x1="480" y1="300" x2="520" y2="230"></line>
 
           <g class="cityNode" data-city="Des Moines">
-            <circle class="cityPulse" cx="442" cy="290" r="26"></circle>
-            <circle id="node-Des Moines" class="cityCore" cx="442" cy="290" r="13"></circle>
-            <text class="cityLabel" x="388" y="322">Des Moines</text>
-          </g>
-
-          <g class="cityNode" data-city="Ames">
-            <circle class="cityPulse" cx="470" cy="210" r="26"></circle>
-            <circle id="node-Ames" class="cityCore" cx="470" cy="210" r="13"></circle>
-            <text class="cityLabel" x="452" y="182">Ames</text>
+            <circle class="cityPulse" cx="480" cy="300" r="24"></circle>
+            <circle id="node-Des Moines" class="cityCore current" cx="480" cy="300" r="13"></circle>
+            <text class="cityLabel" x="425" y="336">Des Moines</text>
           </g>
 
           <g class="cityNode" data-city="Waterloo">
-            <circle class="cityPulse" cx="690" cy="152" r="26"></circle>
+            <circle class="cityPulse" cx="690" cy="152" r="24"></circle>
             <circle id="node-Waterloo" class="cityCore" cx="690" cy="152" r="13"></circle>
-            <text class="cityLabel" x="655" y="126">Waterloo</text>
+            <text class="cityLabel" x="652" y="126">Waterloo</text>
           </g>
 
           <g class="cityNode" data-city="Cedar Falls">
-            <circle class="cityPulse" cx="736" cy="146" r="26"></circle>
+            <circle class="cityPulse" cx="736" cy="146" r="24"></circle>
             <circle id="node-Cedar Falls" class="cityCore" cx="736" cy="146" r="13"></circle>
-            <text class="cityLabel" x="696" y="116">Cedar Falls</text>
+            <text class="cityLabel" x="690" y="114">Cedar Falls</text>
           </g>
 
-          <circle id="travelDot" class="travelDot" cx="-100" cy="-100" r="8"></circle>
+          <g class="cityNode" data-city="Ames">
+            <circle class="cityPulse" cx="520" cy="230" r="24"></circle>
+            <circle id="node-Ames" class="cityCore" cx="520" cy="230" r="13"></circle>
+            <text class="cityLabel" x="505" y="202">Ames</text>
+          </g>
+
+          <circle id="travelDot" cx="-100" cy="-100" r="8"></circle>
         </svg>
       </div>
 
-      <div id="travelBanner" class="travelBanner"></div>
-      <div id="cityList" class="cityGrid"></div>
-
-      <div class="row">
-        <button id="travelBtn" class="btn">Travel</button>
-        <button id="stayBtn" class="btn btnSecondary">Stay Here</button>
+      <div class="cityGrid">
+        <button class="cityBtn active current" data-city="Des Moines">Des Moines</button>
+        <button class="cityBtn" data-city="Waterloo">Waterloo</button>
+        <button class="cityBtn" data-city="Cedar Falls">Cedar Falls</button>
+        <button class="cityBtn" data-city="Ames">Ames</button>
       </div>
-<hr>
+    </section>
 
+    <section class="panel">
+      <h2>Actions</h2>
+      <div class="sub">Buy low. Move smart. Survive pressure. Hit the goal by Day 30.</div>
 
-      
-    </div>
-  </div>
+      <div class="actionsPanel">
+        <div class="actionRow2">
+          <button class="actionBtn" id="buyBtn">Buy 1 →</button>
+          <button class="actionBtn" id="sellBtn">← Sell 1</button>
+        </div>
 
-  <div id="tab-market" class="tabPanel">
-    <div class="panel">
-      <h2>MARKET + HEARSAY</h2>
-      <div class="small" id="selectedCityInfo"></div>
+        <div class="actionRow2">
+          <button class="actionBtn secondary" id="storeBtn">Store 1</button>
+          <button class="actionBtn secondary" id="takeBtn">Take 1</button>
+        </div>
 
-      <h3 style="margin-top:10px">Market</h3>
-      <div id="marketRows" class="scroll"></div>
+        <div class="divider"></div>
 
-      <h3 style="margin-top:14px">Hearsay</h3>
-      <div id="hearsayRows" class="scroll"></div>
-    </div>
-  </div>
-<div class="panel">
-  <h3>📦 Storage</h3>
+        <div class="actionRow2">
+          <button class="actionBtn" id="travelBtn">Travel</button>
+          <button class="actionBtn secondary" id="stayBtn">Stay</button>
+        </div>
 
-  <div id="storageDisplay" class="small">Empty</div>
+        <div class="actionRow2">
+          <button class="actionBtn heal" id="hospitalBtn">Hospital</button>
+          <button class="actionBtn danger" id="fightBtn">Fight Back</button>
+        </div>
 
-  <div class="row">
-    <button class="btn" onclick="storeItem(selectedItem(), 1)">Store 1</button>
-    <button class="btn" onclick="takeFromStorage(selectedItem(), 1)">Take 1</button>
-  </div>
-</div>
-  <div id="tab-inventory" class="tabPanel">
-    <div class="panel">
-      <h2>INVENTORY</h2>
-      <div id="inventoryRows" class="scroll"></div>
-    </div>
+        <div class="divider"></div>
 
-    <div class="panel" style="margin-top:10px">
-      <h2>ROAD CHOICES</h2>
-      <div id="walletRows" class="scroll"></div>
-    </div>
-  </div>
+        <div class="actionRow2">
+          <button class="actionBtn" id="borrow500Btn">Borrow 500</button>
+          <button class="actionBtn secondary" id="deposit500Btn">Deposit 500</button>
+        </div>
 
-  <div id="tab-log" class="tabPanel">
-    <div class="panel">
-      <h2>CITY EVENTS</h2>
-      <div id="eventRows" class="scroll"></div>
-    </div>
+        <div class="actionRow2">
+          <button class="actionBtn secondary" id="withdraw500Btn">Withdraw 500</button>
+          <button class="actionBtn danger" id="repay500Btn">Repay 500</button>
+        </div>
 
-    <div class="panel" style="margin-top:10px">
-      <h2>EVENT LOG</h2>
-      <div id="log" class="log"></div>
-    </div>
+        <div class="divider"></div>
+
+        <div class="actionRow2">
+          <button class="actionBtn secondary" id="saveBtn">Save</button>
+          <button class="actionBtn secondary" id="loadBtn">Load</button>
+        </div>
+
+        <div class="actionRow2">
+          <button class="actionBtn danger" id="resetBtn">Reset</button>
+          <button class="actionBtn secondary" id="muteBtn">Sound: On</button>
+        </div>
+      </div>
+
+      <div class="footerNote">
+        Goal: Reach <strong>$20,000 net worth</strong> by <strong>Day 30</strong>. Net worth = cash + bank + inventory value - debt.
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Inventory</h2>
+      <div class="sub" id="inventoryCap">Capacity 0 / 12</div>
+      <div id="inventoryRows" class="smallList"></div>
+
+      <div class="divider"></div>
+
+      <h2>Storage</h2>
+      <div class="sub">Current city stash.</div>
+      <div id="storageRows" class="smallList"></div>
+
+      <div class="divider"></div>
+
+      <h2>Health</h2>
+      <div class="sub">Fights, mob pressure, police trouble, and street events can hurt you.</div>
+      <div class="healthBarWrap"><div class="healthBar" id="healthBar"></div></div>
+      <div class="footerNote" id="healthNote">Solid shape.</div>
+
+      <div class="divider"></div>
+
+      <h2>Street Feed</h2>
+      <div class="sub">Recent action.</div>
+      <div id="eventRows" class="feed"></div>
+    </section>
   </div>
 </div>
 
 <script>
-const cities = ["Des Moines","Waterloo","Cedar Falls","Ames"];
-const items = ["Beef","Chicken","Seafood","Rare Sneakers","Electronics"];
-const proteinItems = ["Beef","Chicken","Seafood"];
+const GOODS = [
+  { name: "Sneakers", icon: "👟", base: 140 },
+  { name: "Mixtapes", icon: "📼", base: 55 },
+  { name: "Jackets", icon: "🧥", base: 120 },
+  { name: "Headphones", icon: "🎧", base: 180 },
+  { name: "Hot Sauce", icon: "🌶️", base: 65 },
+  { name: "Vintage Tees", icon: "👕", base: 95 }
+];
 
-const basePrices = {
-  "Des Moines": { Beef:120, Chicken:70, Seafood:160, "Rare Sneakers":300, Electronics:420 },
-  "Waterloo": { Beef:95, Chicken:60, Seafood:145, "Rare Sneakers":250, Electronics:380 },
-  "Cedar Falls": { Beef:130, Chicken:75, Seafood:180, "Rare Sneakers":340, Electronics:460 },
-  "Ames": { Beef:125, Chicken:72, Seafood:170, "Rare Sneakers":320, Electronics:440 }
+const CITY_RULES = {
+  "Des Moines": { Sneakers: 1.0, Mixtapes: 1.0, Jackets: 1.1, Headphones: 1.0, "Hot Sauce": 0.9, "Vintage Tees": 1.0 },
+  "Waterloo":   { Sneakers: 0.9, Mixtapes: 1.1, Jackets: 1.0, Headphones: 1.25, "Hot Sauce": 1.0, "Vintage Tees": 0.95 },
+  "Cedar Falls":{ Sneakers: 1.1, Mixtapes: 1.3, Jackets: 0.95, Headphones: 1.0, "Hot Sauce": 0.95, "Vintage Tees": 1.15 },
+  "Ames":       { Sneakers: 1.15, Mixtapes: 0.95, Jackets: 0.9, Headphones: 1.05, "Hot Sauce": 1.25, "Vintage Tees": 1.2 }
 };
 
-const hearsayPool = {
+const CITY_POS = {
+  "Des Moines": { x: 480, y: 300 },
+  "Waterloo": { x: 690, y: 152 },
+  "Cedar Falls": { x: 736, y: 146 },
+  "Ames": { x: 520, y: 230 }
+};
+
+const CITY_UPDATES = {
   "Des Moines": [
-    "Beef buyers look nervous here.",
-    "Electronics may jump tomorrow.",
-    "Chicken could soften overnight."
+    "Downtown demand is climbing.",
+    "Middle Iowa buyers are active tonight.",
+    "Steady movement, but margins feel tight."
   ],
   "Waterloo": [
-    "Rare sneakers may get scarce.",
-    "Seafood chatter sounds bullish.",
-    "Some sellers are dumping beef."
+    "Warehouse supply just hit the streets.",
+    "Tech buyers are watching the market.",
+    "Fast flips feel possible here."
   ],
   "Cedar Falls": [
-    "Electronics talk is getting loud.",
-    "Chicken demand may jump soon.",
-    "Rare sneakers may cool off."
+    "Campus buyers are circling.",
+    "Retro goods are moving tonight.",
+    "The college crowd is spending."
   ],
   "Ames": [
-    "Seafood rumors are spreading.",
-    "Beef could swing hard by morning.",
-    "Electronics buyers are circling."
+    "Student money is moving tonight.",
+    "Game day energy is boosting demand.",
+    "Rumors say prices may jump by morning."
   ]
 };
 
 const state = {
   day: 1,
+  maxDay: 30,
+  goal: 20000,
   cash: 2500,
-bank: 0,
-debt: 0,
-debtDueDay: 0,  
+  bank: 0,
+  debt: 0,
+  health: 100,
   currentCity: "Des Moines",
   selectedCity: "Des Moines",
-  isTraveling: false,
+  selectedGood: "Sneakers",
+  market: {},
   inventory: {},
-  prices: {},
-  trends: {},
-  cityEvents: {},
-  empireChosen: false,
-  empireType: "",
-  gameWon: false,
-  walletChoiceActive: false,
-  pendingWallet: null,
-  musicOn: true
+  cityStorage: {},
+  logLines: ["Welcome to Market Run Iowa."],
+  muted: false,
+  capacity: 12,
+  pendingFight: false,
+  gameOver: false
 };
-
-items.forEach(item => {
-  state.inventory[item] = { qty: 0, avg: 0 };
-});
 
 let audioCtx = null;
 let musicTimer = null;
-let leadStep = 0;
-let currentSlide = 0;
-let slides = [];
-let dots = [];
-
-function fmt(n){ return "$" + Math.round(n).toLocaleString(); }
-function randomInt(min, max){ return Math.floor(Math.random() * (max - min + 1)) + min; }
-
-function trendSymbol(trend){
-  if (trend === "Rising") return `<span class="arrowUp">▲</span>`;
-  if (trend === "Falling") return `<span class="arrowDown">▼</span>`;
-  return `<span class="arrowFlat">■</span>`;
-}
-
-function initTutorial(){
-  slides = Array.from(document.querySelectorAll(".slide"));
-  const dotsWrap = document.getElementById("dots");
-  dotsWrap.innerHTML = "";
-  slides.forEach((_, i) => {
-    const d = document.createElement("span");
-    d.className = "dot" + (i === 0 ? " active" : "");
-    dotsWrap.appendChild(d);
-  });
-  dots = Array.from(document.querySelectorAll(".dot"));
-  showSlide(0);
-
-  const slidesWrap = document.getElementById("slides");
-  let startX = 0;
-  slidesWrap.addEventListener("touchstart", e => {
-    initAudio();
-    startX = e.touches[0].clientX;
-  });
-  slidesWrap.addEventListener("touchend", e => {
-    const endX = e.changedTouches[0].clientX;
-    if (startX - endX > 50) nextSlide();
-    if (endX - startX > 50) prevSlide();
-  });
-}
-
-function showSlide(index){
-  slides.forEach((slide, i) => slide.classList.toggle("active", i === index));
-  dots.forEach((dot, i) => dot.classList.toggle("active", i === index));
-  currentSlide = index;
-  document.getElementById("prevSlideBtn").style.visibility = currentSlide === 0 ? "hidden" : "visible";
-  const last = currentSlide === slides.length - 1;
-  document.getElementById("nextSlideBtn").classList.toggle("hidden", last);
-  document.getElementById("startGameBtn").classList.toggle("hidden", !last);
-}
-function nextSlide(){ if (currentSlide < slides.length - 1) showSlide(currentSlide + 1); }
-function prevSlide(){ if (currentSlide > 0) showSlide(currentSlide - 1); }
 
 function initAudio(){
-  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-  if (!audioCtx) audioCtx = new AudioContextClass();
-  if (audioCtx.state === "suspended") audioCtx.resume();
-
-  const buffer = audioCtx.createBuffer(1, 1, 22050);
-  const source = audioCtx.createBufferSource();
-  source.buffer = buffer;
-  source.connect(audioCtx.destination);
-  source.start(0);
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
 }
 
-function beep(freq=440, duration=0.12, type="square", volume=0.08){
-  if (state.musicOn === false || !audioCtx) return;
+function tone(freq, duration, type="square", volume=0.04, when=0){
+  if (state.muted) return;
+  initAudio();
+  const now = audioCtx.currentTime + when;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
   osc.type = type;
-  osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-  gain.gain.setValueAtTime(volume, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-  osc.start();
-  osc.stop(audioCtx.currentTime + duration);
+  osc.frequency.setValueAtTime(freq, now);
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(volume, now + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+  osc.connect(gain).connect(audioCtx.destination);
+  osc.start(now);
+  osc.stop(now + duration + 0.04);
 }
 
-function playClick(){
-  if (!audioCtx || state.musicOn === false) return;
-  const now = audioCtx.currentTime;
-
-  const osc1 = audioCtx.createOscillator();
-  const gain1 = audioCtx.createGain();
-  osc1.type = "square";
-  osc1.frequency.setValueAtTime(880, now);
-  gain1.gain.setValueAtTime(0.09, now);
-  gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
-  osc1.connect(gain1);
-  gain1.connect(audioCtx.destination);
-  osc1.start(now);
-  osc1.stop(now + 0.06);
-
-  const osc2 = audioCtx.createOscillator();
-  const gain2 = audioCtx.createGain();
-  osc2.type = "square";
-  osc2.frequency.setValueAtTime(660, now + 0.02);
-  gain2.gain.setValueAtTime(0.05, now + 0.02);
-  gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
-  osc2.connect(gain2);
-  gain2.connect(audioCtx.destination);
-  osc2.start(now + 0.02);
-  osc2.stop(now + 0.08);
-}
+function soundBuy(){ tone(220, 0.08, "square", 0.04); tone(330, 0.11, "triangle", 0.03, 0.05); }
+function soundSell(){ tone(440, 0.08, "triangle", 0.04); tone(660, 0.12, "triangle", 0.03, 0.05); }
+function soundStore(){ tone(180, 0.1, "square", 0.04); }
+function soundTake(){ tone(300, 0.1, "triangle", 0.04); }
+function soundTravel(){ tone(120, 0.2, "sawtooth", 0.03); tone(200, 0.25, "triangle", 0.03, 0.09); }
+function soundArrival(){ tone(520, 0.08, "triangle", 0.04); tone(760, 0.15, "triangle", 0.03, 0.06); }
+function soundError(){ tone(140, 0.12, "square", 0.03); tone(90, 0.18, "square", 0.03, 0.1); }
+function soundHeal(){ tone(330, 0.08, "triangle", 0.03); tone(494, 0.12, "triangle", 0.03, 0.05); tone(660, 0.14, "triangle", 0.03, 0.1); }
+function soundFight(){ tone(170,0.08,"square",0.04); tone(120,0.1,"sawtooth",0.03,0.06); tone(240,0.08,"square",0.03,0.12); }
+function soundClick(){ tone(520, 0.05, "triangle", 0.02); }
 
 function startMusic(){
-  if (!audioCtx || musicTimer || state.musicOn === false) return;
-  const lead = [523,659,784,659,523,659,880,784];
-  const bass = [131,147,165,147,131,147,196,165];
-
+  if (musicTimer) clearInterval(musicTimer);
+  if (state.muted) return;
+  initAudio();
+  const pattern = [
+    [110, "square"], [165, "triangle"], [147, "square"], [196, "triangle"],
+    [123, "square"], [185, "triangle"], [165, "square"], [220, "triangle"]
+  ];
+  let i = 0;
   musicTimer = setInterval(() => {
-    if (!audioCtx || state.musicOn === false) return;
-    const i = leadStep % lead.length;
-    beep(lead[i], 0.11, "square", 0.05);
-    setTimeout(() => beep(bass[i], 0.14, "triangle", 0.035), 40);
-    leadStep++;
-  }, 220);
+    if (state.muted || !audioCtx) return;
+    const note = pattern[i % pattern.length];
+    tone(note[0], 0.12, note[1], 0.012, 0);
+    if (i % 4 === 2) tone(note[0] / 2, 0.1, "sawtooth", 0.008, 0.02);
+    i++;
+  }, 420);
 }
 
 function stopMusic(){
-  if (musicTimer) {
-    clearInterval(musicTimer);
-    musicTimer = null;
-  }
+  if (musicTimer) clearInterval(musicTimer);
+  musicTimer = null;
 }
 
-function toggleMute(){
-  initAudio();
-  playClick();
-  state.musicOn = !state.musicOn;
-  document.getElementById("muteBtn").textContent = state.musicOn ? "Mute: Off" : "Mute: On";
-  if (state.musicOn) startMusic();
-  else stopMusic();
-  saveGameAuto();
+function fmt(n){
+  return `$${Math.round(n).toLocaleString()}`;
 }
 
-function startGame(){
-  initAudio();
-  startMusic();
-  document.getElementById("tutorialOverlay").classList.add("hidden");
+function popup(text){
+  const el = document.createElement("div");
+  el.className = "popup";
+  el.textContent = text;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 780);
 }
 
-function showTab(id, btn){
-  document.querySelectorAll(".tabPanel").forEach(tab => tab.classList.remove("active"));
-  document.querySelectorAll(".tabBtn").forEach(tab => tab.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-  btn.classList.add("active");
-  playClick();
+function setEventBar(text){
+  document.getElementById("eventBar").textContent = text;
 }
 
-function log(msg, cls=""){
-  const div = document.createElement("div");
-  div.className = "entry " + cls;
-  div.innerHTML = msg;
-  document.getElementById("log").prepend(div);
+function logLine(text){
+  state.logLines.unshift(text);
+  state.logLines = state.logLines.slice(0, 14);
+  setEventBar(text);
+  renderFeed();
 }
 
-function initMarkets(){
-  cities.forEach(city => {
-    state.prices[city] = {};
-    state.trends[city] = {};
-    items.forEach(item => {
-      state.prices[city][item] = basePrices[city][item];
-      state.trends[city][item] = "Steady";
-    });
-  });
-  generateCityEvents();
-  generateWalletSituation(false);
+function flashActiveRow(){
+  const row = document.querySelector(".rowItem.active");
+  if (!row) return;
+  row.classList.add("flash");
+  setTimeout(() => row.classList.remove("flash"), 180);
 }
 
-function netWorth(){
-  let total = state.cash;
-  items.forEach(item => {
-    total += state.inventory[item].qty * state.prices[state.currentCity][item];
-  });
-  return total;
+function randomFrom(arr){
+  return arr[Math.floor(Math.random() * arr.length)];
 }
 
-function generateCityEvents(){
-  state.cityEvents = {};
-  cities.forEach(city => state.cityEvents[city] = []);
-
-  const outbreakCity = cities[randomInt(0, cities.length - 1)];
-  const outbreakItem = proteinItems[randomInt(0, proteinItems.length - 1)];
-  state.cityEvents[outbreakCity].push({
-    type: "outbreak",
-    item: outbreakItem,
-    text: `Ecological outbreak hit ${outbreakItem.toLowerCase()} in ${outbreakCity}. Supply tightened hard.`
-  });
-
-  const sneakerCity = cities[randomInt(0, cities.length - 1)];
-  state.cityEvents[sneakerCity].push({
-    type: "sneaker",
-    item: "Rare Sneakers",
-    text: `Rare sneakers landed in ${sneakerCity}. Pairs got taken fast and demand stayed high.`
-  });
-
-  const techCity = cities[randomInt(0, cities.length - 1)];
-  state.cityEvents[techCity].push({
-    type: "electronics",
-    item: "Electronics",
-    text: `Electronics shortage rumor spread through ${techCity}. Buyers started paying up.`
-  });
-
-  const proteinCrashCity = cities[randomInt(0, cities.length - 1)];
-  const proteinCrashItem = proteinItems[randomInt(0, proteinItems.length - 1)];
-  state.cityEvents[proteinCrashCity].push({
-    type: "oversupply",
-    item: proteinCrashItem,
-    text: `${proteinCrashItem} oversupply flooded ${proteinCrashCity}. Sellers started undercutting each other.`
-  });
-
-  applyCityEventsToPrices();
+function getTotalInventoryQty(){
+  return Object.values(state.inventory).reduce((sum, item) => sum + item.qty, 0);
 }
 
-function applyCityEventsToPrices(){
-  cities.forEach(city => {
-    items.forEach(item => {
-      const oldPrice = state.prices[city][item];
-      const base = basePrices[city][item];
-      const swing = randomInt(-25, 25);
-      const pull = Math.round((base - oldPrice) * 0.15);
-      const next = Math.max(20, oldPrice + swing + pull);
-      state.trends[city][item] = next > oldPrice ? "Rising" : next < oldPrice ? "Falling" : "Steady";
-      state.prices[city][item] = next;
-    });
-  });
+function getStorage(city){
+  if (!state.cityStorage[city]) state.cityStorage[city] = {};
+  return state.cityStorage[city];
+}
 
-  cities.forEach(city => {
-    state.cityEvents[city].forEach(ev => {
-      if (ev.type === "outbreak") {
-        state.prices[city][ev.item] += randomInt(65, 140);
-        state.trends[city][ev.item] = "Rising";
-      }
-      if (ev.type === "sneaker") {
-        state.prices[city]["Rare Sneakers"] += randomInt(80, 170);
-        state.trends[city]["Rare Sneakers"] = "Rising";
-      }
-      if (ev.type === "electronics") {
-        state.prices[city]["Electronics"] += randomInt(60, 130);
-        state.trends[city]["Electronics"] = "Rising";
-      }
-      if (ev.type === "oversupply") {
-        state.prices[city][ev.item] = Math.max(20, state.prices[city][ev.item] - randomInt(40, 95));
-        state.trends[city][ev.item] = "Falling";
-      }
-    });
+function generateMarket(city){
+  state.market = {};
+  GOODS.forEach(good => {
+    const cityMult = CITY_RULES[city][good.name] || 1;
+    const swing = 0.72 + Math.random() * 0.75;
+    let price = good.base * cityMult * swing;
+    if (Math.random() < 0.12) price *= 1.8;
+    if (Math.random() < 0.10) price *= 0.58;
+    state.market[good.name] = Math.max(20, Math.round(price));
   });
 }
 
-function generateWalletSituation(force){
-  state.walletChoiceActive = force || Math.random() < 0.35;
-  state.pendingWallet = state.walletChoiceActive ? { cash: randomInt(80, 240) } : null;
+function getTrendClass(price, base){
+  if (price > base * 1.1) return "up";
+  if (price < base * 0.9) return "down";
+  return "flat";
+}
+function getTrendArrow(price, base){
+  if (price > base * 1.1) return "▲";
+  if (price < base * 0.9) return "▼";
+  return "•";
 }
 
-function applyEmpireDailyEffects(){
-  if (state.empireType === "store") {
-    const daily = 1500;
-    state.cash += daily;
-    log(`🏪 Store income hit today: +${fmt(daily)}.`, "good");
-  }
-  if (state.empireType === "fleet") {
-    const daily = randomInt(1000, 2800);
-    state.cash += daily;
-    log(`🚚 Fleet routes came in: +${fmt(daily)}.`, "good");
-  }
+function getInventoryValue(){
+  return Object.entries(state.inventory).reduce((sum, [name, data]) => {
+    const price = state.market[name] || data.avg || 0;
+    return sum + price * data.qty;
+  }, 0);
 }
 
-function nextDay(){
-  state.day += 1;
-  generateCityEvents();
-  generateWalletSituation(false);
-  applyEmpireDailyEffects();
+function getNetWorth(){
+  return state.cash + state.bank + getInventoryValue() - state.debt;
 }
 
-function checkMilestones(){
-  const worth = netWorth();
-  if (worth >= 1000000 && !state.empireChosen) {
-    document.getElementById("choiceOverlay").classList.remove("hidden");
-  }
-  if (worth >= 100000000 && !state.gameWon) {
-    state.gameWon = true;
-    document.getElementById("winOverlay").classList.remove("hidden");
-  }
+function clampHealth(){
+  state.health = Math.max(0, Math.min(100, state.health));
 }
 
-function chooseEmpire(type){
-  playClick();
-  state.empireChosen = true;
-  state.empireType = type;
-  document.getElementById("choiceOverlay").classList.add("hidden");
-  log(type === "store" ? "🏪 You opened a store." : "🚚 You built a fleet.", "good");
-  saveGameAuto();
-  renderAll();
+function applyDamage(amount, source){
+  state.health -= amount;
+  clampHealth();
+  soundFight();
+  logLine(`⚠️ ${source}. Health -${amount}.`);
+  popup(`-${amount} health`);
+  checkGameState();
+}
+
+function addCash(amount, text){
+  state.cash += amount;
+  logLine(text);
+  popup(`+${fmt(amount)}`);
+}
+
+function loseCash(amount, text){
+  const hit = Math.min(state.cash, amount);
+  state.cash -= hit;
+  logLine(text.replace("{amt}", fmt(hit)));
+  popup(`-${fmt(hit)}`);
 }
 
 function renderStats(){
   document.getElementById("dayStat").textContent = state.day;
   document.getElementById("cashStat").textContent = fmt(state.cash);
+  document.getElementById("bankStat").textContent = fmt(state.bank);
+  document.getElementById("debtStat").textContent = fmt(state.debt);
+  document.getElementById("healthStat").textContent = `${state.health}`;
   document.getElementById("cityStat").textContent = state.currentCity;
-  document.getElementById("selectedStat").textContent = state.selectedCity;
-  document.getElementById("worthStat").textContent = fmt(netWorth());
-  document.getElementById("empireStat").textContent = state.empireType ? state.empireType.toUpperCase() : "None";
- document.getElementById("bankStat").textContent = fmt(state.bank || 0);
-document.getElementById("debtStat").textContent = fmt(state.debt || 0); 
-}
+  document.getElementById("goalStat").textContent = `${fmt(getNetWorth())} / ${fmt(state.goal)}`;
 
-function updateMapState(){
-  cities.forEach(city => {
-    const node = document.getElementById("node-" + city);
-    node.classList.toggle("current", city === state.currentCity);
-    node.classList.toggle("selected", city === state.selectedCity && city !== state.currentCity);
-  });
-}
+  const marketSub = state.selectedCity === state.currentCity
+    ? `Street prices in ${state.currentCity}. Selected item: ${state.selectedGood}`
+    : `Current market: ${state.currentCity}. Destination selected: ${state.selectedCity}.`;
 
-function renderCityButtons(){
-  const wrap = document.getElementById("cityList");
-  wrap.innerHTML = "";
-  cities.forEach(city => {
-    const btn = document.createElement("button");
-    btn.className = "btn btnSecondary cityBtn" + (city === state.selectedCity ? " active" : "");
-    btn.textContent = city + (city === state.currentCity ? " • CURRENT" : "");
-    btn.onclick = () => {
-      if (state.isTraveling) return;
-      initAudio();
-      playClick();
-      state.selectedCity = city;
-      renderAll();
-      log(`Selected <strong>${city}</strong>.`);
-    };
-    wrap.appendChild(btn);
-  });
-}
+  document.getElementById("marketSub").textContent = marketSub;
+  document.getElementById("inventoryCap").textContent = `Capacity ${getTotalInventoryQty()} / ${state.capacity}`;
 
-function renderTravelButton(){
-  const btn = document.getElementById("travelBtn");
-  if (state.isTraveling) {
-    btn.textContent = "Traveling...";
-    btn.disabled = true;
-  } else if (state.selectedCity === state.currentCity) {
-    btn.textContent = "Already Here";
-    btn.disabled = true;
-  } else {
-    btn.textContent = "Travel to " + state.selectedCity;
-    btn.disabled = false;
+  const healthBar = document.getElementById("healthBar");
+  healthBar.style.width = `${state.health}%`;
+  healthBar.className = "healthBar";
+  let note = "Solid shape.";
+  if (state.health <= 50) {
+    healthBar.classList.add("healthLow");
+    note = "You’re getting worn down.";
   }
-}
+  if (state.health <= 25) {
+    healthBar.classList.remove("healthLow");
+    healthBar.classList.add("healthDanger");
+    note = "Health is dangerous. Hospital recommended.";
+  }
+  document.getElementById("healthNote").textContent = note;
 
-function renderSelectedCityInfo(){
-  const city = state.selectedCity;
-  const events = state.cityEvents[city] || [];
-  const text = events.length ? events.map(e => e.text).join(" ") : `No major rumor is dominating ${city} today.`;
-  document.getElementById("selectedCityInfo").innerHTML =
-    `<strong>${city}</strong> <span class="pill">Scout before you move</span><br>${text}`;
+  document.getElementById("muteBtn").textContent = state.muted ? "Sound: Off" : "Sound: On";
+
+  const notHere = state.selectedCity !== state.currentCity || state.gameOver;
+  document.getElementById("buyBtn").disabled = notHere;
+  document.getElementById("sellBtn").disabled = notHere;
+  document.getElementById("storeBtn").disabled = notHere;
+  document.getElementById("takeBtn").disabled = notHere;
+  document.getElementById("travelBtn").disabled = state.gameOver;
+  document.getElementById("stayBtn").disabled = state.gameOver;
+  document.getElementById("hospitalBtn").disabled = state.gameOver;
+  document.getElementById("fightBtn").disabled = !state.pendingFight || state.gameOver;
 }
 
 function renderMarket(){
-  const wrap = document.getElementById("marketRows");
-  wrap.innerHTML = "";
-  const city = state.selectedCity;
+  const box = document.getElementById("marketRows");
+  const rows = [`<div class="rowHead"><div>Item</div><div>Trend</div><div>Price</div></div>`];
 
-  items.forEach(item => {
-    const price = state.prices[city][item];
-    const trend = state.trends[city][item];
-    const canTrade = city === state.currentCity;
-    const cls = trend === "Rising" ? "good" : trend === "Falling" ? "bad" : "";
-    const row = document.createElement("div");
-    row.className = "marketRow";
-    row.innerHTML = `
-      <div style="flex:1">
-        <strong>${item}</strong><br>
-        <span class="small">${city} • ${fmt(price)} • ${trendSymbol(trend)} <span class="${cls}">${trend}</span></span>
+  GOODS.forEach(good => {
+    const price = state.market[good.name];
+    const trendClass = getTrendClass(price, good.base);
+    const active = state.selectedGood === good.name ? " active" : "";
+    rows.push(`
+      <div class="rowItem${active}" data-good="${good.name}">
+        <div class="itemName">${good.icon} ${good.name}</div>
+        <div class="${trendClass}">${getTrendArrow(price, good.base)}</div>
+        <div>${fmt(price)}</div>
       </div>
-      <div class="actions">
-        ${canTrade ? `<button class="btn btnSecondary" data-buy="${item}">Buy</button>` : ``}
-        ${canTrade ? `<button class="btn btnSecondary" data-sell="${item}">Sell</button>` : ``}
-      </div>
-    `;
-    wrap.appendChild(row);
+    `);
   });
 
-  document.querySelectorAll("[data-buy]").forEach(btn => {
-    btn.onclick = () => buyItem(btn.dataset.buy);
-  });
-  document.querySelectorAll("[data-sell]").forEach(btn => {
-    btn.onclick = () => sellItem(btn.dataset.sell);
-  });
-}
-
-function renderHearsay(){
-  const wrap = document.getElementById("hearsayRows");
-  wrap.innerHTML = "";
-  cities.forEach(city => {
-    const rumors = hearsayPool[city];
-    const rumor = rumors[(state.day + city.length) % rumors.length];
-    const row = document.createElement("div");
-    row.className = "hearsayRow";
-    row.innerHTML = `<div><strong>${city}</strong><br><span class="small">${rumor}</span></div>`;
-    wrap.appendChild(row);
-  });
-}
-
-function renderInventory(){
-  const wrap = document.getElementById("inventoryRows");
-  wrap.innerHTML = "";
-  items.forEach(item => {
-    const inv = state.inventory[item];
-    const localPrice = state.prices[state.currentCity][item];
-    const pnl = inv.qty > 0 ? (localPrice - inv.avg) * inv.qty : 0;
-    const cls = pnl > 0 ? "good" : pnl < 0 ? "bad" : "";
-    const row = document.createElement("div");
-    row.className = "invRow";
-    row.innerHTML = `
-      <div style="flex:1">
-        <strong>${item}</strong><br>
-        <span class="small">Qty: ${inv.qty} • Avg: ${inv.qty ? fmt(inv.avg) : "$0"}</span>
-      </div>
-      <div class="${cls}">${inv.qty ? (pnl >= 0 ? "+" : "-") + fmt(Math.abs(pnl)) : "$0"}</div>
-    `;
-    wrap.appendChild(row);
-  });
-}
-
-function renderEvents(){
-  const wrap = document.getElementById("eventRows");
-  wrap.innerHTML = "";
-  cities.forEach(city => {
-    const evs = state.cityEvents[city] || [];
-    const row = document.createElement("div");
-    row.className = "eventRow";
-    row.innerHTML = `<div><strong>${city}</strong><br><span class="small">${evs.length ? evs.map(e => e.text).join(" ") : "No major event."}</span></div>`;
-    wrap.appendChild(row);
-  });
-}
-
-function renderWalletChoices(){
-  const wrap = document.getElementById("walletRows");
-  wrap.innerHTML = "";
-
-  if (!state.walletChoiceActive || !state.pendingWallet) {
-    wrap.innerHTML = `<div class="small">No special road choice waiting right now.</div>`;
-    return;
-  }
-
-  const row = document.createElement("div");
-  row.className = "walletRow";
-  row.innerHTML = `
-    <div style="flex:1">
-      <strong>Found Wallet</strong><br>
-      <span class="small">Cash inside: ${fmt(state.pendingWallet.cash)}</span>
-    </div>
-    <div class="actions">
-      <button class="btn btnSecondary" onclick="resolveWallet('keep')">Keep</button>
-      <button class="btn btnSecondary" onclick="resolveWallet('owner')">Return</button>
-      <button class="btn btnSecondary" onclick="resolveWallet('authorities')">Turn In</button>
-    </div>
-  `;
-  wrap.appendChild(row);
-}
-
-function renderAll(){
-  renderStats();
-  renderCityButtons();
-  updateMapState();
-  renderTravelButton();
-  renderSelectedCityInfo();
-  renderMarket();
-  renderHearsay();
-  renderInventory();
-  renderEvents();
-  renderWalletChoices();
-}
-
-function buyItem(item){
-  initAudio();
-  playClick();
-  const price = state.prices[state.currentCity][item];
-  if (state.cash < price) {
-    log(`Not enough cash to buy <strong>${item}</strong>.`, "bad");
-    return;
-  }
-  const inv = state.inventory[item];
-  const totalBefore = inv.avg * inv.qty;
-  inv.qty += 1;
-  inv.avg = (totalBefore + price) / inv.qty;
-  state.cash -= price;
-  beep(500, 0.06);
-  saveGameAuto();
-  renderAll();
-  checkMilestones();
-  log(`Bought 1 <strong>${item}</strong> for ${fmt(price)}.`, "good");
-}
-
-function sellItem(item){
-  initAudio();
-  playClick();
-  const inv = state.inventory[item];
-  if (inv.qty <= 0) {
-    log(`No <strong>${item}</strong> to sell.`, "bad");
-    return;
-  }
-  const salePrice = state.prices[state.currentCity][item];
-  const profit = salePrice - inv.avg;
-  state.cash += salePrice;
-  inv.qty -= 1;
-  if (inv.qty === 0) inv.avg = 0;
-  beep(profit >= 0 ? 700 : 220, 0.08);
-  saveGameAuto();
-  renderAll();
-  checkMilestones();
-  log(
-    profit >= 0
-      ? `Sold 1 <strong>${item}</strong> for ${fmt(salePrice)}. Profit ${fmt(profit)}.`
-      : `Sold 1 <strong>${item}</strong> for ${fmt(salePrice)}. Loss ${fmt(Math.abs(profit))}.`,
-    profit >= 0 ? "good" : "bad"
-  );
-}
-
-function resolveWallet(choice){
-  initAudio();
-  playClick();
-  if (!state.walletChoiceActive || !state.pendingWallet) return;
-  const cash = state.pendingWallet.cash;
-  if (choice === "keep") {
-    state.cash += cash;
-    showMoneyPop(cash);
-    log(`👛 Kept the wallet: +${fmt(cash)}.`, "bad");
-  } else if (choice === "owner") {
-    const reward = Math.round(cash * 0.55);
-    state.cash += reward;
-    showMoneyPop(reward);
-    log(`🤝 Returned wallet for reward: +${fmt(reward)}.`, "good");
-  } else {
-    const reward = Math.round(cash * 0.25);
-    state.cash += reward;
-    showMoneyPop(reward);
-    log(`🏛️ Turned wallet in: +${fmt(reward)}.`, "good");
-  }
-  state.walletChoiceActive = false;
-  state.pendingWallet = null;
-  saveGameAuto();
-  renderAll();
-  checkMilestones();
-}
-
-function routeId(a, b){
-  const tryA = document.getElementById(`route-${a}-${b}`);
-  const tryB = document.getElementById(`route-${b}-${a}`);
-  return tryA ? `route-${a}-${b}` : tryB ? `route-${b}-${a}` : null;
-}
-
-function randomTravelEvent(){
-  const fleetRisk = state.empireType === "fleet" ? 0.14 : 0;
-  const roll = Math.random();
-
-  if (roll < 0.18 + fleetRisk) {
-    const cost = randomInt(120, 340);
-    state.cash = Math.max(0, state.cash - cost);
-    log(`🔧 Car broke down. Repairs cost ${fmt(cost)}.`, "bad");
-    return;
-  }
-  if (roll < 0.35 + fleetRisk) {
-    const loss = randomInt(100, 260);
-    state.cash = Math.max(0, state.cash - loss);
-    log(`💀 Hit on the road. Lost ${fmt(loss)}.`, "bad");
-    return;
-  }
-  if (roll < 0.58) {
-    const gain = randomInt(90, 260);
-    state.cash += gain;
-    log(`🔥 Lucky break. Gained ${fmt(gain)}.`, "good");
-    return;
-  }
-  log(`😐 Quiet road into <strong>${state.currentCity}</strong>.`);
-}
-
-function animateTravel(fromCity, toCity){
-  return new Promise(resolve => {
-    const dot = document.getElementById("travelDot");
-    const banner = document.getElementById("travelBanner");
-    const id = routeId(fromCity, toCity);
-    const path = id ? document.getElementById(id) : null;
-
-    banner.style.display = "block";
-    banner.textContent = `Traveling from ${fromCity} to ${toCity}...`;
-
-    if (!path) {
-      banner.style.display = "none";
-      resolve();
-      return;
-    }
-
-    const length = path.getTotalLength();
-    let startTime = null;
-    const duration = 1300;
-
-    function frame(ts){
-      if (!startTime) startTime = ts;
-      const progress = Math.min((ts - startTime) / duration, 1);
-      const point = path.getPointAtLength(length * progress);
-      dot.setAttribute("cx", point.x);
-      dot.setAttribute("cy", point.y);
-
-      if (progress < 1) requestAnimationFrame(frame);
-      else setTimeout(() => {
-        banner.style.display = "none";
-        dot.setAttribute("cx", "-100");
-        dot.setAttribute("cy", "-100");
-        resolve();
-      }, 100);
-    }
-
-    requestAnimationFrame(frame);
-  });
-}
-
-async function travel(){
-  if (state.selectedCity === state.currentCity || state.isTraveling) return;
-  initAudio();
-  playClick();
-  const from = state.currentCity;
-  const to = state.selectedCity;
-  state.isTraveling = true;
-  renderTravelButton();
-  await animateTravel(from, to);
-  state.currentCity = to;
-  nextDay();
-  randomTravelEvent();
-  state.isTraveling = false;
-  saveGameAuto();
-  renderAll();
-  checkMilestones();
-}
-
-function stayHere(){
-  if (state.isTraveling) return;
-  initAudio();
-  playClick();
-  nextDay();
-  beep(360, 0.08, "triangle", 0.02);
-  log(`🕰️ Stayed in <strong>${state.currentCity}</strong> and let another day roll over.`);
-  saveGameAuto();
-  renderAll();
-  checkMilestones();
-}
-
-function bindMapClicks(){
-  document.querySelectorAll(".cityNode").forEach(node => {
-    const city = node.getAttribute("data-city");
-    node.addEventListener("click", () => {
-      if (state.isTraveling) return;
-      initAudio();
-      playClick();
-      state.selectedCity = city;
-      renderAll();
-      log(`Selected <strong>${city}</strong> from the map.`);
+  box.innerHTML = rows.join("");
+  box.querySelectorAll(".rowItem").forEach(el => {
+    el.addEventListener("click", () => {
+      soundClick();
+      state.selectedGood = el.dataset.good;
+      renderMarket();
+      renderStats();
     });
   });
 }
 
-function saveGameAuto(){
-  localStorage.setItem("marketRunGodmodeSave", JSON.stringify(state));
+function renderInventory(){
+  const box = document.getElementById("inventoryRows");
+  const items = Object.entries(state.inventory).filter(([,data]) => data.qty > 0);
+  if (!items.length) {
+    box.innerHTML = `<div class="rowHead"><div>Item</div><div>Qty</div><div>Avg</div></div>
+    <div class="rowItem"><div class="itemName">Empty</div><div>0</div><div>—</div></div>`;
+    return;
+  }
+  let html = `<div class="rowHead"><div>Item</div><div>Qty</div><div>Avg</div></div>`;
+  items.forEach(([name, data]) => {
+    const good = GOODS.find(g => g.name === name);
+    html += `
+      <div class="rowItem">
+        <div class="itemName">${good ? good.icon : "📦"} ${name}</div>
+        <div>${data.qty}</div>
+        <div>${fmt(data.avg)}</div>
+      </div>
+    `;
+  });
+  box.innerHTML = html;
 }
 
-function saveGameManual(){
-  initAudio();
-  playClick();
-  saveGameAuto();
-  log("💾 Game saved.", "good");
-  alert("Game saved.");
+function renderStorage(){
+  const box = document.getElementById("storageRows");
+  const items = Object.entries(getStorage(state.currentCity)).filter(([,data]) => data.qty > 0);
+  if (!items.length) {
+    box.innerHTML = `<div class="rowHead"><div>Item</div><div>Qty</div><div>Avg</div></div>
+    <div class="rowItem"><div class="itemName">Empty</div><div>0</div><div>—</div></div>`;
+    return;
+  }
+  let html = `<div class="rowHead"><div>Item</div><div>Qty</div><div>Avg</div></div>`;
+  items.forEach(([name, data]) => {
+    const good = GOODS.find(g => g.name === name);
+    html += `
+      <div class="rowItem">
+        <div class="itemName">${good ? good.icon : "📦"} ${name}</div>
+        <div>${data.qty}</div>
+        <div>${fmt(data.avg || 0)}</div>
+      </div>
+    `;
+  });
+  box.innerHTML = html;
+}
+
+function renderFeed(){
+  const box = document.getElementById("eventRows");
+  box.innerHTML = state.logLines.map(line => `<div class="feedLine">${line}</div>`).join("");
+}
+
+function renderMap(){
+  document.querySelectorAll(".cityBtn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.city === state.selectedCity);
+    btn.classList.toggle("current", btn.dataset.city === state.currentCity);
+  });
+  document.querySelectorAll(".cityCore").forEach(node => {
+    node.classList.remove("current", "selected");
+  });
+  const currentNode = document.getElementById(`node-${state.currentCity}`);
+  if (currentNode) currentNode.classList.add("current");
+  const selectedNode = document.getElementById(`node-${state.selectedCity}`);
+  if (selectedNode && state.selectedCity !== state.currentCity) selectedNode.classList.add("selected");
+}
+
+function renderAll(){
+  renderStats();
+  renderMarket();
+  renderInventory();
+  renderStorage();
+  renderFeed();
+  renderMap();
+}
+
+function buyOne(){
+  if (state.gameOver) return;
+  soundBuy();
+  flashActiveRow();
+
+  const item = state.selectedGood;
+  const price = state.market[item];
+  if (getTotalInventoryQty() >= state.capacity) {
+    soundError();
+    logLine("⚠️ Inventory full. Sell or store first.");
+    return;
+  }
+  if (state.cash < price) {
+    soundError();
+    logLine("⚠️ Not enough cash.");
+    return;
+  }
+
+  state.cash -= price;
+  if (!state.inventory[item]) state.inventory[item] = { qty: 0, avg: 0 };
+  const slot = state.inventory[item];
+  slot.avg = ((slot.avg * slot.qty) + price) / (slot.qty + 1);
+  slot.qty += 1;
+
+  popup(`Bought ${item}`);
+  logLine(`💸 Bought 1 ${item} for ${fmt(price)}.`);
+  renderAll();
+}
+
+function sellOne(){
+  if (state.gameOver) return;
+  soundSell();
+  flashActiveRow();
+
+  const item = state.selectedGood;
+  const slot = state.inventory[item];
+  if (!slot || slot.qty <= 0) {
+    soundError();
+    logLine(`⚠️ No ${item} to sell.`);
+    return;
+  }
+
+  const price = state.market[item];
+  state.cash += price;
+  slot.qty -= 1;
+  if (slot.qty <= 0) delete state.inventory[item];
+
+  popup(`Sold ${item}`);
+  logLine(`💰 Sold 1 ${item} for ${fmt(price)}.`);
+  renderAll();
+}
+
+function storeOne(){
+  if (state.gameOver) return;
+  soundStore();
+  const item = state.selectedGood;
+  const slot = state.inventory[item];
+  if (!slot || slot.qty <= 0) {
+    soundError();
+    logLine(`⚠️ No ${item} to store.`);
+    return;
+  }
+  const store = getStorage(state.currentCity);
+  if (!store[item]) store[item] = { qty: 0, avg: slot.avg };
+  store[item].qty += 1;
+  store[item].avg = slot.avg;
+
+  slot.qty -= 1;
+  if (slot.qty <= 0) delete state.inventory[item];
+
+  popup(`Stored ${item}`);
+  logLine(`📦 Stored 1 ${item} in ${state.currentCity}.`);
+  renderAll();
+}
+
+function takeOne(){
+  if (state.gameOver) return;
+  soundTake();
+  const item = state.selectedGood;
+  const store = getStorage(state.currentCity);
+  if (!store[item] || store[item].qty <= 0) {
+    soundError();
+    logLine(`⚠️ No ${item} in ${state.currentCity} storage.`);
+    return;
+  }
+  if (getTotalInventoryQty() >= state.capacity) {
+    soundError();
+    logLine("⚠️ Inventory full.");
+    return;
+  }
+
+  if (!state.inventory[item]) state.inventory[item] = { qty: 0, avg: store[item].avg || 0 };
+  state.inventory[item].qty += 1;
+  state.inventory[item].avg = store[item].avg || state.inventory[item].avg;
+
+  store[item].qty -= 1;
+  if (store[item].qty <= 0) delete store[item];
+
+  popup(`Took ${item}`);
+  logLine(`📦 Took 1 ${item} from ${state.currentCity} storage.`);
+  renderAll();
+}
+
+function deposit(amount){
+  if (state.gameOver) return;
+  soundClick();
+  if (state.cash < amount) {
+    soundError();
+    logLine("⚠️ Not enough cash to deposit.");
+    return;
+  }
+  state.cash -= amount;
+  state.bank += amount;
+  logLine(`🏦 Deposited ${fmt(amount)}.`);
+  popup(`Deposited ${fmt(amount)}`);
+  renderAll();
+}
+
+function withdraw(amount){
+  if (state.gameOver) return;
+  soundClick();
+  if (state.bank < amount) {
+    soundError();
+    logLine("⚠️ Not enough bank balance.");
+    return;
+  }
+  state.bank -= amount;
+  state.cash += amount;
+  logLine(`🏦 Withdrew ${fmt(amount)}.`);
+  popup(`Withdrew ${fmt(amount)}`);
+  renderAll();
+}
+
+function borrow(amount){
+  if (state.gameOver) return;
+  soundClick();
+  state.cash += amount;
+  state.debt += amount;
+  logLine(`💵 Borrowed ${fmt(amount)}.`);
+  popup(`Borrowed ${fmt(amount)}`);
+  renderAll();
+}
+
+function repay(amount){
+  if (state.gameOver) return;
+  soundClick();
+  if (state.cash < amount) {
+    soundError();
+    logLine("⚠️ Not enough cash to repay.");
+    return;
+  }
+  if (state.debt <= 0) {
+    soundError();
+    logLine("⚠️ You have no debt.");
+    return;
+  }
+  state.cash -= amount;
+  state.debt = Math.max(0, state.debt - amount);
+  logLine(`💼 Repaid ${fmt(amount)}.`);
+  popup(`Repaid ${fmt(amount)}`);
+  renderAll();
+}
+
+function visitHospital(){
+  if (state.gameOver) return;
+  soundHeal();
+  const cost = state.health >= 90 ? 120 : state.health >= 60 ? 180 : 280;
+  if (state.cash < cost) {
+    soundError();
+    logLine(`⚠️ Hospital costs ${fmt(cost)}. Not enough cash.`);
+    return;
+  }
+  state.cash -= cost;
+  const healed = Math.min(100 - state.health, 35);
+  state.health += healed;
+  clampHealth();
+  logLine(`🏥 Hospital visit. Paid ${fmt(cost)} and restored ${healed} health.`);
+  popup(`+${healed} health`);
+  renderAll();
+}
+
+function fightBack(){
+  if (state.gameOver) return;
+  if (!state.pendingFight) {
+    soundError();
+    logLine("⚠️ No active threat to fight right now.");
+    return;
+  }
+  soundFight();
+  state.pendingFight = false;
+
+  const roll = Math.random();
+  if (roll < 0.45) {
+    const damage = 10 + Math.floor(Math.random() * 10);
+    applyDamage(damage, "You fought them off");
+    addCash(120 + Math.floor(Math.random() * 140), "👊 You fought back and kept control of the street.");
+  } else {
+    const damage = 18 + Math.floor(Math.random() * 14);
+    state.health -= damage;
+    clampHealth();
+    const loss = 120 + Math.floor(Math.random() * 220);
+    state.cash = Math.max(0, state.cash - loss);
+    soundFight();
+    logLine(`🥊 Bad fight. Health -${damage}. Lost ${fmt(loss)}.`);
+    popup(`Fight went bad`);
+  }
+  checkGameState();
+  renderAll();
+}
+
+function animateTravel(fromCity, toCity, done){
+  const a = CITY_POS[fromCity];
+  const b = CITY_POS[toCity];
+  const dot = document.getElementById("travelDot");
+  if (!a || !b || !dot) {
+    done && done();
+    return;
+  }
+  soundTravel();
+  let t = 0;
+  dot.setAttribute("cx", a.x);
+  dot.setAttribute("cy", a.y);
+  dot.style.opacity = 1;
+
+  function step(){
+    t += 0.03;
+    if (t > 1) t = 1;
+    const x = a.x + (b.x - a.x) * t;
+    const y = a.y + (b.y - a.y) * t;
+    dot.setAttribute("cx", x);
+    dot.setAttribute("cy", y);
+    if (t < 1) {
+      requestAnimationFrame(step);
+    } else {
+      dot.style.opacity = 0;
+      done && done();
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+function cityMessage(city){
+  return randomFrom(CITY_UPDATES[city] || ["The city feels quiet."]);
+}
+
+function applyDebtInterest(){
+  if (state.debt > 0) {
+    const add = Math.max(25, Math.round(state.debt * 0.05));
+    state.debt += add;
+    logLine(`📈 Debt pressure hit. Interest added ${fmt(add)}.`);
+  }
+}
+
+function randomEvent(){
+  state.pendingFight = false;
+  const roll = Math.random();
+
+  if (roll < 0.12) {
+    const found = 80 + Math.floor(Math.random() * 180);
+    state.cash += found;
+    soundSell();
+    logLine(`👛 Found a wallet. Pocketed ${fmt(found)}.`);
+    popup(`Found ${fmt(found)}`);
+    return;
+  }
+
+  if (roll < 0.22) {
+    const fee = 70 + Math.floor(Math.random() * 130);
+    loseCash(fee, `🚔 Speeding ticket. Paid {amt}.`);
+    soundError();
+    return;
+  }
+
+  if (roll < 0.33) {
+    const damage = 8 + Math.floor(Math.random() * 12);
+    state.pendingFight = true;
+    applyDamage(damage, "Mob boss sent thugs to remind you who runs this route");
+    logLine("👥 Thugs are still nearby. You can hit Fight Back now.");
+    return;
+  }
+
+  if (roll < 0.43) {
+    const penalty = 90 + Math.floor(Math.random() * 150);
+    loseCash(penalty, `🚨 Police stop. Lost {amt} handling the trouble.`);
+    soundError();
+    return;
+  }
+
+  if (roll < 0.54) {
+    const boostGood = randomFrom(GOODS);
+    const add = 45 + Math.floor(Math.random() * 90);
+    state.market[boostGood.name] += add;
+    logLine(`📢 Street rumor: ${boostGood.name} demand jumped in ${state.currentCity}.`);
+    popup(`${boostGood.name} up`);
+    return;
+  }
+
+  if (roll < 0.64) {
+    const dropGood = randomFrom(GOODS);
+    const down = 20 + Math.floor(Math.random() * 50);
+    state.market[dropGood.name] = Math.max(20, state.market[dropGood.name] - down);
+    logLine(`📦 A flood of ${dropGood.name} hit the block. Prices softened.`);
+    return;
+  }
+
+  if (roll < 0.74) {
+    const found = 120 + Math.floor(Math.random() * 220);
+    state.bank += found;
+    logLine(`🏦 You found access to a hidden bank stash. Bank +${fmt(found)}.`);
+    popup(`Bank +${fmt(found)}`);
+    return;
+  }
+
+  if (roll < 0.84) {
+    const damage = 10 + Math.floor(Math.random() * 15);
+    applyDamage(damage, "Street trouble got physical");
+    return;
+  }
+
+  logLine(`📍 ${state.currentCity}: ${cityMessage(state.currentCity)}`);
+}
+
+function checkGameState(){
+  if (state.gameOver) return;
+
+  if (state.health <= 0) {
+    state.gameOver = true;
+    soundError();
+    logLine("☠️ You collapsed from the pressure. Game over.");
+    renderAll();
+    return;
+  }
+
+  if (getNetWorth() >= state.goal) {
+    state.gameOver = true;
+    soundArrival();
+    logLine(`🏆 You hit ${fmt(getNetWorth())}. You won Market Run Iowa.`);
+    renderAll();
+    return;
+  }
+
+  if (state.day > state.maxDay) {
+    state.gameOver = true;
+    if (getNetWorth() >= state.goal) {
+      logLine(`🏆 Day 30 closed out and you still cleared the goal with ${fmt(getNetWorth())}.`);
+    } else {
+      logLine(`⌛ Time ran out. Final net worth: ${fmt(getNetWorth())}.`);
+    }
+    renderAll();
+  }
+}
+
+function advanceDay(){
+  state.day += 1;
+  generateMarket(state.currentCity);
+  applyDebtInterest();
+  randomEvent();
+  checkGameState();
+}
+
+function travel(){
+  if (state.gameOver) return;
+  soundClick();
+  if (state.selectedCity === state.currentCity) {
+    logLine("You’re already here.");
+    return;
+  }
+  const from = state.currentCity;
+  const to = state.selectedCity;
+  const cost = 100;
+
+  if (state.cash < cost) {
+    soundError();
+    logLine("⚠️ Not enough cash to travel.");
+    return;
+  }
+
+  logLine(`🗺️ Traveling to ${to}... Cost ${fmt(cost)}.`);
+  animateTravel(from, to, () => {
+    state.cash -= cost;
+    state.currentCity = to;
+    generateMarket(state.currentCity);
+    soundArrival();
+    advanceDay();
+    renderAll();
+  });
+}
+
+function stay(){
+  if (state.gameOver) return;
+  soundClick();
+  logLine(`🕶️ Stayed in ${state.currentCity}.`);
+  advanceDay();
+  renderAll();
+}
+
+function saveGame(){
+  soundClick();
+  localStorage.setItem("marketRunIowaClassic", JSON.stringify(state));
+  logLine("💾 Game saved.");
 }
 
 function loadGame(){
-  initAudio();
-  playClick();
-  const raw = localStorage.getItem("marketRunGodmodeSave");
+  soundClick();
+  const raw = localStorage.getItem("marketRunIowaClassic");
   if (!raw) {
-    alert("No saved game found.");
+    soundError();
+    logLine("⚠️ No saved game found.");
     return;
   }
-  try{
-    const loaded = JSON.parse(raw);
-    Object.keys(state).forEach(k => delete state[k]);
-    Object.assign(state, loaded);
-    renderAll();
-    log("📂 Game loaded.", "good");
-    alert("Game loaded.");
-  }catch(e){
-    alert("Save file failed to load.");
-  }
+  const data = JSON.parse(raw);
+  Object.assign(state, data);
+  renderAll();
+  logLine("📂 Game loaded.");
 }
 
 function resetGame(){
-  initAudio();
-  playClick();
-  const ok = confirm("Reset saved game completely?");
-  if (!ok) return;
+  soundClick();
+  localStorage.removeItem("marketRunIowaClassic");
+  location.reload();
+}
 
-  localStorage.removeItem("marketRunGodmodeSave");
-  state.day = 1;
-  state.cash = 2500;
-  state.currentCity = "Des Moines";
-  state.selectedCity = "Des Moines";
-  state.isTraveling = false;
-  state.empireChosen = false;
-  state.empireType = "";
-  state.gameWon = false;
-  state.walletChoiceActive = false;
-  state.pendingWallet = null;
-  state.musicOn = true;
+function bindUI(){
+  document.getElementById("buyBtn").addEventListener("click", buyOne);
+  document.getElementById("sellBtn").addEventListener("click", sellOne);
+  document.getElementById("storeBtn").addEventListener("click", storeOne);
+  document.getElementById("takeBtn").addEventListener("click", takeOne);
 
-  items.forEach(item => {
-    state.inventory[item] = { qty: 0, avg: 0 };
+  document.getElementById("travelBtn").addEventListener("click", travel);
+  document.getElementById("stayBtn").addEventListener("click", stay);
+  document.getElementById("hospitalBtn").addEventListener("click", visitHospital);
+  document.getElementById("fightBtn").addEventListener("click", fightBack);
+
+  document.getElementById("borrow500Btn").addEventListener("click", () => borrow(500));
+  document.getElementById("deposit500Btn").addEventListener("click", () => deposit(500));
+  document.getElementById("withdraw500Btn").addEventListener("click", () => withdraw(500));
+  document.getElementById("repay500Btn").addEventListener("click", () => repay(500));
+
+  document.getElementById("saveBtn").addEventListener("click", saveGame);
+  document.getElementById("loadBtn").addEventListener("click", loadGame);
+  document.getElementById("resetBtn").addEventListener("click", resetGame);
+
+  document.getElementById("muteBtn").addEventListener("click", () => {
+    soundClick();
+    state.muted = !state.muted;
+    if (state.muted) stopMusic();
+    else startMusic();
+    renderStats();
   });
 
-  document.getElementById("muteBtn").textContent = "Mute: Off";
-  initMarkets();
-  renderAll();
-  log("♻️ Save reset. New run started.", "good");
-}
+  document.querySelectorAll(".cityBtn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      soundClick();
+      state.selectedCity = btn.dataset.city;
+      renderMap();
+      renderStats();
+    });
+  });
 
-document.getElementById("travelBtn").addEventListener("click", travel);
-document.getElementById("stayBtn").addEventListener("click", stayHere);
-document.getElementById("prevSlideBtn").addEventListener("click", () => { forceAudioUnlock(); initAudio(); playClick(); prevSlide(); });
-document.getElementById("nextSlideBtn").addEventListener("click", () => { forceAudioUnlock(); initAudio(); playClick(); nextSlide(); });
-document.getElementById("startGameBtn").addEventListener("click", () => { forceAudioUnlock(); initAudio(); playClick(); startGame(); });
-document.getElementById("saveBtn").addEventListener("click", saveGameManual);
-document.getElementById("loadBtn").addEventListener("click", loadGame);
-document.getElementById("resetBtn").addEventListener("click", resetGame);
-document.getElementById("muteBtn").addEventListener("click", toggleMute);
+  document.querySelectorAll(".cityNode").forEach(node => {
+    node.addEventListener("click", () => {
+      soundClick();
+      state.selectedCity = node.dataset.city;
+      renderMap();
+      renderStats();
+    });
+  });
 
-initTutorial();
-initMarkets();
-bindMapClicks();
-renderAll();
-log(`Run started in <strong>${state.currentCity}</strong> with ${fmt(state.cash)}.`, "good");
-function showMoneyPop(amount) {
-  const el = document.createElement("div");
-  el.textContent = `+$${amount}`;
-  el.style.position = "fixed";
-  el.style.left = "50%";
-  el.style.top = "50%";
-  el.style.transform = "translate(-50%, -50%)";
-  el.style.color = "#00ff88";
-  el.style.fontSize = "22px";
-  el.style.fontWeight = "bold";
-  el.style.pointerEvents = "none";
-  el.style.zIndex = "9999";
-  el.style.transition = "all 0.6s ease";
-
-  document.body.appendChild(el);
-
-  setTimeout(() => {
-    el.style.top = "30%";
-    el.style.opacity = "0";
-  }, 50);
-
-  setTimeout(() => {
-    el.remove();
-  }, 600);
-}
-// 🔊 FORCE AUDIO UNLOCK FOR iPHONE
-function forceAudioUnlock() {
-  try {
+  const unlockAudio = () => {
     initAudio();
-    if (audioCtx && audioCtx.state === "suspended") {
-      audioCtx.resume();
-    }
-  } catch (e) {}
+    startMusic();
+  };
+  document.body.addEventListener("click", unlockAudio, { once: true });
+  document.body.addEventListener("touchstart", unlockAudio, { once: true });
 }
 
-document.addEventListener("touchstart", forceAudioUnlock, { once: true });
-document.addEventListener("touchend", forceAudioUnlock, { once: true });
-document.addEventListener("click", forceAudioUnlock, { once: true });
-function borrowMoney(amount) {
-  if (!state.debt) state.debt = 0;
-  if (!state.debtDueDay) state.debtDueDay = 0;
-
-  const owed = Math.floor(amount * 1.4);
-
-  state.cash += amount;
-  state.debt += owed;
-  state.debtDueDay = state.day + 3;
-
-  log(`💸 Borrowed $${amount}. You owe $${owed} by day ${state.debtDueDay}.`, "bad");
-  renderAll();
-}
-
-function deposit(amount) {
-  if (!state.bank) state.bank = 0;
-
-  if (state.cash < amount) {
-    log("❌ Not enough cash.", "bad");
-    return;
-  }
-
-  state.cash -= amount;
-  state.bank += amount;
-
-  log(`🏦 Deposited $${amount}.`, "good");
-  renderAll();
-}
-
-function withdraw(amount) {
-  if (!state.bank) state.bank = 0;
-
-  if (state.bank < amount) {
-    log("❌ Not enough in bank.", "bad");
-    return;
-  }
-
-  state.bank -= amount;
-  state.cash += amount;
-
-  log(`🏦 Withdrew $${amount}.`, "neutral");
-  renderAll();
-}
-
-function repayDebt(amount) {
-  if (!state.debt || state.debt <= 0) {
-    log("✅ No debt.", "good");
-    return;
-  }
-
-  if (state.cash < amount) {
-    log("❌ Not enough cash.", "bad");
-    return;
-  }
-
-  state.cash -= amount;
-  state.debt -= amount;
-
-  if (state.debt <= 0) {
-    state.debt = 0;
-    log("🔥 Debt cleared. You're free.", "good");
-  } else {
-    log(`💰 Paid $${amount}. Remaining debt: $${state.debt}`, "neutral");
-  }
-
-  renderAll();
-} // ===== STORAGE SYSTEM =====
-
-function getCityStorage(city) {
-  if (!state.storage) state.storage = {};
-
-  if (!state.storage[city]) {
-    state.storage[city] = {};
-  }
-
-  return state.storage[city];
-}
-
-function storeItem(item, qty) {
-  if (!item || qty <= 0) return;
-
-  const inv = state.inventory[item];
-  if (!inv || inv.qty < qty) {
-    log("❌ Not enough inventory to store.", "bad");
-    return;
-  }
-
-  const cityStore = getCityStorage(state.currentCity);
-
-  if (!cityStore[item]) {
-    cityStore[item] = { qty: 0, avg: inv.avg || 0 };
-  }
-
-  cityStore[item].qty += qty;
-  cityStore[item].avg = inv.avg || cityStore[item].avg || 0;
-
-  inv.qty -= qty;
-
-  if (inv.qty <= 0) {
-    delete state.inventory[item];
-  }
-
-  log(`📦 Stored ${qty} ${item} in ${state.currentCity}.`, "good");
-  renderAll();
-}
-
-function takeFromStorage(item, qty) {
-  if (!item || qty <= 0) return;
-
-  const cityStore = getCityStorage(state.currentCity);
-  const stored = cityStore[item];
-
-  if (!stored || stored.qty < qty) {
-    log("❌ Not enough in city storage.", "bad");
-    return;
-  }
-
-  if (!state.inventory[item]) {
-    state.inventory[item] = { qty: 0, avg: stored.avg || 0 };
-  }
-
-  state.inventory[item].qty += qty;
-  state.inventory[item].avg = stored.avg || state.inventory[item].avg || 0;
-
-  stored.qty -= qty;
-
-  if (stored.qty <= 0) {
-    delete cityStore[item];
-  }
-
-  log(`📦 Pulled ${qty} ${item} from ${state.currentCity} storage.`, "neutral");
-  renderAll();
-}
-
-function storageSummary(city) {
-  const cityStore = getCityStorage(city);
-  const entries = Object.entries(cityStore);
-
-  if (!entries.length) return "Empty";
-
-  return entries.map(([name, data]) => `${name}: ${data.qty}`).join(" • ");
-} 
+generateMarket(state.currentCity);
+bindUI();
+renderAll();
 </script>
 </body>
 </html>
