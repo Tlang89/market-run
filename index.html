@@ -392,6 +392,77 @@ button,input,select{font:inherit}
   100%{opacity:0; transform:translateX(-50%) translateY(-18px)}
 }
 
+
+.inventoryFab{
+  position:fixed;
+  right:14px;
+  bottom:18px;
+  z-index:9000;
+  border:none;
+  border-radius:999px;
+  padding:12px 16px;
+  background:linear-gradient(180deg,#d8b770,#bc9856);
+  color:#1b150a;
+  font-weight:700;
+  font-size:14px;
+  box-shadow:0 8px 18px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.18);
+  cursor:pointer;
+}
+.inventoryFab:active{
+  transform:scale(.97);
+}
+.inventoryPanel{
+  position:fixed;
+  left:10px;
+  right:10px;
+  bottom:72px;
+  z-index:9000;
+  background:linear-gradient(180deg,#111a29,#0c1420);
+  border:1px solid var(--line);
+  border-radius:14px;
+  box-shadow:0 12px 26px rgba(0,0,0,.42), inset 0 0 0 1px rgba(255,255,255,.02);
+  padding:10px;
+  display:none;
+  max-height:42dvh;
+  overflow:auto;
+}
+.inventoryPanel.show{
+  display:block;
+}
+.inventoryPanelHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:8px;
+}
+.inventoryPanelTitle{
+  color:var(--gold);
+  font-size:16px;
+  font-weight:700;
+}
+.inventoryClose{
+  border:none;
+  border-radius:10px;
+  padding:8px 10px;
+  background:linear-gradient(180deg,#273249,#1a2437);
+  color:var(--text);
+  font-weight:700;
+  cursor:pointer;
+}
+.inventoryMini{
+  margin-top:8px;
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:10px;
+  background:rgba(0,0,0,.14);
+  padding:8px 10px;
+  font-size:13px;
+  color:var(--muted);
+}
+@media (min-width:981px){
+  .inventoryFab,.inventoryPanel{display:none !important;}
+}
+
 .intro{
   position:fixed;
   inset:0;
@@ -665,6 +736,18 @@ button,input,select{font:inherit}
       </div>
     </section>
   </div>
+</div>
+
+
+<button class="inventoryFab" id="inventoryFab">📦 Inventory</button>
+
+<div class="inventoryPanel" id="inventoryPanel">
+  <div class="inventoryPanelHead">
+    <div class="inventoryPanelTitle">Inventory</div>
+    <button class="inventoryClose" id="inventoryClose">Close</button>
+  </div>
+  <div id="inventoryMobileSummary" class="inventoryMini">Empty</div>
+  <div id="inventoryMobileRows" class="list" style="min-height:0;max-height:none;"></div>
 </div>
 
 <script>
@@ -971,6 +1054,38 @@ function renderFeed(){
   box.innerHTML = state.logLines.map(line => `<div class="feedLine">${line}</div>`).join("");
 }
 
+
+function renderMobileInventory(){
+  const summary = document.getElementById("inventoryMobileSummary");
+  const box = document.getElementById("inventoryMobileRows");
+  if (!summary || !box) return;
+
+  const items = Object.entries(state.inventory).filter(([,data]) => data.qty > 0);
+  const totalQty = getTotalInventoryQty();
+  summary.textContent = totalQty
+    ? `Carrying ${totalQty} / ${state.capacity} items`
+    : "Inventory empty";
+
+  if (!items.length) {
+    box.innerHTML = `<div class="rowHead"><div>Item</div><div>Qty</div><div>Avg</div></div>
+      <div class="rowItem"><div class="itemName">Empty</div><div>0</div><div>—</div></div>`;
+    return;
+  }
+
+  let html = `<div class="rowHead"><div>Item</div><div>Qty</div><div>Avg</div></div>`;
+  items.forEach(([name, data]) => {
+    const good = GOODS.find(g => g.name === name);
+    html += `
+      <div class="rowItem">
+        <div class="itemName">${good ? good.icon : "📦"} ${name}</div>
+        <div>${data.qty}</div>
+        <div>${fmt(data.avg)}</div>
+      </div>
+    `;
+  });
+  box.innerHTML = html;
+}
+
 function renderMap(){
   document.querySelectorAll(".cityBtn").forEach(btn => {
     btn.classList.toggle("active", btn.dataset.city === state.selectedCity);
@@ -990,6 +1105,7 @@ function renderAll(){
   renderMarket();
   renderFeed();
   renderMap();
+  renderMobileInventory();
 }
 
 function buyOne(){
@@ -1425,6 +1541,14 @@ function bindTabs(){
 }
 
 function bindUI(){
+  document.getElementById("inventoryFab").addEventListener("click", () => {
+    soundClick();
+    document.getElementById("inventoryPanel").classList.toggle("show");
+  });
+  document.getElementById("inventoryClose").addEventListener("click", () => {
+    soundClick();
+    document.getElementById("inventoryPanel").classList.remove("show");
+  });
   document.getElementById("buyBtn").addEventListener("click", buyOne);
   document.getElementById("sellBtn").addEventListener("click", sellOne);
   document.getElementById("storeBtn").addEventListener("click", storeOne);
