@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Market Run Iowa — Compact Boxed</title>
 <style>
 :root{
@@ -23,8 +23,11 @@
   box-sizing:border-box;
   -webkit-tap-highlight-color:transparent;
 button, .actionBtn, .cityBtn, .tabBtn, .rowItem {
-  touch-action: manipulation;
-  user-select: none;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    font-size: 16px;
+}
 }
 html,body{
   margin:0;
@@ -1609,7 +1612,14 @@ function bindUI(){
     renderStats();
   });
 }
-
+let lastTouchEnd = 0;
+document.addEventListener("touchend", function (event) {
+  const now = Date.now();
+  if (now - lastTouchEnd <= 300) {
+    event.preventDefault();
+  }
+  lastTouchEnd = now;
+}, { passive: false });
 generateMarket(state.currentCity);
 bindTabs();
 bindUI();
