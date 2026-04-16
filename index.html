@@ -622,7 +622,7 @@ button,input,select{font:inherit}
     <div class="stat"><div class="label">Worth</div><div class="value" id="worthStat">$2,500</div></div>
   </div>
 
-  <div class="eventBar" id="eventBar">Welcome to Market Run Iowa. Markets now boom, flood, and spike.</div>
+  <div class="eventBar" id="eventBar">Welcome to Market Run Iowa. Hunt hot deals, outrun crashes, and stay ahead of the yearly target.</div>
 
   <div class="board">
     <section class="panel marketPanel">
@@ -809,9 +809,10 @@ const state = {
   selectedCity: "Des Moines",
   selectedGood: "Sneakers",
   market: {},
+  cityMarkets: {},
   inventory: {},
   cityStorage: {},
-  logLines: ["Welcome to Market Run Iowa. Markets now boom, flood, and spike."],
+  logLines: ["Welcome to Market Run Iowa. Hunt hot deals, outrun crashes, and stay ahead of the yearly target."],
   muted: false,
   capacity: 12,
   pendingFight: false,
@@ -932,11 +933,11 @@ function getDailyMarketState(){
 
 function getStateMultiplier(stateName){
   const ranges = {
-    normal: [0.90, 1.12],
-    cheap: [0.55, 0.82],
-    booming: [1.30, 1.85],
-    flooded: [0.35, 0.62],
-    shortage: [1.55, 2.25]
+    normal: [0.85, 1.15],
+    cheap: [0.35, 0.70],
+    booming: [1.60, 2.40],
+    flooded: [0.20, 0.50],
+    shortage: [2.00, 3.20]
   };
   const range = ranges[stateName] || ranges.normal;
   return range[0] + Math.random() * (range[1] - range[0]);
@@ -954,7 +955,8 @@ function getMarketStateLabel(stateName){
 }
 
 function generateMarket(city){
-  state.market = {};
+  if (!state.cityMarkets) state.cityMarkets = {};
+  state.cityMarkets[city] = {};
   state.marketStates[city] = {};
 
   GOODS.forEach(good => {
@@ -966,10 +968,29 @@ function generateMarket(city){
     let price = good.base * cityMult * cityFlavor * stateMult;
     price = Math.max(20, Math.round(price));
 
-    state.market[good.name] = price;
+    state.cityMarkets[city][good.name] = price;
     state.marketStates[city][good.name] = stateName;
   });
+
+  if (city === state.currentCity) {
+    state.market = { ...state.cityMarkets[city] };
+  }
 }
+
+function initAllCityMarkets(){
+  Object.keys(CITY_RULES).forEach(city => generateMarket(city));
+  state.market = { ...(state.cityMarkets[state.currentCity] || {}) };
+}
+
+function getDisplayCity(){
+  return state.selectedCity || state.currentCity;
+}
+
+function getDisplayMarket(){
+  const city = getDisplayCity();
+  return state.cityMarkets[city] || {};
+}
+
 
 function getTrendClass(price, base){
   if (price > base * 1.1) return "up";
@@ -985,7 +1006,7 @@ function getTrendArrow(price, base){
 
 function getInventoryValue(){
   return Object.entries(state.inventory).reduce((sum, [name, data]) => {
-    const price = state.market[name] || data.avg || 0;
+    const price = ((state.cityMarkets[state.currentCity] || state.market)[name]) || data.avg || 0;
     return sum + price * data.qty;
   }, 0);
 }
@@ -1007,8 +1028,26 @@ function applyDamage(amount, source){
   checkGameState();
 }
 
+function isHotDeal(price, base){
+  return price < base * 0.6;
+}
+
+function flashAction(text){
+  const el = document.createElement("div");
+  el.className = "popup";
+  el.textContent = text;
+  el.style.bottom = "50%";
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 620);
+}
+
+function getTargetForDay(){
+  return (state.goal / state.maxDay) * state.day;
+}
+
 function buildMarketAlert(){
-  const states = state.marketStates[state.currentCity] || {};
+  const city = getDisplayCity();
+  const states = state.marketStates[city] || {};
   const strong = Object.entries(states)
     .filter(([, s]) => s !== "normal")
     .sort((a, b) => {
@@ -1018,7 +1057,7 @@ function buildMarketAlert(){
     .slice(0, 2);
 
   if (!strong.length) {
-    return `${state.currentCity}: market is steady today.`;
+    return `${city}: market is steady today.`;
   }
 
   return strong.map(([name, stateName]) => `${name} is ${getMarketStateLabel(stateName)}`).join(" • ");
@@ -1030,17 +1069,24 @@ function renderStats(){
   document.getElementById("bankStat").textContent = fmt(state.bank);
   document.getElementById("debtStat").textContent = fmt(state.debt);
   document.getElementById("healthStat").textContent = `${state.health}`;
-  document.getElementById("cityStat").textContent = state.currentCity;
+  const target = getTargetForDay();
+  const net = getNetWorth();
+  let pressure = "• On track";
+  if (net < target * 0.7) pressure = "⚠️ Behind";
+  else if (net > target * 1.2) pressure = "🔥 Ahead";
+  document.getElementById("cityStat").textContent = `${state.currentCity} | ${pressure}`;
   document.getElementById("worthStat").textContent = fmt(getNetWorth());
 
   document.getElementById("marketSub").textContent =
     state.selectedCity === state.currentCity
       ? `${buildMarketAlert()}`
-      : `Travel target selected: ${state.selectedCity}`;
+      : `Previewing ${state.selectedCity} market • current city: ${state.currentCity} • look for 🔥 hot deals`;
 
-  const selectedState = (state.marketStates[state.currentCity] || {})[state.selectedGood] || "normal";
+  const displayCity = getDisplayCity();
+  const displayMarket = getDisplayMarket();
+  const selectedState = (state.marketStates[displayCity] || {})[state.selectedGood] || "normal";
   document.getElementById("selectedInfo").textContent =
-    `Selected item: ${state.selectedGood} • ${getMarketStateLabel(selectedState)} • Price ${fmt(state.market[state.selectedGood] || 0)}`;
+    `Selected item: ${state.selectedGood} • ${displayCity} • ${getMarketStateLabel(selectedState)} • Price ${fmt(displayMarket[state.selectedGood] || 0)}`;
 
   const store = getStorage(state.currentCity);
   const entries = Object.entries(store).filter(([,v]) => v.qty > 0);
@@ -1082,16 +1128,19 @@ function renderStats(){
 
 function renderMarket(){
   const box = document.getElementById("marketRows");
+  const displayCity = getDisplayCity();
+  const displayMarket = getDisplayMarket();
+  const displayStates = state.marketStates[displayCity] || {};
   const rows = [`<div class="rowHead"><div>Item</div><div>Trend</div><div>Price</div></div>`];
   GOODS.forEach(good => {
-    const price = state.market[good.name];
+    const price = displayMarket[good.name];
     const trendClass = getTrendClass(price, good.base);
     const active = state.selectedGood === good.name ? " active" : "";
     rows.push(`
       <div class="rowItem${active}" data-good="${good.name}">
         <div class="itemName">${good.icon} ${good.name}</div>
-        <div class="${trendClass}">${getTrendArrow(price, good.base)} ${getMarketStateLabel(((state.marketStates[state.currentCity] || {})[good.name]) || "normal")}</div>
-        <div>${fmt(price)}</div>
+        <div class="${trendClass}">${getTrendArrow(price, good.base)} ${getMarketStateLabel((displayStates[good.name]) || "normal")}</div>
+        <div>${fmt(price)} ${isHotDeal(price, good.base) ? "🔥" : ""}</div>
       </div>
     `);
   });
@@ -1170,7 +1219,7 @@ function buyOne(){
   soundBuy();
   flashActiveRow();
   const item = state.selectedGood;
-  const price = state.market[item];
+  const price = (state.cityMarkets[state.currentCity] || state.market)[item];
   if (getTotalInventoryQty() >= state.capacity) {
     soundError();
     logLine("⚠️ Inventory full. Sell or store first.");
@@ -1187,6 +1236,7 @@ function buyOne(){
   slot.avg = ((slot.avg * slot.qty) + price) / (slot.qty + 1);
   slot.qty += 1;
   popup(`Bought ${item}`);
+  flashAction("Bought!");
   logLine(`💸 Bought 1 ${item} for ${fmt(price)}.`);
   renderAll();
 }
@@ -1202,11 +1252,12 @@ function sellOne(){
     logLine(`⚠️ No ${item} to sell.`);
     return;
   }
-  const price = state.market[item];
+  const price = (state.cityMarkets[state.currentCity] || state.market)[item];
   state.cash += price;
   slot.qty -= 1;
   if (slot.qty <= 0) delete state.inventory[item];
   popup(`Sold ${item}`);
+  flashAction("Sold!");
   logLine(`💰 Sold 1 ${item} for ${fmt(price)}.`);
   renderAll();
 }
@@ -1459,7 +1510,8 @@ function randomEvent(){
   if (roll < 0.57) {
     const boostGood = randomFrom(GOODS);
     const add = Math.round((45 + Math.random() * 90) * Math.min(2.3, 1 + scale * 0.35));
-    state.market[boostGood.name] += add;
+    state.cityMarkets[state.currentCity][boostGood.name] += add;
+    state.market = { ...(state.cityMarkets[state.currentCity] || {}) };
     logLine(`📢 Street rumor: ${boostGood.name} demand jumped in ${state.currentCity}.`);
     popup(`${boostGood.name} up`);
     return;
@@ -1467,7 +1519,8 @@ function randomEvent(){
   if (roll < 0.67) {
     const dropGood = randomFrom(GOODS);
     const down = Math.round((20 + Math.random() * 50) * Math.min(1.9, 0.95 + scale * 0.28));
-    state.market[dropGood.name] = Math.max(20, state.market[dropGood.name] - down);
+    state.cityMarkets[state.currentCity][dropGood.name] = Math.max(20, state.cityMarkets[state.currentCity][dropGood.name] - down);
+    state.market = { ...(state.cityMarkets[state.currentCity] || {}) };
     logLine(`📦 A flood of ${dropGood.name} hit the block. Prices softened.`);
     return;
   }
@@ -1519,9 +1572,10 @@ function checkGameState(){
 
 function advanceDay(){
   state.day += 1;
-  generateMarket(state.currentCity);
+  initAllCityMarkets();
   applyDebtInterest();
   randomEvent();
+  state.market = { ...(state.cityMarkets[state.currentCity] || {}) };
   checkGameState();
 }
 
@@ -1544,7 +1598,7 @@ function travel(){
   animateTravel(from, to, () => {
     state.cash -= cost;
     state.currentCity = to;
-    generateMarket(state.currentCity);
+    state.market = { ...(state.cityMarkets[state.currentCity] || {}) };
     soundArrival();
     advanceDay();
     renderAll();
@@ -1575,6 +1629,11 @@ function loadGame(){
   }
   const data = JSON.parse(raw);
   Object.assign(state, data);
+  if (!state.cityMarkets || !Object.keys(state.cityMarkets).length) {
+    initAllCityMarkets();
+  } else {
+    state.market = { ...(state.cityMarkets[state.currentCity] || {}) };
+  }
   renderAll();
   logLine("📂 Game loaded.");
 }
@@ -1664,7 +1723,7 @@ function bindUI(){
   });
 }
 
-generateMarket(state.currentCity);
+initAllCityMarkets();
 bindTabs();
 bindUI();
 renderAll();
