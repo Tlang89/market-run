@@ -622,7 +622,7 @@ button,input,select{font:inherit}
     <div class="stat"><div class="label">Worth</div><div class="value" id="worthStat">$2,500</div></div>
   </div>
 
-  <div class="eventBar" id="eventBar">Welcome to Market Run Iowa. Hunt hot deals, outrun crashes, and stay ahead of the yearly target.</div>
+  <div class="eventBar" id="eventBar">Welcome to Market Run Iowa. Tap cities to compare live prices, hunt hot deals, and outrun crashes.</div>
 
   <div class="board">
     <section class="panel marketPanel">
@@ -761,10 +761,38 @@ const GOODS = [
 ];
 
 const CITY_RULES = {
-  "Des Moines": { Sneakers: 1.0, Mixtapes: 1.0, Jackets: 1.1, Headphones: 1.0, "Hot Sauce": 0.9, "Vintage Tees": 1.0 },
-  "Waterloo":   { Sneakers: 0.9, Mixtapes: 1.1, Jackets: 1.0, Headphones: 1.25, "Hot Sauce": 1.0, "Vintage Tees": 0.95 },
-  "Cedar Falls":{ Sneakers: 1.1, Mixtapes: 1.3, Jackets: 0.95, Headphones: 1.0, "Hot Sauce": 0.95, "Vintage Tees": 1.15 },
-  "Ames":       { Sneakers: 1.15, Mixtapes: 0.95, Jackets: 0.9, Headphones: 1.05, "Hot Sauce": 1.25, "Vintage Tees": 1.2 }
+  "Des Moines": {
+    Sneakers: 1.00,
+    Mixtapes: 0.85,
+    Jackets: 1.20,
+    Headphones: 1.00,
+    "Hot Sauce": 0.75,
+    "Vintage Tees": 1.05
+  },
+  "Waterloo": {
+    Sneakers: 0.72,
+    Mixtapes: 1.35,
+    Jackets: 0.92,
+    Headphones: 1.55,
+    "Hot Sauce": 1.05,
+    "Vintage Tees": 0.82
+  },
+  "Cedar Falls": {
+    Sneakers: 1.38,
+    Mixtapes: 1.62,
+    Jackets: 0.78,
+    Headphones: 1.12,
+    "Hot Sauce": 0.72,
+    "Vintage Tees": 1.48
+  },
+  "Ames": {
+    Sneakers: 1.18,
+    Mixtapes: 0.68,
+    Jackets: 0.62,
+    Headphones: 0.96,
+    "Hot Sauce": 1.72,
+    "Vintage Tees": 1.34
+  }
 };
 
 const CITY_POS = {
@@ -812,7 +840,7 @@ const state = {
   cityMarkets: {},
   inventory: {},
   cityStorage: {},
-  logLines: ["Welcome to Market Run Iowa. Hunt hot deals, outrun crashes, and stay ahead of the yearly target."],
+  logLines: ["Welcome to Market Run Iowa. Tap cities to compare live prices, hunt hot deals, and outrun crashes."],
   muted: false,
   capacity: 12,
   pendingFight: false,
@@ -924,20 +952,20 @@ function getStorage(city){
 
 function getDailyMarketState(){
   const roll = Math.random();
-  if (roll < 0.44) return "normal";
-  if (roll < 0.59) return "cheap";
-  if (roll < 0.73) return "booming";
-  if (roll < 0.86) return "flooded";
+  if (roll < 0.38) return "normal";
+  if (roll < 0.56) return "cheap";
+  if (roll < 0.72) return "booming";
+  if (roll < 0.87) return "flooded";
   return "shortage";
 }
 
 function getStateMultiplier(stateName){
   const ranges = {
-    normal: [0.85, 1.15],
-    cheap: [0.35, 0.70],
-    booming: [1.60, 2.40],
-    flooded: [0.20, 0.50],
-    shortage: [2.00, 3.20]
+    normal: [0.82, 1.12],
+    cheap: [0.30, 0.68],
+    booming: [1.70, 2.55],
+    flooded: [0.18, 0.46],
+    shortage: [2.10, 3.40]
   };
   const range = ranges[stateName] || ranges.normal;
   return range[0] + Math.random() * (range[1] - range[0]);
@@ -954,14 +982,15 @@ function getMarketStateLabel(stateName){
   return labels[stateName] || stateName;
 }
 
-function generateMarket(city){
+function buildCityMarket(city){
   if (!state.cityMarkets) state.cityMarkets = {};
+  if (!state.marketStates) state.marketStates = {};
   state.cityMarkets[city] = {};
   state.marketStates[city] = {};
 
   GOODS.forEach(good => {
     const cityMult = CITY_RULES[city][good.name] || 1;
-    const cityFlavor = 0.80 + Math.random() * 0.55;
+    const cityFlavor = 0.72 + Math.random() * 0.72;
     const stateName = getDailyMarketState();
     const stateMult = getStateMultiplier(stateName);
 
@@ -971,15 +1000,19 @@ function generateMarket(city){
     state.cityMarkets[city][good.name] = price;
     state.marketStates[city][good.name] = stateName;
   });
-
-  if (city === state.currentCity) {
-    state.market = { ...state.cityMarkets[city] };
-  }
 }
 
 function initAllCityMarkets(){
-  Object.keys(CITY_RULES).forEach(city => generateMarket(city));
+  Object.keys(CITY_RULES).forEach(city => buildCityMarket(city));
   state.market = { ...(state.cityMarkets[state.currentCity] || {}) };
+}
+
+function refreshSelectedPreview(){
+  const displayCity = getDisplayCity();
+  if (state.cityMarkets && state.cityMarkets[displayCity]) {
+    return;
+  }
+  buildCityMarket(displayCity);
 }
 
 function getDisplayCity(){
@@ -988,6 +1021,7 @@ function getDisplayCity(){
 
 function getDisplayMarket(){
   const city = getDisplayCity();
+  refreshSelectedPreview();
   return state.cityMarkets[city] || {};
 }
 
@@ -1047,6 +1081,7 @@ function getTargetForDay(){
 
 function buildMarketAlert(){
   const city = getDisplayCity();
+  refreshSelectedPreview();
   const states = state.marketStates[city] || {};
   const strong = Object.entries(states)
     .filter(([, s]) => s !== "normal")
@@ -1080,7 +1115,7 @@ function renderStats(){
   document.getElementById("marketSub").textContent =
     state.selectedCity === state.currentCity
       ? `${buildMarketAlert()}`
-      : `Previewing ${state.selectedCity} market • current city: ${state.currentCity} • look for 🔥 hot deals`;
+      : `Previewing ${state.selectedCity} market • current city: ${state.currentCity} • tap cities to compare live prices`;
 
   const displayCity = getDisplayCity();
   const displayMarket = getDisplayMarket();
@@ -1131,7 +1166,7 @@ function renderMarket(){
   const displayCity = getDisplayCity();
   const displayMarket = getDisplayMarket();
   const displayStates = state.marketStates[displayCity] || {};
-  const rows = [`<div class="rowHead"><div>Item</div><div>Trend</div><div>Price</div></div>`];
+  const rows = [`<div class="rowHead"><div>Item (${displayCity})</div><div>Trend</div><div>Price</div></div>`];
   GOODS.forEach(good => {
     const price = displayMarket[good.name];
     const trendClass = getTrendClass(price, good.base);
@@ -1572,7 +1607,8 @@ function checkGameState(){
 
 function advanceDay(){
   state.day += 1;
-  initAllCityMarkets();
+  state.selectedCity = state.currentCity;
+initAllCityMarkets();
   applyDebtInterest();
   randomEvent();
   state.market = { ...(state.cityMarkets[state.currentCity] || {}) };
@@ -1598,6 +1634,7 @@ function travel(){
   animateTravel(from, to, () => {
     state.cash -= cost;
     state.currentCity = to;
+    state.selectedCity = to;
     state.market = { ...(state.cityMarkets[state.currentCity] || {}) };
     soundArrival();
     advanceDay();
@@ -1629,6 +1666,7 @@ function loadGame(){
   }
   const data = JSON.parse(raw);
   Object.assign(state, data);
+  state.selectedCity = state.selectedCity || state.currentCity;
   if (!state.cityMarkets || !Object.keys(state.cityMarkets).length) {
     initAllCityMarkets();
   } else {
@@ -1695,6 +1733,7 @@ function bindUI(){
       state.selectedCity = btn.dataset.city;
       renderMap();
       renderStats();
+      renderMarket();
     });
   });
 
@@ -1704,6 +1743,7 @@ function bindUI(){
       state.selectedCity = node.dataset.city;
       renderMap();
       renderStats();
+      renderMarket();
     });
   });
 
