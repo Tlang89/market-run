@@ -70,6 +70,32 @@ button,input,select{font:inherit}
   white-space:nowrap;
 }
 
+.timeOverlay{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  background:linear-gradient(180deg, rgba(18,28,44,0.00), rgba(5,8,15,0.00));
+  transition:background .35s ease, opacity .35s ease;
+}
+.timeOverlay.night{
+  background:linear-gradient(180deg, rgba(10,16,28,0.20), rgba(2,4,10,0.48));
+}
+.timeOverlay.evening{
+  background:linear-gradient(180deg, rgba(38,22,18,0.10), rgba(13,8,18,0.22));
+}
+.timeCallout{
+  margin-top:6px;
+  margin-bottom:8px;
+  padding:8px 10px;
+  border:1px solid rgba(140,198,255,.18);
+  border-radius:10px;
+  background:rgba(255,255,255,.03);
+  color:var(--text);
+  font-size:13px;
+  text-align:center;
+  min-height:18px;
+}
 .eventBar{
   min-height:54px;
   display:flex;
@@ -637,6 +663,7 @@ button,input,select{font:inherit}
 </style>
 </head>
 <body>
+<div class="timeOverlay" id="timeOverlay"></div>
 <div id="introScreen" class="intro">
   <div class="introBox">
     <h1>Market Run Iowa</h1>
@@ -648,7 +675,8 @@ button,input,select{font:inherit}
       • Watch for cops, mob pressure, and random events<br>
       • Keep your health up<br>
       • Use the bank and manage debt<br>
-      • Every move matters now
+      • Every move matters now<br>
+      • Watch the 24-hour market cycle
       <br><br>
       <strong>Goal:</strong><br>
       Reach $1,000,000 net worth before Day 365
@@ -668,10 +696,12 @@ button,input,select{font:inherit}
     <div class="stat"><div class="label">Debt</div><div class="value" id="debtStat">$0</div></div>
     <div class="stat"><div class="label">Health</div><div class="value" id="healthStat">100</div></div>
     <div class="stat"><div class="label">City</div><div class="value" id="cityStat">Des Moines</div></div>
+    <div class="stat"><div class="label">Time</div><div class="value" id="timeStat">08:00</div></div>
     <div class="stat"><div class="label">Moves</div><div class="value" id="movesStat">4 / 4</div></div>
   </div>
 
   <div class="eventBar" id="eventBar"><div class="tickerTrack" id="tickerTrack"><div class="tickerChunk" id="tickerTextA">Welcome to Market Run Iowa. Tap cities for live prices and street rumors, hunt hot deals, and outrun crashes.</div><div class="tickerChunk" id="tickerTextB">Welcome to Market Run Iowa. Tap cities for live prices and street rumors, hunt hot deals, and outrun crashes.</div></div></div>
+  <div class="timeCallout" id="timeCallout">Day 1 • 08:00 • Market open.</div>
 
   <div class="board">
     <section class="panel marketPanel">
@@ -909,6 +939,8 @@ const state = {
   capacity: 12,
   maxMoves: 4,
   moves: 4,
+  hour: 8,
+  minute: 0,
   pendingFight: false,
   gameOver: false,
   marketStates: {},
@@ -1206,6 +1238,58 @@ function buildMarketAlert(){
   return strong.map(([name, stateName]) => `${name} is ${getMarketStateLabel(stateName)}`).join(" • ");
 }
 
+function formatClock(){
+  const h = String(state.hour).padStart(2, "0");
+  const m = String(state.minute).padStart(2, "0");
+  return `${h}:${m}`;
+}
+
+function getTimePhase(){
+  const t = state.hour + (state.minute / 60);
+  if (t >= 6 && t < 18) return "day";
+  if (t >= 18 && t < 22) return "evening";
+  return "night";
+}
+
+function updateTimeUI(){
+  const timeStat = document.getElementById("timeStat");
+  if (timeStat) timeStat.textContent = formatClock();
+
+  const overlay = document.getElementById("timeOverlay");
+  if (overlay){
+    overlay.classList.remove("day", "evening", "night");
+    overlay.classList.add(getTimePhase());
+  }
+
+  const callout = document.getElementById("timeCallout");
+  if (callout){
+    const phaseText = getTimePhase() === "day" ? "Market open." : getTimePhase() === "evening" ? "Evening pressure building." : "Night rumors are spreading.";
+    callout.textContent = `Day ${state.day} • ${formatClock()} • ${phaseText}`;
+  }
+}
+
+function advanceClock(hours, minutes=0){
+  let total = state.hour * 60 + state.minute + hours * 60 + minutes;
+  state.hour = Math.floor((total % (24*60)) / 60);
+  state.minute = total % 60;
+}
+
+function closeMarketAndOpenTomorrow(){
+  state.hour = 21;
+  state.minute = 0;
+  logLine("🌙 Market closed. Rumors spread overnight...");
+  state.day += 1;
+  initAllCityMarkets();
+  applyDebtInterest();
+  randomEvent();
+  state.hour = 8;
+  state.minute = 0;
+  state.moves = state.maxMoves;
+  logLine(`☀️ Day ${state.day} — Market open. New prices are live.`);
+  state.market = { ...(state.cityMarkets[state.currentCity] || {}) };
+  checkGameState();
+}
+
 function useMoves(cost, actionLabel){
   if (state.gameOver) return false;
   if (state.moves < cost) {
@@ -1214,11 +1298,16 @@ function useMoves(cost, actionLabel){
     return false;
   }
   state.moves -= cost;
-  if (state.moves <= 0) {
-    logLine(`⏳ Last move used on ${actionLabel}. A new day begins.`);
-    advanceDay();
-    state.moves = state.maxMoves;
+  advanceClock(cost * 3, 0);
+
+  if (state.moves === 1) {
+    logLine("⚠️ Last move coming up. Choose carefully.");
   }
+
+  if (state.moves <= 0) {
+    closeMarketAndOpenTomorrow();
+  }
+
   return true;
 }
 
@@ -1755,6 +1844,8 @@ function checkGameState(){
 function advanceDay(){
   state.day += 1;
   state.selectedCity = state.currentCity;
+state.hour = 8;
+state.minute = 0;
 initAllCityMarkets();
   applyDebtInterest();
   randomEvent();
@@ -1781,6 +1872,7 @@ function travel(){
   logLine(`🗺️ Traveling to ${to}... Cost ${fmt(cost)}.`);
   animateTravel(from, to, () => {
     state.cash -= cost;
+    advanceClock(2, 0);
     state.currentCity = to;
     state.selectedCity = to;
     state.market = { ...(state.cityMarkets[state.currentCity] || {}) };
@@ -1793,9 +1885,8 @@ function travel(){
 function stay(){
   if (state.gameOver) return;
   soundClick();
-  logLine(`🕶️ Stayed in ${state.currentCity}. You ended the day early.`);
-  advanceDay();
-  state.moves = state.maxMoves;
+  logLine(`🕶️ You closed up early in ${state.currentCity}.`);
+  closeMarketAndOpenTomorrow();
   renderAll();
 }
 
@@ -1818,6 +1909,8 @@ function loadGame(){
   state.selectedCity = state.selectedCity || state.currentCity;
   state.maxMoves = state.maxMoves || 4;
   state.moves = state.moves || state.maxMoves;
+  state.hour = (state.hour ?? 8);
+  state.minute = (state.minute ?? 0);
   if (!state.cityMarkets || !Object.keys(state.cityMarkets).length) {
     initAllCityMarkets();
   } else {
