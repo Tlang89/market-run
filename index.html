@@ -245,6 +245,15 @@ button,input,select{font:inherit}
 .actionTabPane{display:none;}
 .actionTabPane.active{display:block;}
 
+.actionExplain{
+  margin-top:6px;
+  margin-bottom:10px;
+  font-size:13px;
+  color:var(--muted);
+  text-align:center;
+  min-height:18px;
+}
+
 .choiceBanner{
   margin-top:8px;
   padding:8px 10px;
@@ -679,6 +688,10 @@ button,input,select{font:inherit}
         <button class="actionTabBtn active" data-action-tab="trade">Trade</button>
         <button class="actionTabBtn" data-action-tab="operate">Operate</button>
         <button class="actionTabBtn" data-action-tab="system">System</button>
+      </div>
+
+      <div id="actionExplain" class="actionExplain">
+        Buy low, sell high. Manage your inventory.
       </div>
 
       <div class="actionTabPane active" id="action-trade">
@@ -1820,6 +1833,19 @@ function resetGame(){
   location.reload();
 }
 
+function updateActionExplain(tab){
+  const el = document.getElementById("actionExplain");
+  if (!el) return;
+
+  if (tab === "trade") {
+    el.textContent = "Buy low, sell high. Manage your inventory.";
+  } else if (tab === "operate") {
+    el.textContent = "Move cities, manage money, and take risks.";
+  } else if (tab === "system") {
+    el.textContent = "Save progress, load, adjust sound, or reset.";
+  }
+}
+
 function bindActionTabs(){
   document.querySelectorAll(".actionTabBtn").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -1830,6 +1856,7 @@ function bindActionTabs(){
       const key = btn.dataset.actionTab;
       const pane = document.getElementById(`action-${key}`);
       if (pane) pane.classList.add("active");
+      updateActionExplain(key);
     });
   });
 }
@@ -1921,6 +1948,7 @@ function bindUI(){
 
 initAllCityMarkets();
 bindActionTabs();
+updateActionExplain("trade");
 bindTabs();
 bindUI();
 renderAll();
