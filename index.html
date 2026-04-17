@@ -766,9 +766,7 @@ button,input,select{font:inherit}
 
       <div class="actionTabPane" id="action-operate">
         <div class="actions">
-          <button class="actionBtn" id="travelBtn">Travel</button>
-          <button class="actionBtn secondary" id="stayBtn">Stay</button>
-          <button class="actionBtn" id="borrow500Btn">Borrow 500</button>
+                    <button class="actionBtn" id="borrow500Btn">Borrow 500</button>
           <button class="actionBtn danger" id="repay500Btn">Repay 500</button>
           <button class="actionBtn secondary" id="deposit500Btn">Deposit 500</button>
           <button class="actionBtn secondary" id="withdraw500Btn">Withdraw 500</button>
@@ -849,6 +847,11 @@ button,input,select{font:inherit}
           <button class="cityBtn" data-city="Waterloo">Waterloo</button>
           <button class="cityBtn" data-city="Cedar Falls">Cedar Falls</button>
           <button class="cityBtn" data-city="Ames">Ames</button>
+        </div>
+
+        <div class="mapActions">
+          <button class="actionBtn travelBtn" id="travelBtn">Travel</button>
+          <button class="actionBtn stayBtn" id="stayBtn">Stay</button>
         </div>
       </div>
 
@@ -1509,6 +1512,24 @@ function renderMap(){
   if (currentNode) currentNode.classList.add("current");
   const selectedNode = document.getElementById(`node-${state.selectedCity}`);
   if (selectedNode && state.selectedCity !== state.currentCity) selectedNode.classList.add("selected");
+}
+
+function updateTravelButtonState(){
+  const travelBtn = document.getElementById("travelBtn");
+  if (!travelBtn) return;
+
+  const sameCity = state.selectedCity === state.currentCity;
+  travelBtn.disabled = sameCity;
+
+  if (sameCity) {
+    travelBtn.textContent = "Already Here";
+    travelBtn.style.opacity = "0.65";
+    travelBtn.style.cursor = "not-allowed";
+  } else {
+    travelBtn.textContent = `Travel to ${state.selectedCity}`;
+    travelBtn.style.opacity = "1";
+    travelBtn.style.cursor = "pointer";
+  }
 }
 
 function renderAll(){
