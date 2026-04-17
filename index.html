@@ -291,6 +291,30 @@ button,input,select{font:inherit}
   color:var(--text);
 }
 
+.runInfoPanel{
+  margin-top:10px;
+  padding:12px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+  background:rgba(255,255,255,.03);
+}
+.runInfoPanel h3{
+  margin:0 0 8px 0;
+  font-size:18px;
+  color:var(--gold);
+}
+.runInfoPanel .smallBox{
+  margin-top:8px;
+}
+.runInfoPanel .sub{
+  margin-top:8px;
+  margin-bottom:4px;
+}
+.runInfoFeed{
+  max-height:150px;
+}
+
+
 .marketIntel{
   margin-top:10px;
   padding-top:10px;
@@ -791,82 +815,76 @@ button,input,select{font:inherit}
         <div class="dangerLevel safe" id="dangerLevel">STABLE</div>
         <div class="dangerAdvice" id="dangerAdvice">You are in decent shape. Keep building smart.</div>
       </div>
-    </section>
 
-    <section class="panel mapPanel">
-      <div class="tabs">
-        <button class="tabBtn active" data-tab="tab-map">Map</button>
-        <button class="tabBtn" data-tab="tab-status">Intel</button>
-      </div>
-
-      <div class="tabPane active" id="tab-map">
-        <h2>Iowa Map</h2>
-        <div class="sub">Pick your next city and make your move.</div>
-        <div class="mapWrap">
-          <svg viewBox="0 0 980 520" id="iowaMap">
-            <path class="hill1" d="M0 355 Q120 300 240 338 T480 326 T720 348 T980 318 L980 520 L0 520 Z"></path>
-            <path class="hill2" d="M0 388 Q140 342 260 375 T520 370 T760 394 T980 364 L980 520 L0 520 Z"></path>
-            <path class="hill3" d="M0 420 Q150 390 300 420 T600 412 T980 404 L980 520 L0 520 Z"></path>
-
-            <path class="iowa" d="M120 95 L785 95 L810 118 L925 122 L905 330 L870 355 L860 410 L785 448 L700 446 L620 435 L560 450 L500 430 L430 448 L360 430 L290 438 L200 412 L155 360 L130 290 L105 240 L120 210 L105 180 L120 95 Z"></path>
-
-            <line class="cityRoute" x1="480" y1="300" x2="690" y2="152"></line>
-            <line class="cityRoute" x1="480" y1="300" x2="736" y2="146"></line>
-            <line class="cityRoute" x1="480" y1="300" x2="520" y2="230"></line>
-
-            <g class="cityNode" data-city="Des Moines">
-              <circle class="cityPulse" cx="480" cy="300" r="24"></circle>
-              <circle id="node-Des Moines" class="cityCore current" cx="480" cy="300" r="13"></circle>
-              <text class="cityLabel" x="425" y="336">Des Moines</text>
-            </g>
-
-            <g class="cityNode" data-city="Waterloo">
-              <circle class="cityPulse" cx="690" cy="152" r="24"></circle>
-              <circle id="node-Waterloo" class="cityCore" cx="690" cy="152" r="13"></circle>
-              <text class="cityLabel" x="652" y="126">Waterloo</text>
-            </g>
-
-            <g class="cityNode" data-city="Cedar Falls">
-              <circle class="cityPulse" cx="736" cy="146" r="24"></circle>
-              <circle id="node-Cedar Falls" class="cityCore" cx="736" cy="146" r="13"></circle>
-              <text class="cityLabel" x="690" y="114">Cedar Falls</text>
-            </g>
-
-            <g class="cityNode" data-city="Ames">
-              <circle class="cityPulse" cx="520" cy="230" r="24"></circle>
-              <circle id="node-Ames" class="cityCore" cx="520" cy="230" r="13"></circle>
-              <text class="cityLabel" x="505" y="202">Ames</text>
-            </g>
-
-            <circle id="travelDot" cx="-100" cy="-100" r="8"></circle>
-          </svg>
-        </div>
-
-        <div class="cityGrid">
-          <button class="cityBtn active current" data-city="Des Moines">Des Moines</button>
-          <button class="cityBtn" data-city="Waterloo">Waterloo</button>
-          <button class="cityBtn" data-city="Cedar Falls">Cedar Falls</button>
-          <button class="cityBtn" data-city="Ames">Ames</button>
-        </div>
-
-        <div class="mapActions">
-          <button class="actionBtn travelBtn" id="travelBtn">Travel</button>
-          <button class="actionBtn stayBtn" id="stayBtn">Stay</button>
-        </div>
-      </div>
-
-      <div class="tabPane" id="tab-status">
-        
+      <div class="runInfoPanel" id="runInfoPanel">
+        <h3>Run Info</h3>
         <div class="smallBox" id="selectedInfo">Selected item: Sneakers</div>
         <div class="smallBox" id="storageInfo">Storage: Empty</div>
         <div class="smallBox" id="goalInfo">Goal: Reach $1,000,000 by Day 365.</div>
 
-        <div class="sub" style="margin-top:2px;">Health</div>
+        <div class="sub">Health</div>
         <div class="healthBarWrap"><div class="healthBar" id="healthBar"></div></div>
         <div class="smallBox" id="healthNote" style="margin-top:8px;">Solid shape.</div>
 
-        <div class="sub" style="margin-top:2px;">Recent Activity</div>
-        <div id="eventRows" class="feed"></div>
+        <div class="sub">Recent Activity</div>
+        <div id="eventRows" class="feed runInfoFeed"></div>
+      </div>
+    </section>
+
+    <section class="panel mapPanel">
+      <h2>Map & Travel</h2>
+      <div class="sub">Pick your next city and make your move.</div>
+
+      <div class="mapWrap">
+        <svg viewBox="0 0 980 520" id="iowaMap">
+          <path class="hill1" d="M0 355 Q120 300 240 338 T480 326 T720 348 T980 318 L980 520 L0 520 Z"></path>
+          <path class="hill2" d="M0 388 Q140 342 260 375 T520 370 T760 394 T980 364 L980 520 L0 520 Z"></path>
+          <path class="hill3" d="M0 420 Q150 390 300 420 T600 412 T980 404 L980 520 L0 520 Z"></path>
+
+          <path class="iowa" d="M120 95 L785 95 L810 118 L925 122 L905 330 L870 355 L860 410 L785 448 L700 446 L620 435 L560 450 L500 430 L430 448 L360 430 L290 438 L200 412 L155 360 L130 290 L105 240 L120 210 L105 180 L120 95 Z"></path>
+
+          <line class="cityRoute" x1="480" y1="300" x2="690" y2="152"></line>
+          <line class="cityRoute" x1="480" y1="300" x2="736" y2="146"></line>
+          <line class="cityRoute" x1="480" y1="300" x2="520" y2="230"></line>
+
+          <g class="cityNode" data-city="Des Moines">
+            <circle class="cityPulse" cx="480" cy="300" r="26"></circle>
+            <circle id="node-Des Moines" class="cityCore current" cx="480" cy="300" r="13"></circle>
+            <text class="cityLabel" x="425" y="336">Des Moines</text>
+          </g>
+
+          <g class="cityNode" data-city="Waterloo">
+            <circle class="cityPulse" cx="690" cy="152" r="26"></circle>
+            <circle id="node-Waterloo" class="cityCore" cx="690" cy="152" r="13"></circle>
+            <text class="cityLabel" x="652" y="126">Waterloo</text>
+          </g>
+
+          <g class="cityNode" data-city="Cedar Falls">
+            <circle class="cityPulse" cx="736" cy="146" r="26"></circle>
+            <circle id="node-Cedar Falls" class="cityCore" cx="736" cy="146" r="13"></circle>
+            <text class="cityLabel" x="690" y="114">Cedar Falls</text>
+          </g>
+
+          <g class="cityNode" data-city="Ames">
+            <circle class="cityPulse" cx="520" cy="230" r="26"></circle>
+            <circle id="node-Ames" class="cityCore" cx="520" cy="230" r="13"></circle>
+            <text class="cityLabel" x="505" y="202">Ames</text>
+          </g>
+
+          <circle id="travelDot" cx="-100" cy="-100" r="8"></circle>
+        </svg>
+      </div>
+
+      <div class="cityGrid">
+        <button class="cityBtn active current" data-city="Des Moines">Des Moines</button>
+        <button class="cityBtn" data-city="Waterloo">Waterloo</button>
+        <button class="cityBtn" data-city="Cedar Falls">Cedar Falls</button>
+        <button class="cityBtn" data-city="Ames">Ames</button>
+      </div>
+
+      <div class="mapActions">
+        <button class="actionBtn travelBtn" id="travelBtn">Travel</button>
+        <button class="actionBtn stayBtn" id="stayBtn">Stay</button>
       </div>
     </section>
   </div>
@@ -1455,17 +1473,9 @@ function renderMarket(){
 }
 
 function renderFeed(){
-  const box = document.getElementById("feedRows");
-  const lines = state.logLines.slice(0, 8);
-  const feedHTML = lines.map(line => `<div class="feedLine">${line}</div>`).join("");
-  if (box) box.innerHTML = feedHTML;
-
-  const intelFeed = document.getElementById("marketIntelFeed");
-  if (intelFeed) {
-    intelFeed.innerHTML = lines
-      .map(line => `<div class="marketIntelLine">${line}</div>`)
-      .join("");
-  }
+  const box = document.getElementById("eventRows");
+  if (!box) return;
+  box.innerHTML = state.logLines.map(line => `<div class="feedLine">${line}</div>`).join("");
 }
 
 
@@ -2021,17 +2031,7 @@ function bindActionTabs(){
 }
 
 function bindTabs(){
-  document.querySelectorAll(".tabBtn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      soundClick();
-      document.querySelectorAll(".tabBtn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      document.querySelectorAll(".tabPane").forEach(p => p.classList.remove("active"));
-      const key = btn.dataset.tab;
-      const pane = document.getElementById(`${key}Pane`);
-      if (pane) pane.classList.add("active");
-    });
-  });
+  // Map panel no longer uses tabs.
 }
 
 function bindUI(){
