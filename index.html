@@ -754,12 +754,12 @@ button,input,select{font:inherit}
     <div class="stat"><div class="label">Debt</div><div class="value" id="debtStat">$0</div></div>
     <div class="stat"><div class="label">Health</div><div class="value" id="healthStat">100</div></div>
     <div class="stat"><div class="label">City</div><div class="value" id="cityStat">Des Moines</div></div>
-    <div class="stat"><div class="label">Real Time</div><div class="value" id="timeStat">08:00</div></div>
+    <div class="stat"><div class="label">Time</div><div class="value" id="timeStat">08:00</div></div>
     <div class="stat"><div class="label">Moves</div><div class="value" id="movesStat">4 / 4</div></div>
   </div>
 
-  <div class="eventBar" id="eventBar"><div class="tickerTrack" id="tickerTrack"><div class="tickerChunk" id="tickerTextA">Welcome to Market Run Iowa. Tap cities for live prices and street rumors, hunt hot deals, and outrun crashes.</div><div class="tickerChunk" id="tickerTextB">Welcome to Market Run Iowa. Tap cities for live prices and street rumors, hunt hot deals, and outrun crashes.</div></div></div>
-  <div class="timeCallout" id="timeCallout">Day 1 • 08:00 • Market open.</div>
+  <div class="eventBar" id="eventBar"><div class="tickerTrack" id="tickerTrack"><div class="tickerChunk" id="tickerTextA">Welcome to Market Run Iowa. Tap cities, watch the streets, and move when the time feels right.</div><div class="tickerChunk" id="tickerTextB">Welcome to Market Run Iowa. Tap cities, watch the streets, and move when the time feels right.</div></div></div>
+  <div class="timeCallout" id="timeCallout">Day 1 • 08:00 • Things are moving.</div>
 
   <div class="board">
     <section class="panel marketPanel">
@@ -993,7 +993,7 @@ const state = {
   cityMarkets: {},
   inventory: {},
   cityStorage: {},
-  logLines: ["Welcome to Market Run Iowa. Tap cities for live prices and street rumors, hunt hot deals, and outrun crashes."],
+  logLines: ["Welcome to Market Run Iowa. Tap cities, watch the streets, and move when the time feels right."],
   muted: false,
   capacity: 12,
   maxMoves: 4,
@@ -1077,24 +1077,48 @@ function popup(text){
   setTimeout(() => el.remove(), 780);
 }
 
-function setEventBar(text){
+function setEventBar(text=""){
   const a = document.getElementById("tickerTextA");
   const b = document.getElementById("tickerTextB");
-  if (a) a.textContent = ` ${text}   •   ${buildTickerSummary()}   •   `;
-  if (b) b.textContent = ` ${text}   •   ${buildTickerSummary()}   •   `;
+  const chatter = text || getStreetChatter();
+  if (a) a.textContent = ` ${chatter}   •   `;
+  if (b) b.textContent = ` ${chatter}   •   `;
+}
+
+function getStreetTime(){
+  const h = new Date().getHours();
+  if (h < 6) return "Late night";
+  if (h < 12) return "Morning";
+  if (h < 18) return "Afternoon";
+  return "Night";
+}
+
+function getStreetChatter(){
+  const city = state.selectedCity || state.currentCity;
+  const time = getStreetTime();
+  const rumor = state.cityRumors && state.cityRumors[city] ? state.cityRumors[city] : "";
+
+  const chatter = [
+    `${city} feels different ${time.toLowerCase()}...`,
+    `Word is something's moving in ${city}.`,
+    `${city} is quiet... too quiet.`,
+    `Buyers are watching right now.`,
+    `Something feels off in ${city}.`,
+    `People are holding and waiting.`,
+    `You might want to move soon.`,
+    `${city} had a drop earlier.`,
+    `Not everybody is buying right now.`,
+    `Someone is making moves in ${city}.`
+  ];
+
+  if (rumor) chatter.unshift(`${city} rumor: ${rumor}`);
+  return chatter[Math.floor(Math.random() * chatter.length)];
 }
 
 function buildTickerSummary(){
-  const city = getDisplayCity ? getDisplayCity() : state.currentCity;
-  const rumor = (state.cityRumors && state.cityRumors[city]) ? state.cityRumors[city] : cityMessage(state.currentCity);
-  const target = typeof getTargetForDay === "function" ? getTargetForDay() : 0;
-  const net = typeof getNetWorth === "function" ? getNetWorth() : (state.cash + state.bank);
-  let pressure = "On track";
-  if (target) {
-    if (net < target * 0.7) pressure = "Behind target";
-    else if (net > target * 1.2) pressure = "Ahead of target";
-  }
-  return `${city} rumor: ${rumor}   •   ${pressure}`;
+  const city = state.selectedCity || state.currentCity;
+  const rumor = (state.cityRumors && state.cityRumors[city]) ? state.cityRumors[city] : "Street chatter is light right now.";
+  return `${city} rumor: ${rumor}`;
 }
 
 function logLine(text){
@@ -1128,18 +1152,18 @@ function getDailyMarketState(){
   const roll = Math.random();
   if (roll < 0.34) return "normal";
   if (roll < 0.52) return "cheap";
-  if (roll < 0.70) return "booming";
-  if (roll < 0.86) return "flooded";
-  return "shortage";
+  if (roll < 0.70) return "heating up";
+  if (roll < 0.86) return "oversupplied";
+  return "hard to find";
 }
 
 function getStateMultiplier(stateName){
   const ranges = {
     normal: [0.85, 1.15],
     cheap: [0.32, 0.68],
-    booming: [1.75, 2.60],
-    flooded: [0.18, 0.48],
-    shortage: [2.10, 3.50]
+    heating up: [1.75, 2.60],
+    oversupplied: [0.18, 0.48],
+    hard to find: [2.10, 3.50]
   };
   const range = ranges[stateName] || ranges.normal;
   return range[0] + Math.random() * (range[1] - range[0]);
@@ -1149,9 +1173,9 @@ function getMarketStateLabel(stateName){
   const labels = {
     normal: "steady",
     cheap: "discounted",
-    booming: "booming",
-    flooded: "flooded",
-    shortage: "shortage"
+    heating up: "heating up",
+    oversupplied: "oversupplied",
+    hard to find: "hard to find"
   };
   return labels[stateName] || stateName;
 }
@@ -1161,7 +1185,7 @@ function buildCityRumor(city){
   const strongest = Object.entries(states)
     .filter(([, s]) => s !== "normal")
     .sort((a, b) => {
-      const order = { shortage: 4, booming: 3, flooded: 2, cheap: 1, normal: 0 };
+      const order = { hard to find: 4, heating up: 3, oversupplied: 2, cheap: 1, normal: 0 };
       return (order[b[1]] || 0) - (order[a[1]] || 0);
     })
     .slice(0, 2);
@@ -1177,10 +1201,10 @@ function buildCityRumor(city){
   }
 
   const rumorLines = strongest.map(([name, stateName]) => {
-    if (stateName === "booming") return `${name} is getting hot fast.`;
-    if (stateName === "flooded") return `${name} is crashing from oversupply.`;
+    if (stateName === "heating up") return `${name} is getting hot fast.`;
+    if (stateName === "oversupplied") return `${name} is crashing from oversupply.`;
     if (stateName === "cheap") return `${name} is unusually cheap right now.`;
-    if (stateName === "shortage") return `${name} is in short supply.`;
+    if (stateName === "hard to find") return `${name} is in short supply.`;
     return `${name} is steady.`;
   });
 
@@ -1285,7 +1309,7 @@ function buildMarketAlert(){
   const strong = Object.entries(states)
     .filter(([, s]) => s !== "normal")
     .sort((a, b) => {
-      const order = { shortage: 4, booming: 3, flooded: 2, cheap: 1, normal: 0 };
+      const order = { hard to find: 4, heating up: 3, oversupplied: 2, cheap: 1, normal: 0 };
       return (order[b[1]] || 0) - (order[a[1]] || 0);
     })
     .slice(0, 2);
@@ -1330,23 +1354,31 @@ function getRealTimeMood(){
   const now = getRealTimeParts().hour;
   if (now >= 6 && now < 12) return "Morning market energy.";
   if (now >= 12 && now < 18) return "Midday trade window.";
-  if (now >= 18 && now < 22) return "Evening pressure building.";
-  return "Night rumors are spreading.";
+  if (now >= 18 && now < 22) return "Things are heating up.";
+  return "Word on the street is moving.";
 }
 
 function updateTimeUI(){
+  const now = new Date();
+  const h = now.getHours();
+  const m = String(now.getMinutes()).padStart(2, "0");
+
   const timeStat = document.getElementById("timeStat");
-  if (timeStat) timeStat.textContent = formatRealClock();
+  if (timeStat){
+    timeStat.textContent = `${h}:${m}`;
+  }
 
   const overlay = document.getElementById("timeOverlay");
   if (overlay){
     overlay.classList.remove("day", "evening", "night");
-    overlay.classList.add(getTimePhase());
+    if (h >= 6 && h < 18) overlay.classList.add("day");
+    else if (h >= 18 && h < 22) overlay.classList.add("evening");
+    else overlay.classList.add("night");
   }
 
   const callout = document.getElementById("timeCallout");
   if (callout){
-    callout.textContent = `Day ${state.day} • Real ${formatRealClock()} • Market Clock ${formatMarketClock()} • ${getRealTimeMood()}`;
+    callout.textContent = `${getStreetTime()} • ${state.currentCity}`;
   }
 }
 
@@ -1359,7 +1391,7 @@ function advanceClock(hours, minutes=0){
 function closeMarketAndOpenTomorrow(){
   state.hour = 21;
   state.minute = 0;
-  logLine("🌙 Market closed. Rumors spread overnight...");
+  logLine("🌙 Night fell. Rumors spread overnight...");
   state.day += 1;
   initAllCityMarkets();
   applyDebtInterest();
@@ -1367,7 +1399,7 @@ function closeMarketAndOpenTomorrow(){
   state.hour = 8;
   state.minute = 0;
   state.moves = state.maxMoves;
-  logLine(`☀️ Day ${state.day} — Market open. New prices are live.`);
+  logLine(`☀️ Day ${state.day} — Things are moving. New prices are live.`);
   state.market = { ...(state.cityMarkets[state.currentCity] || {}) };
   checkGameState();
 }
@@ -1409,8 +1441,8 @@ function renderStats(){
   const target = getTargetForDay();
   const net = getNetWorth();
   let pressure = "• On track";
-  if (net < target * 0.7) pressure = "⚠️ Behind";
-  else if (net > target * 1.2) pressure = "🔥 Ahead";
+  if (net < target * 0.7) pressure = "⚠️ Falling off";
+  else if (net > target * 1.2) pressure = "🔥 Doing well";
   document.getElementById("cityStat").textContent = `${state.currentCity} | ${pressure}`;
   document.getElementById("movesStat").textContent = `${state.moves} / ${state.maxMoves}`;
 
@@ -1552,9 +1584,7 @@ function renderAll(){
   renderFeed();
   renderMap();
   renderMobileInventory();
-  if (state.logLines && state.logLines.length) {
-    setEventBar(state.logLines[0]);
-  }
+  setEventBar();
 }
 
 function buyOne(){
@@ -1583,7 +1613,10 @@ function buyOne(){
   flashAction("Bought!");
   logLine(`💸 Bought 1 ${item} for ${fmt(price)}.`);
   renderAll();
-setInterval(updateTimeUI, 1000);
+setInterval(() => {
+  updateTimeUI();
+  setEventBar();
+}, 4000);
 }
 
 function sellOne(){
