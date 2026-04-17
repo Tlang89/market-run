@@ -1613,10 +1613,6 @@ function buyOne(){
   flashAction("Bought!");
   logLine(`💸 Bought 1 ${item} for ${fmt(price)}.`);
   renderAll();
-setInterval(() => {
-  updateTimeUI();
-  setEventBar();
-}, 4000);
 }
 
 function sellOne(){
@@ -2156,6 +2152,8 @@ function bindUI(){
     if (intro) intro.style.display = "none";
     const help = document.getElementById("helpOverlay");
     if (help) help.classList.remove("show");
+    updateTimeUI();
+    setEventBar();
     renderAll();
   });
 
@@ -2165,6 +2163,8 @@ function bindUI(){
     if (intro) intro.style.display = "none";
     const help = document.getElementById("helpOverlay");
     if (help) help.classList.remove("show");
+    updateTimeUI();
+    setEventBar();
     renderAll();
   });
 }
@@ -2175,6 +2175,10 @@ updateActionExplain("trade");
 bindTabs();
 bindUI();
 renderAll();
+setInterval(() => {
+  updateTimeUI();
+  setEventBar();
+}, 4000);
 </script>
 </body>
 </html>
