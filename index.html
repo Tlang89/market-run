@@ -96,6 +96,50 @@ button,input,select{font:inherit}
   text-align:center;
   min-height:18px;
 }
+
+.helpOverlay{
+  position:fixed;
+  inset:0;
+  background:rgba(5,8,15,.92);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  z-index:99998;
+}
+.helpOverlay.show{display:flex;}
+.helpBox{
+  width:min(560px,100%);
+  max-height:80dvh;
+  overflow:auto;
+  border:1px solid rgba(215,178,107,.55);
+  border-radius:16px;
+  background:linear-gradient(180deg,#0f1827,#0a1019);
+  box-shadow:0 0 30px rgba(0,0,0,.6);
+  padding:18px;
+}
+.helpBox h3{
+  margin:0 0 10px 0;
+  color:var(--gold);
+  font-size:22px;
+}
+.helpBox p{
+  margin:0 0 10px 0;
+  color:#ddd;
+  line-height:1.5;
+  font-size:14px;
+}
+.helpClose{
+  margin-top:8px;
+  width:100%;
+  border:none;
+  border-radius:10px;
+  padding:12px 14px;
+  background:linear-gradient(180deg,#d7b26b,#b7914d);
+  color:#1b150a;
+  font-weight:700;
+  cursor:pointer;
+}
 .eventBar{
   min-height:54px;
   display:flex;
@@ -679,12 +723,26 @@ button,input,select{font:inherit}
       • Watch the 24-hour market cycle
       <br><br>
       <strong>Goal:</strong><br>
-      Reach $1,000,000 net worth before Day 365
+      Reach $1,000,000 net worth before Day 365<br><br>
+      You can reopen these instructions later from the System tab.
     </p>
     <div class="startRow">
       <button id="startGameBtn">Start With Sound</button>
       <button id="startMutedBtn">Start Muted</button>
     </div>
+  </div>
+</div>
+
+<div class="helpOverlay" id="helpOverlay">
+  <div class="helpBox">
+    <h3>How to Play</h3>
+    <p><strong>Goal:</strong> Reach your yearly target before time runs out.</p>
+    <p><strong>Trade:</strong> Buy low, sell high, and watch for 🔥 hot deals.</p>
+    <p><strong>Operate:</strong> Travel between cities, use the bank, repay debt, and react to danger.</p>
+    <p><strong>Moves:</strong> You only get a limited number of moves per day, so every click matters.</p>
+    <p><strong>Cities:</strong> Tap cities to preview their prices and rumors before you travel.</p>
+    <p><strong>Day/Night:</strong> The market opens in the morning, pressure builds through the day, and overnight rumors shape tomorrow.</p>
+    <button class="helpClose" id="helpCloseBtn">Back to Game</button>
   </div>
 </div>
 
@@ -696,7 +754,7 @@ button,input,select{font:inherit}
     <div class="stat"><div class="label">Debt</div><div class="value" id="debtStat">$0</div></div>
     <div class="stat"><div class="label">Health</div><div class="value" id="healthStat">100</div></div>
     <div class="stat"><div class="label">City</div><div class="value" id="cityStat">Des Moines</div></div>
-    <div class="stat"><div class="label">Time</div><div class="value" id="timeStat">08:00</div></div>
+    <div class="stat"><div class="label">Real Time</div><div class="value" id="timeStat">08:00</div></div>
     <div class="stat"><div class="label">Moves</div><div class="value" id="movesStat">4 / 4</div></div>
   </div>
 
@@ -751,6 +809,7 @@ button,input,select{font:inherit}
           <button class="actionBtn secondary" id="saveBtn">Save</button>
           <button class="actionBtn secondary" id="loadBtn">Load</button>
           <button class="actionBtn secondary" id="muteBtn">Sound: On</button>
+          <button class="actionBtn secondary" id="helpBtn">How to Play</button>
           <button class="actionBtn danger" id="resetBtn">Reset</button>
         </div>
       </div>
@@ -1238,22 +1297,46 @@ function buildMarketAlert(){
   return strong.map(([name, stateName]) => `${name} is ${getMarketStateLabel(stateName)}`).join(" • ");
 }
 
-function formatClock(){
+function formatMarketClock(){
   const h = String(state.hour).padStart(2, "0");
   const m = String(state.minute).padStart(2, "0");
   return `${h}:${m}`;
 }
 
+function getRealTimeParts(){
+  const now = new Date();
+  return {
+    hour: now.getHours(),
+    minute: now.getMinutes()
+  };
+}
+
+function formatRealClock(){
+  const now = getRealTimeParts();
+  const h = String(now.hour).padStart(2, "0");
+  const m = String(now.minute).padStart(2, "0");
+  return `${h}:${m}`;
+}
+
 function getTimePhase(){
-  const t = state.hour + (state.minute / 60);
+  const now = getRealTimeParts();
+  const t = now.hour + (now.minute / 60);
   if (t >= 6 && t < 18) return "day";
   if (t >= 18 && t < 22) return "evening";
   return "night";
 }
 
+function getRealTimeMood(){
+  const now = getRealTimeParts().hour;
+  if (now >= 6 && now < 12) return "Morning market energy.";
+  if (now >= 12 && now < 18) return "Midday trade window.";
+  if (now >= 18 && now < 22) return "Evening pressure building.";
+  return "Night rumors are spreading.";
+}
+
 function updateTimeUI(){
   const timeStat = document.getElementById("timeStat");
-  if (timeStat) timeStat.textContent = formatClock();
+  if (timeStat) timeStat.textContent = formatRealClock();
 
   const overlay = document.getElementById("timeOverlay");
   if (overlay){
@@ -1263,8 +1346,7 @@ function updateTimeUI(){
 
   const callout = document.getElementById("timeCallout");
   if (callout){
-    const phaseText = getTimePhase() === "day" ? "Market open." : getTimePhase() === "evening" ? "Evening pressure building." : "Night rumors are spreading.";
-    callout.textContent = `Day ${state.day} • ${formatClock()} • ${phaseText}`;
+    callout.textContent = `Day ${state.day} • Real ${formatRealClock()} • Market Clock ${formatMarketClock()} • ${getRealTimeMood()}`;
   }
 }
 
@@ -1501,6 +1583,7 @@ function buyOne(){
   flashAction("Bought!");
   logLine(`💸 Bought 1 ${item} for ${fmt(price)}.`);
   renderAll();
+setInterval(updateTimeUI, 1000);
 }
 
 function sellOne(){
@@ -1991,6 +2074,16 @@ function bindUI(){
   document.getElementById("loadBtn").addEventListener("click", loadGame);
   document.getElementById("resetBtn").addEventListener("click", resetGame);
 
+  document.getElementById("helpBtn").addEventListener("click", () => {
+    soundClick();
+    const overlay = document.getElementById("helpOverlay");
+    if (overlay) overlay.classList.add("show");
+  });
+  document.getElementById("helpCloseBtn").addEventListener("click", () => {
+    soundClick();
+    const overlay = document.getElementById("helpOverlay");
+    if (overlay) overlay.classList.remove("show");
+  });
   document.getElementById("muteBtn").addEventListener("click", () => {
     soundClick();
     state.muted = !state.muted;
@@ -2028,6 +2121,8 @@ function bindUI(){
     soundArrival();
     const intro = document.getElementById("introScreen");
     if (intro) intro.style.display = "none";
+    const help = document.getElementById("helpOverlay");
+    if (help) help.classList.remove("show");
     renderAll();
   });
 
@@ -2035,6 +2130,8 @@ function bindUI(){
     state.muted = true;
     const intro = document.getElementById("introScreen");
     if (intro) intro.style.display = "none";
+    const help = document.getElementById("helpOverlay");
+    if (help) help.classList.remove("show");
     renderAll();
   });
 }
