@@ -622,7 +622,7 @@ button,input,select{font:inherit}
     <div class="stat"><div class="label">Worth</div><div class="value" id="worthStat">$2,500</div></div>
   </div>
 
-  <div class="eventBar" id="eventBar">Welcome to Market Run Iowa. Tap cities to compare live prices, hunt hot deals, and outrun crashes.</div>
+  <div class="eventBar" id="eventBar">Welcome to Market Run Iowa. Tap cities for live prices and street rumors, hunt hot deals, and outrun crashes.</div>
 
   <div class="board">
     <section class="panel marketPanel">
@@ -763,35 +763,35 @@ const GOODS = [
 const CITY_RULES = {
   "Des Moines": {
     Sneakers: 1.00,
-    Mixtapes: 0.85,
-    Jackets: 1.20,
-    Headphones: 1.00,
-    "Hot Sauce": 0.75,
-    "Vintage Tees": 1.05
+    Mixtapes: 0.82,
+    Jackets: 1.18,
+    Headphones: 0.96,
+    "Hot Sauce": 0.72,
+    "Vintage Tees": 1.02
   },
   "Waterloo": {
-    Sneakers: 0.72,
-    Mixtapes: 1.35,
-    Jackets: 0.92,
-    Headphones: 1.55,
-    "Hot Sauce": 1.05,
-    "Vintage Tees": 0.82
+    Sneakers: 0.68,
+    Mixtapes: 1.32,
+    Jackets: 0.88,
+    Headphones: 1.58,
+    "Hot Sauce": 1.08,
+    "Vintage Tees": 0.80
   },
   "Cedar Falls": {
-    Sneakers: 1.38,
-    Mixtapes: 1.62,
-    Jackets: 0.78,
+    Sneakers: 1.42,
+    Mixtapes: 1.60,
+    Jackets: 0.74,
     Headphones: 1.12,
-    "Hot Sauce": 0.72,
-    "Vintage Tees": 1.48
+    "Hot Sauce": 0.70,
+    "Vintage Tees": 1.52
   },
   "Ames": {
-    Sneakers: 1.18,
-    Mixtapes: 0.68,
-    Jackets: 0.62,
-    Headphones: 0.96,
-    "Hot Sauce": 1.72,
-    "Vintage Tees": 1.34
+    Sneakers: 1.16,
+    Mixtapes: 0.66,
+    Jackets: 0.60,
+    Headphones: 0.94,
+    "Hot Sauce": 1.78,
+    "Vintage Tees": 1.36
   }
 };
 
@@ -840,12 +840,13 @@ const state = {
   cityMarkets: {},
   inventory: {},
   cityStorage: {},
-  logLines: ["Welcome to Market Run Iowa. Tap cities to compare live prices, hunt hot deals, and outrun crashes."],
+  logLines: ["Welcome to Market Run Iowa. Tap cities for live prices and street rumors, hunt hot deals, and outrun crashes."],
   muted: false,
   capacity: 12,
   pendingFight: false,
   gameOver: false,
-  marketStates: {}
+  marketStates: {},
+  cityRumors: {}
 };
 
 let audioCtx = null;
@@ -952,20 +953,20 @@ function getStorage(city){
 
 function getDailyMarketState(){
   const roll = Math.random();
-  if (roll < 0.38) return "normal";
-  if (roll < 0.56) return "cheap";
-  if (roll < 0.72) return "booming";
-  if (roll < 0.87) return "flooded";
+  if (roll < 0.34) return "normal";
+  if (roll < 0.52) return "cheap";
+  if (roll < 0.70) return "booming";
+  if (roll < 0.86) return "flooded";
   return "shortage";
 }
 
 function getStateMultiplier(stateName){
   const ranges = {
-    normal: [0.82, 1.12],
-    cheap: [0.30, 0.68],
-    booming: [1.70, 2.55],
-    flooded: [0.18, 0.46],
-    shortage: [2.10, 3.40]
+    normal: [0.85, 1.15],
+    cheap: [0.32, 0.68],
+    booming: [1.75, 2.60],
+    flooded: [0.18, 0.48],
+    shortage: [2.10, 3.50]
   };
   const range = ranges[stateName] || ranges.normal;
   return range[0] + Math.random() * (range[1] - range[0]);
@@ -982,9 +983,42 @@ function getMarketStateLabel(stateName){
   return labels[stateName] || stateName;
 }
 
+function buildCityRumor(city){
+  const states = state.marketStates[city] || {};
+  const strongest = Object.entries(states)
+    .filter(([, s]) => s !== "normal")
+    .sort((a, b) => {
+      const order = { shortage: 4, booming: 3, flooded: 2, cheap: 1, normal: 0 };
+      return (order[b[1]] || 0) - (order[a[1]] || 0);
+    })
+    .slice(0, 2);
+
+  if (!strongest.length) {
+    const quietRumors = {
+      "Des Moines": "Downtown feels calm, but buyers are watching.",
+      "Waterloo": "Warehouse chatter says the market could snap later.",
+      "Cedar Falls": "Campus money is quiet for the moment.",
+      "Ames": "The city feels calm, but game-day energy can flip fast."
+    };
+    return quietRumors[city] || `${city} feels steady right now.`;
+  }
+
+  const rumorLines = strongest.map(([name, stateName]) => {
+    if (stateName === "booming") return `${name} is getting hot fast.`;
+    if (stateName === "flooded") return `${name} is crashing from oversupply.`;
+    if (stateName === "cheap") return `${name} is unusually cheap right now.`;
+    if (stateName === "shortage") return `${name} is in short supply.`;
+    return `${name} is steady.`;
+  });
+
+  return rumorLines.join(" ");
+}
+
 function buildCityMarket(city){
   if (!state.cityMarkets) state.cityMarkets = {};
   if (!state.marketStates) state.marketStates = {};
+  if (!state.cityRumors) state.cityRumors = {};
+
   state.cityMarkets[city] = {};
   state.marketStates[city] = {};
 
@@ -1000,19 +1034,13 @@ function buildCityMarket(city){
     state.cityMarkets[city][good.name] = price;
     state.marketStates[city][good.name] = stateName;
   });
+
+  state.cityRumors[city] = buildCityRumor(city);
 }
 
 function initAllCityMarkets(){
   Object.keys(CITY_RULES).forEach(city => buildCityMarket(city));
   state.market = { ...(state.cityMarkets[state.currentCity] || {}) };
-}
-
-function refreshSelectedPreview(){
-  const displayCity = getDisplayCity();
-  if (state.cityMarkets && state.cityMarkets[displayCity]) {
-    return;
-  }
-  buildCityMarket(displayCity);
 }
 
 function getDisplayCity(){
@@ -1021,7 +1049,6 @@ function getDisplayCity(){
 
 function getDisplayMarket(){
   const city = getDisplayCity();
-  refreshSelectedPreview();
   return state.cityMarkets[city] || {};
 }
 
@@ -1081,7 +1108,6 @@ function getTargetForDay(){
 
 function buildMarketAlert(){
   const city = getDisplayCity();
-  refreshSelectedPreview();
   const states = state.marketStates[city] || {};
   const strong = Object.entries(states)
     .filter(([, s]) => s !== "normal")
@@ -1113,9 +1139,7 @@ function renderStats(){
   document.getElementById("worthStat").textContent = fmt(getNetWorth());
 
   document.getElementById("marketSub").textContent =
-    state.selectedCity === state.currentCity
-      ? `${buildMarketAlert()}`
-      : `Previewing ${state.selectedCity} market • current city: ${state.currentCity} • tap cities to compare live prices`;
+    `${buildMarketAlert()} • Rumor: ${(state.cityRumors[getDisplayCity()] || "No street chatter yet.")}`;
 
   const displayCity = getDisplayCity();
   const displayMarket = getDisplayMarket();
@@ -1164,22 +1188,25 @@ function renderStats(){
 function renderMarket(){
   const box = document.getElementById("marketRows");
   const displayCity = getDisplayCity();
-  const displayMarket = getDisplayMarket();
+  const displayMarket = state.cityMarkets[displayCity] || {};
   const displayStates = state.marketStates[displayCity] || {};
   const rows = [`<div class="rowHead"><div>Item (${displayCity})</div><div>Trend</div><div>Price</div></div>`];
+
   GOODS.forEach(good => {
-    const price = displayMarket[good.name];
+    const price = displayMarket[good.name] || good.base;
     const trendClass = getTrendClass(price, good.base);
     const active = state.selectedGood === good.name ? " active" : "";
     rows.push(`
       <div class="rowItem${active}" data-good="${good.name}">
         <div class="itemName">${good.icon} ${good.name}</div>
         <div class="${trendClass}">${getTrendArrow(price, good.base)} ${getMarketStateLabel((displayStates[good.name]) || "normal")}</div>
-        <div>${fmt(price)} ${isHotDeal(price, good.base) ? "🔥" : ""}</div>
+        <div>${fmt(price)} ${typeof isHotDeal === "function" && isHotDeal(price, good.base) ? "🔥" : ""}</div>
       </div>
     `);
   });
+
   box.innerHTML = rows.join("");
+
   box.querySelectorAll(".rowItem").forEach(el => {
     el.addEventListener("click", () => {
       soundClick();
@@ -1254,7 +1281,7 @@ function buyOne(){
   soundBuy();
   flashActiveRow();
   const item = state.selectedGood;
-  const price = (state.cityMarkets[state.currentCity] || state.market)[item];
+  const price = (state.cityMarkets[state.currentCity] || {})[item] || state.market[item];
   if (getTotalInventoryQty() >= state.capacity) {
     soundError();
     logLine("⚠️ Inventory full. Sell or store first.");
@@ -1287,7 +1314,7 @@ function sellOne(){
     logLine(`⚠️ No ${item} to sell.`);
     return;
   }
-  const price = (state.cityMarkets[state.currentCity] || state.market)[item];
+  const price = (state.cityMarkets[state.currentCity] || {})[item] || state.market[item];
   state.cash += price;
   slot.qty -= 1;
   if (slot.qty <= 0) delete state.inventory[item];
