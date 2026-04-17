@@ -329,8 +329,8 @@ button,input,select{font:inherit}
 .marketIntelFeed{
   font-size:13px;
   line-height:1.45;
-  max-height:170px;
-  min-height:90px;
+  max-height:220px;
+  min-height:140px;
   overflow:auto;
   color:var(--text);
   opacity:.95;
@@ -761,6 +761,7 @@ button,input,select{font:inherit}
 
       <div class="marketIntel">
         <div class="marketIntelTitle">Street Intel</div>
+        <div class="sub">Rumors and recent activity in one place.</div>
         <div id="marketIntelFeed" class="marketIntelFeed"></div>
       </div>
     </section>
@@ -825,9 +826,6 @@ button,input,select{font:inherit}
         <div class="sub">Health</div>
         <div class="healthBarWrap"><div class="healthBar" id="healthBar"></div></div>
         <div class="smallBox" id="healthNote" style="margin-top:8px;">Solid shape.</div>
-
-        <div class="sub">Recent Activity</div>
-        <div id="eventRows" class="feed runInfoFeed"></div>
       </div>
     </section>
 
@@ -1473,9 +1471,13 @@ function renderMarket(){
 }
 
 function renderFeed(){
-  const box = document.getElementById("eventRows");
-  if (!box) return;
-  box.innerHTML = state.logLines.map(line => `<div class="feedLine">${line}</div>`).join("");
+  const intelFeed = document.getElementById("marketIntelFeed");
+  if (!intelFeed) return;
+
+  const lines = state.logLines.slice(0, 8);
+  intelFeed.innerHTML = lines
+    .map(line => `<div class="marketIntelLine">${line}</div>`)
+    .join("");
 }
 
 
