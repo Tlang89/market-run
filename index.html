@@ -265,6 +265,33 @@ button,input,select{font:inherit}
   min-height:48px;
 }
 
+.dangerPanel{
+  margin-top:10px;
+  padding:12px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+  background:rgba(255,255,255,.03);
+}
+.dangerPanel h3{
+  margin:0 0 8px 0;
+  font-size:18px;
+  color:var(--gold);
+}
+.dangerLevel{
+  font-size:20px;
+  font-weight:700;
+  margin-bottom:8px;
+}
+.dangerLevel.safe{color:var(--green);}
+.dangerLevel.warn{color:var(--gold);}
+.dangerLevel.critical{color:#ff8c8c;}
+.dangerAdvice{
+  font-size:14px;
+  line-height:1.45;
+  color:var(--text);
+}
+
+
 .tabs{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -726,12 +753,18 @@ button,input,select{font:inherit}
       </div>
 
       <div class="choiceBanner" id="choiceBanner">You have 4 moves today. Trade smart.</div>
+
+      <div class="dangerPanel" id="dangerPanel">
+        <h3>Danger</h3>
+        <div class="dangerLevel safe" id="dangerLevel">STABLE</div>
+        <div class="dangerAdvice" id="dangerAdvice">You are in decent shape. Keep building smart.</div>
+      </div>
     </section>
 
     <section class="panel mapPanel">
       <div class="tabs">
         <button class="tabBtn active" data-tab="tab-map">Map</button>
-        <button class="tabBtn" data-tab="tab-status">Status</button>
+        <button class="tabBtn" data-tab="tab-status">Intel</button>
       </div>
 
       <div class="tabPane active" id="tab-map">
@@ -786,7 +819,7 @@ button,input,select{font:inherit}
       </div>
 
       <div class="tabPane" id="tab-status">
-        <h2>Status</h2>
+        <h2>Intel</h2>
         <div class="smallBox" id="selectedInfo">Selected item: Sneakers</div>
         <div class="smallBox" id="storageInfo">Storage: Empty</div>
         <div class="smallBox" id="goalInfo">Goal: Reach $1,000,000 by Day 365.</div>
@@ -1227,6 +1260,40 @@ function getMovePressureText(){
   if (state.moves === 2) return "Two moves left. Plan the route.";
   if (state.moves === 1) return "One move left. Make it count.";
   return "Out of moves.";
+}
+
+function renderDanger(){
+  const levelEl = document.getElementById("dangerLevel");
+  const adviceEl = document.getElementById("dangerAdvice");
+  if (!levelEl || !adviceEl) return;
+
+  let level = "STABLE";
+  let levelClass = "safe";
+  let advice = "You are in decent shape. Keep building smart.";
+
+  if (state.health <= 25) {
+    level = "CRITICAL";
+    levelClass = "critical";
+    advice = "⚠️ You are close to collapse. Get to the hospital now.";
+  } else if (state.health <= 50) {
+    level = "WARNING";
+    levelClass = "warn";
+    advice = "Health is getting low. One more bad event could wreck this run.";
+  }
+
+  if (state.pendingFight) {
+    level = state.health <= 50 ? "CRITICAL" : "WARNING";
+    levelClass = state.health <= 50 ? "critical" : "warn";
+    advice = "👥 Active threat nearby. Fight Back is live, but be careful.";
+  }
+
+  if (state.moves === 1 && state.health > 25 && !state.pendingFight) {
+    advice += " Last move coming up. Make it count.";
+  }
+
+  levelEl.textContent = level;
+  levelEl.className = `dangerLevel ${levelClass}`;
+  adviceEl.textContent = advice;
 }
 
 function renderStats(){
