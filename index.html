@@ -291,28 +291,6 @@ button,input,select{font:inherit}
   color:var(--text);
 }
 
-.runInfoPanel{
-  margin-top:10px;
-  padding:12px;
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:12px;
-  background:rgba(255,255,255,.03);
-}
-.runInfoPanel h3{
-  margin:0 0 8px 0;
-  font-size:18px;
-  color:var(--gold);
-}
-.runInfoPanel .smallBox{
-  margin-top:8px;
-}
-.runInfoPanel .sub{
-  margin-top:8px;
-  margin-bottom:4px;
-}
-.runInfoFeed{
-  max-height:150px;
-}
 
 
 .marketIntel{
@@ -342,6 +320,18 @@ button,input,select{font:inherit}
 .marketIntelLine:first-child{
   border-top:none;
 }
+
+.marketIntelBox{
+  margin-top:10px;
+  padding:10px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;
+  background:rgba(255,255,255,.03);
+}
+.marketIntelBox .sub{
+  margin-bottom:4px;
+}
+
 
 
 
@@ -761,8 +751,30 @@ button,input,select{font:inherit}
 
       <div class="marketIntel">
         <div class="marketIntelTitle">Street Intel</div>
-        <div class="sub">Rumors and recent activity in one place.</div>
-        <div id="marketIntelFeed" class="marketIntelFeed"></div>
+        <div class="sub">Rumors, recent activity, and key run details in one place.</div>
+
+        <div class="marketIntelBox">
+          <div id="selectedInfo">Selected item: Sneakers</div>
+        </div>
+
+        <div class="marketIntelBox">
+          <div id="storageInfo">Storage: Empty</div>
+        </div>
+
+        <div class="marketIntelBox">
+          <div id="goalInfo">Net worth: $2,500 • Goal: $1,000,000 by Day 365.</div>
+        </div>
+
+        <div class="marketIntelBox">
+          <div class="sub">Health</div>
+          <div class="healthBarWrap"><div class="healthBar" id="healthBar"></div></div>
+          <div id="healthNote" style="margin-top:8px;">Solid shape.</div>
+        </div>
+
+        <div class="marketIntelBox">
+          <div class="sub">Recent Activity</div>
+          <div id="marketIntelFeed" class="marketIntelFeed"></div>
+        </div>
       </div>
     </section>
 
@@ -815,17 +827,6 @@ button,input,select{font:inherit}
         <h3>Danger</h3>
         <div class="dangerLevel safe" id="dangerLevel">STABLE</div>
         <div class="dangerAdvice" id="dangerAdvice">You are in decent shape. Keep building smart.</div>
-      </div>
-
-      <div class="runInfoPanel" id="runInfoPanel">
-        <h3>Run Info</h3>
-        <div class="smallBox" id="selectedInfo">Selected item: Sneakers</div>
-        <div class="smallBox" id="storageInfo">Storage: Empty</div>
-        <div class="smallBox" id="goalInfo">Goal: Reach $1,000,000 by Day 365.</div>
-
-        <div class="sub">Health</div>
-        <div class="healthBarWrap"><div class="healthBar" id="healthBar"></div></div>
-        <div class="smallBox" id="healthNote" style="margin-top:8px;">Solid shape.</div>
       </div>
     </section>
 
