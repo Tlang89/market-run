@@ -305,7 +305,8 @@ button,input,select{font:inherit}
 .marketIntelFeed{
   font-size:13px;
   line-height:1.45;
-  max-height:140px;
+  max-height:170px;
+  min-height:90px;
   overflow:auto;
   color:var(--text);
   opacity:.95;
@@ -802,7 +803,7 @@ button,input,select{font:inherit}
 
       <div class="tabPane active" id="tab-map">
         <h2>Iowa Map</h2>
-        <div class="sub">Pick your next city.</div>
+        <div class="sub">Pick your next city and make your move.</div>
         <div class="mapWrap">
           <svg viewBox="0 0 980 520" id="iowaMap">
             <path class="hill1" d="M0 355 Q120 300 240 338 T480 326 T720 348 T980 318 L980 520 L0 520 Z"></path>
@@ -852,7 +853,7 @@ button,input,select{font:inherit}
       </div>
 
       <div class="tabPane" id="tab-status">
-        <h2>Intel</h2>
+        
         <div class="smallBox" id="selectedInfo">Selected item: Sneakers</div>
         <div class="smallBox" id="storageInfo">Storage: Empty</div>
         <div class="smallBox" id="goalInfo">Goal: Reach $1,000,000 by Day 365.</div>
@@ -1452,13 +1453,13 @@ function renderMarket(){
 
 function renderFeed(){
   const box = document.getElementById("feedRows");
-  const feedHTML = state.logLines.map(line => `<div class="feedLine">${line}</div>`).join("");
-  box.innerHTML = feedHTML;
+  const lines = state.logLines.slice(0, 8);
+  const feedHTML = lines.map(line => `<div class="feedLine">${line}</div>`).join("");
+  if (box) box.innerHTML = feedHTML;
 
   const intelFeed = document.getElementById("marketIntelFeed");
   if (intelFeed) {
-    intelFeed.innerHTML = state.logLines
-      .slice(0, 6)
+    intelFeed.innerHTML = lines
       .map(line => `<div class="marketIntelLine">${line}</div>`)
       .join("");
   }
@@ -2003,9 +2004,11 @@ function bindTabs(){
     btn.addEventListener("click", () => {
       soundClick();
       document.querySelectorAll(".tabBtn").forEach(b => b.classList.remove("active"));
-      document.querySelectorAll(".tabPane").forEach(p => p.classList.remove("active"));
       btn.classList.add("active");
-      document.getElementById(btn.dataset.tab).classList.add("active");
+      document.querySelectorAll(".tabPane").forEach(p => p.classList.remove("active"));
+      const key = btn.dataset.tab;
+      const pane = document.getElementById(`${key}Pane`);
+      if (pane) pane.classList.add("active");
     });
   });
 }
