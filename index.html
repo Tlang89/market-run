@@ -291,6 +291,34 @@ button,input,select{font:inherit}
   color:var(--text);
 }
 
+.marketIntel{
+  margin-top:10px;
+  padding-top:10px;
+  border-top:1px solid rgba(255,255,255,.08);
+}
+.marketIntelTitle{
+  font-size:14px;
+  color:var(--gold);
+  margin-bottom:6px;
+  font-weight:700;
+}
+.marketIntelFeed{
+  font-size:13px;
+  line-height:1.45;
+  max-height:140px;
+  overflow:auto;
+  color:var(--text);
+  opacity:.95;
+}
+.marketIntelLine{
+  padding:4px 0;
+  border-top:1px solid rgba(255,255,255,.05);
+}
+.marketIntelLine:first-child{
+  border-top:none;
+}
+
+
 
 .tabs{
   display:grid;
@@ -705,6 +733,11 @@ button,input,select{font:inherit}
       <h2>Market</h2>
       <div class="sub" id="marketSub">Street prices in your current city. Select a product.</div>
       <div id="marketRows" class="list"></div>
+
+      <div class="marketIntel">
+        <div class="marketIntelTitle">Street Intel</div>
+        <div id="marketIntelFeed" class="marketIntelFeed"></div>
+      </div>
     </section>
 
     <section class="panel actionPanel">
@@ -828,7 +861,7 @@ button,input,select{font:inherit}
         <div class="healthBarWrap"><div class="healthBar" id="healthBar"></div></div>
         <div class="smallBox" id="healthNote" style="margin-top:8px;">Solid shape.</div>
 
-        <div class="sub" style="margin-top:2px;">Street Feed</div>
+        <div class="sub" style="margin-top:2px;">Recent Activity</div>
         <div id="eventRows" class="feed"></div>
       </div>
     </section>
@@ -982,6 +1015,32 @@ function soundArrival(){ tone(520, 0.08, "triangle", 0.05); tone(760, 0.15, "tri
 function soundError(){ tone(140, 0.12, "square", 0.05); tone(90, 0.18, "square", 0.045, 0.1); }
 function soundHeal(){ tone(330, 0.08, "triangle", 0.045); tone(494, 0.12, "triangle", 0.04, 0.05); tone(660, 0.14, "triangle", 0.035, 0.1); }
 function soundFight(){ tone(170,0.08,"square",0.055); tone(120,0.1,"sawtooth",0.045,0.06); tone(240,0.08,"square",0.04,0.12); }
+function soundPulledOver(){
+  if (state.muted) return;
+  soundError();
+  tone(210, 0.16, "square", 0.03, 0.02);
+  tone(150, 0.22, "square", 0.028, 0.16);
+}
+
+function soundThugs(){
+  if (state.muted) return;
+  tone(95, 0.14, "sawtooth", 0.03);
+  tone(82, 0.16, "sawtooth", 0.03, 0.08);
+  tone(110, 0.12, "square", 0.02, 0.22);
+}
+
+function soundWallet(){
+  if (state.muted) return;
+  tone(660, 0.05, "triangle", 0.025);
+  tone(880, 0.08, "triangle", 0.03, 0.05);
+}
+
+function soundRumor(){
+  if (state.muted) return;
+  tone(420, 0.05, "triangle", 0.018);
+  tone(520, 0.06, "triangle", 0.018, 0.04);
+}
+
 function soundClick(){ tone(520, 0.05, "triangle", 0.03); }
 
 function startMusic(){
@@ -1392,8 +1451,17 @@ function renderMarket(){
 }
 
 function renderFeed(){
-  const box = document.getElementById("eventRows");
-  box.innerHTML = state.logLines.map(line => `<div class="feedLine">${line}</div>`).join("");
+  const box = document.getElementById("feedRows");
+  const feedHTML = state.logLines.map(line => `<div class="feedLine">${line}</div>`).join("");
+  box.innerHTML = feedHTML;
+
+  const intelFeed = document.getElementById("marketIntelFeed");
+  if (intelFeed) {
+    intelFeed.innerHTML = state.logLines
+      .slice(0, 6)
+      .map(line => `<div class="marketIntelLine">${line}</div>`)
+      .join("");
+  }
 }
 
 
@@ -1726,7 +1794,7 @@ function randomEvent(){
   if (roll < 0.10) {
     const found = Math.round((80 + Math.random() * 180) * Math.min(1.8, 0.9 + scale * 0.25));
     state.cash += found;
-    soundSell();
+    soundWallet();
     logLine(`👛 Found a wallet. Pocketed ${fmt(found)}.`);
     popup(`Found ${fmt(found)}`);
     return;
@@ -1735,24 +1803,25 @@ function randomEvent(){
     const fee = Math.round((70 + Math.random() * 130) * scale);
     const hit = Math.min(state.cash, fee);
     state.cash -= hit;
-    soundError();
-    logLine(`🚔 Speeding ticket. Paid ${fmt(hit)}.`);
+    soundPulledOver();
+    logLine(`🚔 You got pulled over. Paid ${fmt(hit)}.`);
     popup(`-${fmt(hit)}`);
     return;
   }
   if (roll < 0.33) {
     const damage = Math.round((8 + Math.random() * 12) * Math.min(2, 0.9 + scale * 0.35));
     state.pendingFight = true;
-    applyDamage(damage, "Mob boss sent thugs to remind you who runs this route");
-    logLine("👥 Thugs are still nearby. Fight Back is live.");
+    soundThugs();
+    applyDamage(damage, "Thugs jumped you and tried to shake you down");
+    logLine("👥 Thugs are attacking. Fight Back is live.");
     return;
   }
   if (roll < 0.45) {
     const penalty = Math.round((90 + Math.random() * 150) * scale);
     const hit = Math.min(state.cash, penalty);
     state.cash -= hit;
-    soundError();
-    logLine(`🚨 Police stop. Lost ${fmt(hit)} handling the trouble.`);
+    soundPulledOver();
+    logLine(`🚨 Police pressure hit. Lost ${fmt(hit)} handling the trouble.`);
     popup(`-${fmt(hit)}`);
     return;
   }
@@ -1782,7 +1851,8 @@ function randomEvent(){
   }
   if (roll < 0.88) {
     const damage = Math.round((10 + Math.random() * 15) * Math.min(2.1, 1 + scale * 0.3));
-    applyDamage(damage, "Street trouble got physical");
+    soundThugs();
+    applyDamage(damage, "Street trouble got physical fast");
     return;
   }
 
@@ -1977,6 +2047,8 @@ function bindUI(){
     btn.addEventListener("click", () => {
       soundClick();
       state.selectedCity = btn.dataset.city;
+      soundRumor();
+      soundRumor();
       renderMap();
       renderStats();
       renderMarket();
