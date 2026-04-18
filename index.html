@@ -3,95 +3,100 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Market Run Iowa - OG Real Build</title>
+<title>Market Run Iowa - Map City Markets</title>
 <style>
 :root {
-  --bg:#09101b;
-  --gold:#f0d27f;
-  --text:#f7f2e6;
-  --muted:#d0ddff;
-  --good:#8ff2ad;
-  --warn:#ffd46d;
-  --bad:#ff9fa5;
+  --bg:#09101b; --gold:#f0d27f; --text:#f7f2e6; --muted:#d0ddff;
+  --good:#8ff2ad; --warn:#ffd46d; --bad:#ff9fa5;
 }
-*{box-sizing:border-box}
-html,body{
-  margin:0;width:100%;height:100%;overflow:hidden;
+* { box-sizing:border-box; }
+html, body {
+  margin:0; width:100%; height:100%; overflow:hidden;
   background:radial-gradient(circle at top,#1246ad 0%, #07172f 55%, #050d18 100%);
-  color:var(--text);font-family:Georgia,"Times New Roman",serif;
+  color:var(--text); font-family:Georgia,"Times New Roman",serif;
 }
-#app{height:100vh;display:grid;grid-template-columns:1.06fr .82fr 1.5fr;gap:10px;padding:10px}
-.col{display:grid;gap:10px;min-height:0}
-.left{grid-template-rows:1fr .92fr}
-.center{grid-template-rows:auto auto auto auto auto auto 1fr}
-.right{grid-template-rows:1fr auto auto}
-.panel,.mini-card{
-  min-height:0;overflow:hidden;padding:12px;border-radius:22px;
+#app {
+  height:100vh; display:grid; grid-template-columns:1.05fr .86fr 1.55fr; gap:10px; padding:10px;
+}
+.col { display:grid; gap:10px; min-height:0; }
+.left { grid-template-rows:1fr .92fr; }
+.center { grid-template-rows:auto auto auto auto auto auto 1fr; }
+.right { grid-template-rows:1fr auto auto; }
+.panel, .mini-card {
+  min-height:0; overflow:hidden; padding:12px; border-radius:22px;
   border:2px solid rgba(197,225,255,.42);
   background:linear-gradient(180deg, rgba(20,77,177,.96), rgba(8,34,95,.98));
   box-shadow:inset 0 0 0 2px rgba(255,255,255,.06), 0 12px 30px rgba(0,0,0,.38);
 }
-.title{color:var(--gold);font-weight:800;font-size:14px;letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px}
-.subtle{color:var(--muted)}
-.market-grid,.feed-list{display:grid;gap:8px;align-content:start}
-.market-row{
-  display:grid;grid-template-columns:1.15fr .9fr .55fr;gap:8px;align-items:center;
-  padding:10px 12px;border-radius:14px;border:2px solid rgba(190,220,255,.32);
-  background:linear-gradient(180deg, rgba(25,77,180,.78), rgba(10,42,112,.9));cursor:pointer;
+.title { color:var(--gold); font-weight:800; font-size:14px; letter-spacing:.04em; text-transform:uppercase; margin-bottom:8px; }
+.subtle { color:var(--muted); }
+.market-grid, .feed-list { display:grid; gap:8px; align-content:start; }
+.market-row {
+  display:grid; grid-template-columns:1.2fr .85fr .55fr; gap:8px; align-items:center;
+  padding:10px 12px; border-radius:14px; border:2px solid rgba(190,220,255,.32);
+  background:linear-gradient(180deg, rgba(25,77,180,.78), rgba(10,42,112,.9)); cursor:pointer;
 }
-.market-row.active{border-color:rgba(240,210,127,.95)}
-.item-name{font-size:16px;font-weight:800}
-.trend.good{color:var(--good)} .trend.warn{color:#d6e8ff} .trend.bad{color:var(--bad)}
-.price{text-align:right;font-size:16px;font-weight:800}
-.feed-line{
-  border-radius:14px;border:2px solid rgba(190,220,255,.24);padding:10px 12px;
-  background:linear-gradient(180deg, rgba(17,60,147,.75), rgba(7,31,85,.92));font-size:14px;line-height:1.2;
+.market-row.active { border-color:rgba(240,210,127,.95); }
+.item-name { font-size:16px; font-weight:800; }
+.trend.good { color:var(--good); } .trend.warn { color:#d6e8ff; } .trend.bad { color:var(--bad); }
+.price { text-align:right; font-size:16px; font-weight:800; }
+.feed-line {
+  border-radius:14px; border:2px solid rgba(190,220,255,.24); padding:10px 12px;
+  background:linear-gradient(180deg, rgba(17,60,147,.75), rgba(7,31,85,.92)); font-size:14px; line-height:1.2;
 }
-.feed-good{color:var(--good)} .feed-bad{color:var(--bad)} .feed-warn{color:var(--warn)} .feed-info{color:#e8f0ff}
-.status-box{text-align:center}
-#statusText{font-size:26px;font-weight:900}
-.label{font-size:13px;color:var(--gold);font-weight:800;margin-bottom:6px}
-.value{font-size:16px;font-weight:800}
-.bar-wrap{height:18px;border-radius:999px;background:#08204d;border:2px solid rgba(127,176,255,.3);overflow:hidden}
-#healthBar{height:100%;width:100%;background:linear-gradient(90deg,#ffe8df,#86efac);transition:.2s ease}
-.volume-row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
-input[type="range"]{width:100%;accent-color:#f0d27f}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-button,select{appearance:none;border:none;border-radius:16px;padding:13px 12px;font-family:inherit;font-size:15px;font-weight:800}
-button{cursor:pointer;transition:transform .12s ease,filter .12s ease}
-button:hover{transform:translateY(-1px);filter:brightness(1.04)}
-.btn-gold{background:linear-gradient(180deg,#ffe196,#dcb257);color:#312406}
-.btn-blue{background:linear-gradient(180deg,#6d95e4,#3558ad);color:#f3f7ff}
-.btn-dark{background:linear-gradient(180deg,#22407d,#112654);color:#f2f7ff;border:1px solid rgba(190,220,255,.22)}
-.city-picker{width:100%;background:linear-gradient(180deg,#244687,#11295c);color:#f2f7ff;border:1px solid rgba(190,220,255,.24);cursor:pointer}
+.feed-good { color:var(--good); } .feed-bad { color:var(--bad); } .feed-warn { color:var(--warn); } .feed-info { color:#e8f0ff; }
+.status-box { text-align:center; }
+#statusText { font-size:26px; font-weight:900; }
+.label { font-size:13px; color:var(--gold); font-weight:800; margin-bottom:6px; }
+.value { font-size:16px; font-weight:800; }
+.bar-wrap { height:18px; border-radius:999px; background:#08204d; border:2px solid rgba(127,176,255,.3); overflow:hidden; }
+#healthBar { height:100%; width:100%; background:linear-gradient(90deg,#ffe8df,#86efac); transition:.2s ease; }
+.volume-row { display:grid; grid-template-columns:auto 1fr auto; gap:10px; align-items:center; }
+input[type="range"] { width:100%; accent-color:#f0d27f; }
+.actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+button, select {
+  appearance:none; border:none; border-radius:16px; padding:13px 12px; font-family:inherit; font-size:15px; font-weight:800;
+}
+button { cursor:pointer; transition:transform .12s ease, filter .12s ease; }
+button:hover { transform:translateY(-1px); filter:brightness(1.04); }
+.btn-gold { background:linear-gradient(180deg,#ffe196,#dcb257); color:#312406; }
+.btn-blue { background:linear-gradient(180deg,#6d95e4,#3558ad); color:#f3f7ff; }
+.btn-dark { background:linear-gradient(180deg,#22407d,#112654); color:#f2f7ff; border:1px solid rgba(190,220,255,.22); }
+.city-picker { width:100%; background:linear-gradient(180deg,#244687,#11295c); color:#f2f7ff; border:1px solid rgba(190,220,255,.24); cursor:pointer; }
 
-#mapWrap{position:relative;height:100%;border-radius:18px;overflow:hidden;border:2px solid rgba(190,220,255,.34);background:#081427}
-#mapImage{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
-#travelLine{position:absolute;inset:0;pointer-events:none}
-#playerDot{
-  position:absolute;width:16px;height:16px;transform:translate(-50%,-50%);border-radius:50%;
-  background:#fff5cf;border:2px solid #fff;box-shadow:0 0 0 3px rgba(240,210,127,.2),0 0 18px rgba(240,210,127,.7);z-index:4;
+#mapWrap { position:relative; height:100%; border-radius:18px; overflow:hidden; border:2px solid rgba(190,220,255,.34); background:#081427; }
+#mapImage { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center; }
+#travelLine { position:absolute; inset:0; pointer-events:none; }
+#playerDot {
+  position:absolute; width:16px; height:16px; transform:translate(-50%,-50%); border-radius:50%;
+  background:#fff5cf; border:2px solid #fff; box-shadow:0 0 0 3px rgba(240,210,127,.2),0 0 18px rgba(240,210,127,.7); z-index:4;
   transition:left .45s ease, top .45s ease;
 }
-.city-node{
-  position:absolute;width:14px;height:14px;transform:translate(-50%,-50%);border-radius:50%;
-  border:2px solid #f7fbff;background:rgba(132,184,255,.58);box-shadow:0 0 0 2px rgba(255,255,255,.08),0 0 10px rgba(117,175,255,.35);
+.city-node {
+  position:absolute; width:14px; height:14px; transform:translate(-50%,-50%); border-radius:50%;
+  border:2px solid #f7fbff; background:rgba(132,184,255,.58); box-shadow:0 0 0 2px rgba(255,255,255,.08),0 0 10px rgba(117,175,255,.35);
   cursor:pointer;
 }
-.city-node:hover{background:rgba(240,210,127,.72)}
-.city-node.active{background:rgba(240,210,127,.98);border-color:#fff5d8;box-shadow:0 0 0 2px rgba(255,255,255,.14),0 0 16px rgba(240,210,127,.72)}
-.city-label{
-  position:absolute;transform:translate(-50%,calc(-100% - 6px));font-size:11px;padding:2px 6px;border-radius:999px;
-  background:rgba(4,13,32,.92);border:1px solid rgba(220,236,255,.18);white-space:nowrap;pointer-events:none;opacity:0;transition:.12s ease;
+.city-node:hover { background:rgba(240,210,127,.72); }
+.city-node.active { background:rgba(240,210,127,.98); border-color:#fff5d8; box-shadow:0 0 0 2px rgba(255,255,255,.14),0 0 16px rgba(240,210,127,.72); }
+.city-label {
+  position:absolute; transform:translate(-50%,calc(-100% - 6px)); font-size:11px; padding:2px 6px; border-radius:999px;
+  background:rgba(4,13,32,.92); border:1px solid rgba(220,236,255,.18); white-space:nowrap; pointer-events:none; opacity:0; transition:.12s ease;
 }
-.city-node:hover + .city-label,.city-node.active + .city-label{opacity:1}
-#mapShade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(0,0,0,.08));pointer-events:none}
-#overlay{position:fixed;inset:0;background:rgba(4,8,15,.72);display:none;align-items:center;justify-content:center;z-index:999;padding:18px}
-#overlay.show{display:flex}
-#overlayCard{width:min(560px,92vw);border-radius:22px;background:linear-gradient(180deg,#13398b,#0b2457);border:2px solid rgba(240,210,127,.35);box-shadow:0 25px 55px rgba(0,0,0,.45);padding:18px}
-.overlay-title{font-size:28px;color:var(--gold);margin-bottom:8px;font-weight:900;text-align:center}
-.overlay-body{font-size:16px;line-height:1.45;color:#eef5ff;margin-bottom:16px}
-.overlay-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.city-node:hover + .city-label, .city-node.active + .city-label { opacity:1; }
+#mapShade { position:absolute; inset:0; background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(0,0,0,.08)); pointer-events:none; }
+
+#overlay {
+  position:fixed; inset:0; background:rgba(4,8,15,.72); display:none; align-items:center; justify-content:center; z-index:999; padding:18px;
+}
+#overlay.show { display:flex; }
+#overlayCard {
+  width:min(560px,92vw); border-radius:22px; background:linear-gradient(180deg,#13398b,#0b2457);
+  border:2px solid rgba(240,210,127,.35); box-shadow:0 25px 55px rgba(0,0,0,.45); padding:18px;
+}
+.overlay-title { font-size:28px; color:var(--gold); margin-bottom:8px; font-weight:900; text-align:center; }
+.overlay-body { font-size:16px; line-height:1.45; color:#eef5ff; margin-bottom:16px; }
+.overlay-actions { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
 </style>
 </head>
 <body>
@@ -99,12 +104,12 @@ button:hover{transform:translateY(-1px);filter:brightness(1.04)}
   <div class="col left">
     <section class="panel">
       <div class="title">Statewide Market Feed</div>
-      <div class="subtle" style="margin-bottom:8px;">OG style kept. Click any city on the map and the local market changes.</div>
+      <div class="subtle" style="margin-bottom:8px;">Every clickable city on the Iowa map has its own live market.</div>
       <div id="marketList" class="market-grid"></div>
     </section>
     <section class="panel">
       <div class="title">Street Hearsay</div>
-      <div class="subtle" style="margin-bottom:8px;">Cops, pressure, deal chatter, and local rumors all stay live here.</div>
+      <div class="subtle" style="margin-bottom:8px;">Cops, pressure, deal chatter, and local rumors stay live here.</div>
       <div id="feedList" class="feed-list"></div>
     </section>
   </div>
@@ -117,18 +122,18 @@ button:hover{transform:translateY(-1px);filter:brightness(1.04)}
     </section>
 
     <section class="mini-card">
-      <div class="label">City Market</div>
-      <div class="value" id="cityInfo">Des Moines market live. Clickable map is active.</div>
+      <div class="label">City View</div>
+      <div class="value" id="cityInfo">Des Moines market live. Click any dot for a new city market.</div>
+    </section>
+
+    <section class="mini-card">
+      <div class="label">Roadmap Page</div>
+      <div class="value" id="cityPage">Des Moines • busy blocks • stable buyers • watch the heat.</div>
     </section>
 
     <section class="mini-card">
       <div class="label">Run Info</div>
       <div class="value" id="runInfo">Selected item: Mixtapes • Des Moines • Price $58</div>
-    </section>
-
-    <section class="mini-card">
-      <div class="label">Storage</div>
-      <div class="value" id="storageInfo">Carried: 0 • Stash: 0</div>
     </section>
 
     <section class="mini-card">
@@ -179,12 +184,10 @@ button:hover{transform:translateY(-1px);filter:brightness(1.04)}
         <div id="mapShade"></div>
       </div>
     </section>
-
     <section class="mini-card">
       <div class="label">Travel Event</div>
-      <div class="value" id="travelInfo">The clickable map stays. Police heat and pressure stay too.</div>
+      <div class="value" id="travelInfo">The clickable Iowa map is the heart of the game. Every dot is a city market.</div>
     </section>
-
     <section class="mini-card">
       <div class="label">Bank</div>
       <div class="value" id="moneyInfo">Cash: $2,500 • Goal: $1,000,000 by Day 365</div>
@@ -218,14 +221,22 @@ button:hover{transform:translateY(-1px);filter:brightness(1.04)}
   };
   const cityMarkets = {};
 
+  const cityFlavor = {
+    north: ["quiet roads", "cold deals", "watchful locals", "slow market"],
+    east: ["river pull", "busy buyers", "tight margins", "fast flips"],
+    west: ["long roads", "cheap pickups", "low eyes", "rough blocks"],
+    central: ["busy blocks", "stable buyers", "good flips", "pressure builds fast"],
+    south: ["slow grind", "hidden buyers", "cheap stock", "heat can sneak up"]
+  };
+
   const el = {
     marketList: document.getElementById("marketList"),
     feedList: document.getElementById("feedList"),
     statusText: document.getElementById("statusText"),
     statusDesc: document.getElementById("statusDesc"),
     cityInfo: document.getElementById("cityInfo"),
+    cityPage: document.getElementById("cityPage"),
     runInfo: document.getElementById("runInfo"),
-    storageInfo: document.getElementById("storageInfo"),
     pressureInfo: document.getElementById("pressureInfo"),
     healthBar: document.getElementById("healthBar"),
     healthText: document.getElementById("healthText"),
@@ -259,8 +270,7 @@ button:hover{transform:translateY(-1px);filter:brightness(1.04)}
   }
   function playTone(type="click") {
     const ctx = getAudio(); if (!ctx) return;
-    const now = ctx.currentTime;
-    const baseVol = game.volume;
+    const now = ctx.currentTime, baseVol = game.volume;
     const tone = (freq, dur, kind, vol, offset=0, sweep=null) => {
       const o = ctx.createOscillator(), g = ctx.createGain();
       o.type = kind;
@@ -291,14 +301,29 @@ button:hover{transform:translateY(-1px);filter:brightness(1.04)}
   function money(v) { return "$" + Math.round(v).toLocaleString(); }
   function clamp(v,min,max) { return Math.max(min, Math.min(max, v)); }
 
+  function cityRegion(city) {
+    const [x, y] = cityPositions[city];
+    if (y < 24) return "north";
+    if (y > 72) return "south";
+    if (x < 35) return "west";
+    if (x > 78) return "east";
+    return "central";
+  }
+  function cityDescriptor(city) {
+    const region = cityRegion(city);
+    const bank = cityFlavor[region];
+    const a = bank[(city.length + 1) % bank.length];
+    const b = bank[(city.length + 3) % bank.length];
+    return `${city} • ${a} • ${b} • watch the heat.`;
+  }
+
   function cityFactor(city) {
-    const keys = Object.keys(cityPositions);
-    const idx = keys.indexOf(city);
-    return 0.88 + (idx % 11) * 0.025 + ((city.length % 4) * 0.01);
+    const [x, y] = cityPositions[city];
+    return 0.85 + (x / 100) * 0.25 + ((100 - y) / 100) * 0.12;
   }
   function buildCityMarket(city) {
     const market = {};
-    items.forEach(([name, base]) => {
+    items.forEach(([name, base], idx) => {
       const roll = Math.floor(Math.random()*100);
       let trend = "steady";
       if (roll < 18) trend = "flooded";
@@ -335,16 +360,15 @@ button:hover{transform:translateY(-1px);filter:brightness(1.04)}
   }
   function priceFor(itemName, city=game.city) { return ensureCityMarket(city)[itemName].price; }
   function itemTrend(itemName, city=game.city) { return ensureCityMarket(city)[itemName].trend; }
+  function total(obj) { return Object.values(obj).reduce((a,b)=>a+b,0); }
   function carriedCount(name) { return game.carried[name] || 0; }
   function stashCount(name) { return game.stash[name] || 0; }
-  function total(obj) { return Object.values(obj).reduce((a,b)=>a+b,0); }
 
   function addFeed(text, kind="info") {
     game.feed.unshift({text, kind});
     game.feed = game.feed.slice(0, 8);
     renderFeed();
   }
-
   function renderFeed() {
     el.feedList.innerHTML = "";
     game.feed.forEach(entry => {
@@ -354,7 +378,6 @@ button:hover{transform:translateY(-1px);filter:brightness(1.04)}
       el.feedList.appendChild(div);
     });
   }
-
   function renderMarket() {
     el.marketList.innerHTML = "";
     items.forEach(([name]) => {
@@ -367,15 +390,11 @@ button:hover{transform:translateY(-1px);filter:brightness(1.04)}
         <div class="price">${money(priceFor(name))}</div>
       `;
       row.addEventListener("click", () => {
-        getAudio();
-        playTone("click");
-        game.selectedItem = name;
-        renderAll();
+        getAudio(); playTone("click"); game.selectedItem = name; renderAll();
       });
       el.marketList.appendChild(row);
     });
   }
-
   function renderMapNodes() {
     el.mapNodes.innerHTML = "";
     Object.entries(cityPositions).forEach(([name, pos]) => {
@@ -385,8 +404,7 @@ button:hover{transform:translateY(-1px);filter:brightness(1.04)}
       node.style.left = left + "%";
       node.style.top = top + "%";
       node.addEventListener("click", () => {
-        getAudio();
-        travelTo(name);
+        getAudio(); travelTo(name);
       });
       const label = document.createElement("div");
       label.className = "city-label";
@@ -397,7 +415,6 @@ button:hover{transform:translateY(-1px);filter:brightness(1.04)}
       el.mapNodes.appendChild(label);
     });
   }
-
   function renderCityPicker() {
     el.cityPicker.innerHTML = "";
     Object.keys(cityPositions).forEach(name => {
@@ -408,15 +425,12 @@ button:hover{transform:translateY(-1px);filter:brightness(1.04)}
       el.cityPicker.appendChild(opt);
     });
   }
-
   function drawTravelLine(fromCity, toCity) {
-    const [x1,y1] = cityPositions[fromCity];
-    const [x2,y2] = cityPositions[toCity];
+    const [x1,y1] = cityPositions[fromCity], [x2,y2] = cityPositions[toCity];
     el.travelLine.setAttribute("viewBox","0 0 100 100");
     el.travelLine.innerHTML = `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="rgba(240,210,127,.95)" stroke-width="1.2" stroke-dasharray="3 2" />`;
     setTimeout(() => el.travelLine.innerHTML = "", 550);
   }
-
   function updateMap() {
     const [left, top] = cityPositions[game.city];
     el.playerDot.style.left = left + "%";
@@ -426,17 +440,14 @@ button:hover{transform:translateY(-1px);filter:brightness(1.04)}
   }
 
   function updateStatus() {
-    let text = "STABLE";
-    let desc = "You are in decent shape. Keep building smart.";
+    let text = "STABLE", desc = "You are in decent shape. Keep building smart.";
     if (game.health < 30) {
-      text = "CRITICAL";
-      desc = "One more bad move could end this run.";
+      text = "CRITICAL"; desc = "One more bad move could end this run.";
       el.statusText.style.color = "var(--bad)";
       el.healthBar.style.background = "linear-gradient(90deg,#ffe1d6,#ff9fa5)";
       el.healthText.textContent = "Near collapse.";
     } else if (game.health < 60) {
-      text = "WARNING";
-      desc = "Pressure is rising. Play cleaner.";
+      text = "WARNING"; desc = "Pressure is rising. Play cleaner.";
       el.statusText.style.color = "var(--warn)";
       el.healthBar.style.background = "linear-gradient(90deg,#ffe196,#ffd46d)";
       el.healthText.textContent = "Shaky, but hanging on.";
@@ -447,8 +458,7 @@ button:hover{transform:translateY(-1px);filter:brightness(1.04)}
     }
     el.statusText.textContent = text;
     el.statusDesc.textContent = desc;
-    el.healthBar.style.width = clamp(game.health, 0, 100) + "%";
-
+    el.healthBar.style.width = clamp(game.health,0,100) + "%";
     let heat = "Low heat";
     if (game.pressure >= 6) heat = "Heavy heat";
     else if (game.pressure >= 3) heat = "Building heat";
@@ -456,9 +466,9 @@ button:hover{transform:translateY(-1px);filter:brightness(1.04)}
   }
 
   function updateInfo() {
-    el.cityInfo.textContent = game.city + " market live. Clickable map is active.";
+    el.cityInfo.textContent = game.city + " market live. Click any dot for a new city market.";
+    el.cityPage.textContent = cityDescriptor(game.city);
     el.runInfo.textContent = `Selected item: ${game.selectedItem} • ${game.city} • Price ${money(priceFor(game.selectedItem))}`;
-    el.storageInfo.textContent = `Carried: ${total(game.carried)} • Stash: ${total(game.stash)} • ${game.selectedItem} on hand: ${carriedCount(game.selectedItem)}`;
     el.moneyInfo.textContent = `Cash: ${money(game.cash)} • Goal: ${money(1000000)} by Day 365`;
   }
 
@@ -475,19 +485,17 @@ button:hover{transform:translateY(-1px);filter:brightness(1.04)}
     }
     return false;
   }
-
   function maybeRumor() {
     const list = [
       ["A quiet reseller in " + game.city + " is paying up for jackets.", "good"],
       ["Street talk says vintage tees are piled up cheap around here.", "warn"],
       ["Somebody says hot sauce is moving hard through this part of the state.", "good"],
-      ["The market just shifted in " + game.city + ". Prices feel different now.", "info"],
+      ["The market page flipped in " + game.city + ". Prices feel different now.", "info"],
       ["Pressure is building. The block is starting to notice you.", "warn"],
     ];
     const r = list[rand(0, list.length - 1)];
     addFeed(r[0], r[1]);
   }
-
   function checkDanger() {
     if (game.health > 0) return;
     if (!game.lastChanceUsed) {
@@ -497,63 +505,38 @@ button:hover{transform:translateY(-1px);filter:brightness(1.04)}
         "YOU'RE ABOUT TO GO DOWN",
         "You pushed too far. One move left. Run and survive, or stay and gamble the whole run.",
         [
-          {
-            label:"RUN",
-            className:"btn-gold",
-            onClick:() => {
-              game.health = 12;
-              game.cash = Math.floor(game.cash * 0.7);
-              game.pressure = Math.max(0, game.pressure - 2);
-              addFeed("You ran cold and kept the run alive.", "warn");
-              closeOverlay();
-              renderAll();
+          {label:"RUN", className:"btn-gold", onClick:() => {
+            game.health = 12; game.cash = Math.floor(game.cash * 0.7); game.pressure = Math.max(0, game.pressure - 2);
+            addFeed("You ran cold and kept the run alive.", "warn"); closeOverlay(); renderAll();
+          }},
+          {label:"STAY", className:"btn-blue", onClick:() => {
+            if (chance(0.5)) {
+              game.health = 6; game.cash = Math.floor(game.cash * 1.45); playTone("cash");
+              addFeed("You stayed in it and came out with a wild score.", "good"); closeOverlay(); renderAll();
+            } else {
+              closeOverlay(); gameOver();
             }
-          },
-          {
-            label:"STAY",
-            className:"btn-blue",
-            onClick:() => {
-              if (chance(0.5)) {
-                game.health = 6;
-                game.cash = Math.floor(game.cash * 1.45);
-                playTone("cash");
-                addFeed("You stayed in it and came out with a wild score.", "good");
-                closeOverlay();
-                renderAll();
-              } else {
-                closeOverlay();
-                gameOver();
-              }
-            }
-          }
+          }}
         ]
       );
-    } else {
-      gameOver();
-    }
+    } else gameOver();
   }
 
   function buyOne() {
     const p = priceFor(game.selectedItem);
     if (game.cash < p) {
-      playTone("danger");
-      addFeed("Not enough cash to buy <b>" + game.selectedItem + "</b> in " + game.city + ".", "bad");
-      return;
+      playTone("danger"); addFeed("Not enough cash to buy <b>" + game.selectedItem + "</b> in " + game.city + ".", "bad"); return;
     }
     game.cash -= p;
     game.carried[game.selectedItem] = carriedCount(game.selectedItem) + 1;
     game.pressure = clamp(game.pressure + 1, 0, 10);
     playTone("cash");
     addFeed("Bought 1 <b>" + game.selectedItem + "</b> in <b>" + game.city + "</b> for " + money(p) + ".", "good");
-    maybeRumor();
-    renderAll();
+    maybeRumor(); renderAll();
   }
-
   function sellOne() {
     if (carriedCount(game.selectedItem) < 1) {
-      playTone("danger");
-      addFeed("You have no <b>" + game.selectedItem + "</b> to sell.", "bad");
-      return;
+      playTone("danger"); addFeed("You have no <b>" + game.selectedItem + "</b> to sell.", "bad"); return;
     }
     const p = priceFor(game.selectedItem);
     game.carried[game.selectedItem] = carriedCount(game.selectedItem) - 1;
@@ -561,38 +544,28 @@ button:hover{transform:translateY(-1px);filter:brightness(1.04)}
     game.pressure = clamp(game.pressure + 1, 0, 10);
     playTone("sell");
     addFeed("Sold 1 <b>" + game.selectedItem + "</b> in <b>" + game.city + "</b> for " + money(p) + ".", "good");
-    maybeRumor();
-    renderAll();
+    maybeRumor(); renderAll();
   }
-
   function storeOne() {
     if (carriedCount(game.selectedItem) < 1) {
-      playTone("danger");
-      addFeed("Nothing to store right now.", "bad");
-      return;
+      playTone("danger"); addFeed("Nothing to store right now.", "bad"); return;
     }
     game.carried[game.selectedItem] = carriedCount(game.selectedItem) - 1;
     game.stash[game.selectedItem] = stashCount(game.selectedItem) + 1;
     game.pressure = clamp(game.pressure - 1, 0, 10);
-    playTone("click");
-    addFeed("Stored 1 <b>" + game.selectedItem + "</b> off the street.", "info");
+    playTone("click"); addFeed("Stored 1 <b>" + game.selectedItem + "</b> off the street.", "info");
     renderAll();
   }
-
   function takeOne() {
     if (stashCount(game.selectedItem) < 1) {
-      playTone("danger");
-      addFeed("No stored <b>" + game.selectedItem + "</b> to pull back out.", "bad");
-      return;
+      playTone("danger"); addFeed("No stored <b>" + game.selectedItem + "</b> to pull back out.", "bad"); return;
     }
     game.stash[game.selectedItem] = stashCount(game.selectedItem) - 1;
     game.carried[game.selectedItem] = carriedCount(game.selectedItem) + 1;
     game.pressure = clamp(game.pressure + 1, 0, 10);
-    playTone("click");
-    addFeed("Took 1 <b>" + game.selectedItem + "</b> back into your hands.", "info");
+    playTone("click"); addFeed("Took 1 <b>" + game.selectedItem + "</b> back into your hands.", "info");
     renderAll();
   }
-
   function layLow() {
     game.health = clamp(game.health + rand(7,13), 0, 100);
     game.pressure = Math.max(0, game.pressure - 2);
@@ -601,13 +574,12 @@ button:hover{transform:translateY(-1px);filter:brightness(1.04)}
     el.travelInfo.textContent = "No movement. Just breathing room.";
     renderAll();
   }
-
   function travelTo(city) {
     if (city === game.city) {
       playTone("click");
       rerollCityMarket(city);
-      addFeed("You worked the same ground in <b>" + city + "</b>. The local market shifted again.", "info");
-      el.travelInfo.textContent = city + " just rolled into a fresh market.";
+      addFeed("You flipped the roadmap page in <b>" + city + "</b>. The local market changed again.", "info");
+      el.travelInfo.textContent = city + " just rolled into another local market.";
       renderAll();
       return;
     }
@@ -618,12 +590,9 @@ button:hover{transform:translateY(-1px);filter:brightness(1.04)}
     game.pressure = clamp(game.pressure + 1, 0, 10);
     drawTravelLine(from, city);
     playTone("travel");
-    addFeed("Moved from <b>" + from + "</b> to <b>" + city + "</b>. New market rolled in.", "info");
-    el.travelInfo.textContent = city + " market is live now. Click again to roll another market.";
-    maybePolice();
-    maybeRumor();
-    renderAll();
-    checkDanger();
+    addFeed("Moved from <b>" + from + "</b> to <b>" + city + "</b>. New city market rolled in.", "info");
+    el.travelInfo.textContent = city + " market is live now. Every dot is a city market.";
+    maybePolice(); maybeRumor(); renderAll(); checkDanger();
   }
 
   function showOverlay(title, body, actions) {
@@ -640,40 +609,34 @@ button:hover{transform:translateY(-1px);filter:brightness(1.04)}
     el.overlay.classList.add("show");
   }
   function closeOverlay() { el.overlay.classList.remove("show"); }
-
   function showHow() {
     showOverlay(
       "HOW TO PLAY",
-      `<b>Keep it real:</b> the clickable Iowa map stays as the heart of the game.<br><br>
-       <b>Market:</b> click cities and the local market changes. Same city can roll fresh again.<br><br>
-       <b>Cops + pressure:</b> moving, buying, and selling raise pressure. Higher pressure means more police heat.<br><br>
-       <b>Sounds:</b> travel, cash, cops, danger, and rest all have their own sound cues.<br><br>
-       <b>Last chance:</b> if health drops to zero, you get one desperate call before game over.`,
+      `<b>Clickable Iowa map:</b> every dot is a city and every city has its own market.<br><br>
+       <b>Roadmap page feel:</b> click a city and the center panel flips to that city view with fresh prices and local flavor.<br><br>
+       <b>Market:</b> buy low, sell high, and move when the page goes cold.<br><br>
+       <b>Cops + pressure:</b> moving and hustling raise heat. More pressure means more police trouble.<br><br>
+       <b>Last chance:</b> if health drops to zero, you get one desperate call.`,
       [
-        { label:"BACK TO THE STREETS", className:"btn-gold", onClick:closeOverlay },
-        { label:"CLOSE", className:"btn-dark", onClick:closeOverlay }
+        {label:"BACK TO THE STREETS", className:"btn-gold", onClick:closeOverlay},
+        {label:"CLOSE", className:"btn-dark", onClick:closeOverlay}
       ]
     );
   }
-
   function gameOver() {
     playTone("danger");
     showOverlay(
       "RUN OVER",
       "The streets took this run from you. Reset and build smarter.",
       [
-        { label:"PLAY AGAIN", className:"btn-gold", onClick:() => window.location.reload() },
-        { label:"HOW TO PLAY", className:"btn-dark", onClick:showHow }
+        {label:"PLAY AGAIN", className:"btn-gold", onClick:() => window.location.reload()},
+        {label:"HOW TO PLAY", className:"btn-dark", onClick:showHow}
       ]
     );
   }
 
   function renderAll() {
-    renderMarket();
-    renderFeed();
-    updateStatus();
-    updateInfo();
-    updateMap();
+    renderMarket(); renderFeed(); updateStatus(); updateInfo(); updateMap();
   }
 
   el.buyBtn.addEventListener("click", () => { getAudio(); buyOne(); checkDanger(); });
@@ -687,8 +650,8 @@ button:hover{transform:translateY(-1px);filter:brightness(1.04)}
   el.overlay.addEventListener("click", e => { if (e.target === el.overlay) closeOverlay(); });
 
   Object.keys(cityPositions).forEach(city => ensureCityMarket(city));
-  addFeed("Welcome to <b>Market Run Iowa</b>. OG style is back and the clickable map stays.", "info");
-  addFeed("Pressure, cops, sounds, and market shifts are all live.", "info");
+  addFeed("Welcome to <b>Market Run Iowa</b>. The clickable Iowa map stays front and center.", "info");
+  addFeed("Every dot is a city market now. Click around the state and work the roadmap.", "info");
   renderAll();
 })();
 </script>
