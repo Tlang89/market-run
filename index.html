@@ -147,7 +147,45 @@ button:hover { transform:translateY(-1px); filter:brightness(1.04); }
     font-size: 14px;
     padding: 11px 8px;
   }
-} 
+}
+@media (max-width: 860px) {
+  html, body {
+    overflow: auto;
+  }
+
+  #app {
+    height: auto;
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .right { order: 1; }
+  .center { order: 2; }
+  .left { order: 3; }
+
+  #mapWrap {
+    aspect-ratio: 1.55 / 1;
+    min-height: 290px;
+    height: auto;
+  }
+
+  .panel {
+    padding: 10px;
+    border-radius: 18px;
+  }
+
+  #statusText {
+    font-size: 24px;
+  }
+
+  button {
+    font-size: 14px;
+    padding: 11px 8px;
+  }
+}  
 </style>
 </head>
 <body>
