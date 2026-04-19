@@ -1,173 +1,140 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>The Pusher: The 90s Edition</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="style.css">
+  <title>The Pusher: The 90s Edition</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body{
+      margin:0;
+      background:#0a0a0a;
+      color:#d4af37;
+      font-family:Arial;
+    }
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      padding:10px;
+      border-bottom:1px solid #333;
+      background:#111;
+    }
+
+    .game{
+      display:flex;
+      height:70vh;
+    }
+
+    .left, .right{
+      flex:1;
+      padding:10px;
+      border-right:1px solid #222;
+    }
+
+    .right{
+      border-right:none;
+    }
+
+    .panelTitle{
+      font-weight:bold;
+      margin-bottom:10px;
+      border-bottom:1px solid #333;
+    }
+
+    .item{
+      display:flex;
+      justify-content:space-between;
+      padding:6px 0;
+      border-bottom:1px solid #222;
+    }
+
+    button{
+      background:#111;
+      color:#d4af37;
+      border:1px solid #555;
+      padding:4px 8px;
+      cursor:pointer;
+    }
+
+    button:hover{
+      background:#222;
+    }
+
+    #feed{
+      height:120px;
+      overflow:auto;
+      padding:10px;
+      background:#050505;
+      border-top:1px solid #222;
+      font-size:12px;
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="container">
-  <div class="topbar"></div>
-  <div class="main"></div>
-  <div id="feed"></div>
-  <div class="nav"></div>
+<div class="topbar" id="topbar"></div>
+
+<div class="game">
+  <div class="left" id="market"></div>
+  <div class="right" id="right"></div>
 </div>
 
-<script src="game.js"></script>
+<div id="feed"></div>
 
-</body>
-</html>
-body{
-  margin:0;
-  background:#0a0a0a;
-  color:#d4af37;
-  font-family:Arial, Helvetica, sans-serif;
-}
+<script>
 
-.container{
-  display:flex;
-  flex-direction:column;
-  height:100vh;
-}
-
-.topbar{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:8px;
-  padding:10px;
-  background:#111;
-  border-bottom:1px solid #333;
-}
-
-.statBox{
-  background:#151515;
-  border:1px solid #333;
-  padding:10px;
-}
-
-.statLabel{
-  font-size:11px;
-  color:#9b8340;
-}
-
-.statValue{
-  font-size:22px;
-  font-weight:bold;
-}
-
-.main{
-  display:grid;
-  grid-template-columns:1.2fr 0.8fr;
-  flex:1;
-  padding:10px;
-  gap:10px;
-}
-
-.panel{
-  background:#101010;
-  border:1px solid #333;
-}
-
-.panelHeader{
-  padding:10px;
-  border-bottom:1px solid #333;
-  font-weight:bold;
-}
-
-.panelBody{
-  padding:10px;
-}
-
-.marketItem, .cityBtn{
-  display:flex;
-  justify-content:space-between;
-  padding:8px;
-  border-bottom:1px solid #222;
-}
-
-button{
-  background:#222;
-  color:#d4af37;
-  border:1px solid #555;
-  padding:5px;
-  cursor:pointer;
-}
-
-.btnGold{
-  background:#b48a28;
-  color:#111;
-}
-
-#feed{
-  height:140px;
-  overflow:auto;
-  background:#080808;
-  padding:8px;
-}
-
-.nav{
-  display:flex;
-  gap:10px;
-  padding:10px;
-}
 let cash = 3000;
+let bank = 0;
+let debt = 0;
+
 let city = "New York";
 let day = 1;
-let health = 100;
-let heat = "Low";
 
 let inventory = {};
 
-let bank = 0;
-let mobDebt = 0;
-
-let cities = ["New York","Chicago","Miami","LA","Atlanta"];
+let cities = ["New York","Chicago","Miami","LA","Atlanta","Detroit"];
 
 let items = [
-  {name:"Pagers", price:120},
-  {name:"Sneakers", price:200},
-  {name:"Jewelry", price:500},
-  {name:"Electronics", price:350}
+  {name:"Pagers", base:120},
+  {name:"Sneakers", base:200},
+  {name:"Jewelry", base:500},
+  {name:"Electronics", base:350},
+  {name:"Fake IDs", base:150},
+  {name:"Bootleg CDs", base:80},
+  {name:"Handguns", base:800},
+  {name:"Rifles", base:1500}
 ];
 
 function log(msg){
-  document.getElementById("feed").innerHTML =
-    msg + "<br>" + document.getElementById("feed").innerHTML;
+  let f = document.getElementById("feed");
+  f.innerHTML = msg + "<br>" + f.innerHTML;
+}
+
+function rand(min,max){
+  return Math.floor(Math.random()*(max-min)+min);
 }
 
 function renderTop(){
-  document.querySelector(".topbar").innerHTML = `
-    <div class="statBox">
-      <div class="statLabel">City</div>
-      <div class="statValue">${city}</div>
-    </div>
-
-    <div class="statBox">
-      <div class="statLabel">Cash</div>
-      <div class="statValue">$${cash}</div>
-    </div>
-
-    <div class="statBox">
-      <div class="statLabel">Bank</div>
-      <div class="statValue">$${bank}</div>
-    </div>
-
-    <div class="statBox">
-      <div class="statLabel">Debt</div>
-      <div class="statValue">$${mobDebt}</div>
-    </div>
+  document.getElementById("topbar").innerHTML = `
+    <div>${city}</div>
+    <div>Cash $${cash}</div>
+    <div>Bank $${bank}</div>
+    <div>Debt $${debt}</div>
+    <div>Day ${day}</div>
   `;
 }
 
 function renderMarket(){
-  let html = `<div class="panel"><div class="panelHeader">Market</div><div class="panelBody">`;
+  let html = `<div class="panelTitle">Market</div>`;
 
   items.forEach((item,i)=>{
+    let price = rand(item.base*0.6, item.base*1.6);
+    item.price = price;
+
     html += `
-      <div class="marketItem">
-        ${item.name} ($${item.price})
+      <div class="item">
+        <div>${item.name} ($${price})</div>
         <div>
           <button onclick="buy(${i})">Buy</button>
           <button onclick="sell(${i})">Sell</button>
@@ -176,190 +143,47 @@ function renderMarket(){
     `;
   });
 
-  html += `</div></div>`;
   return html;
 }
 
 function renderRight(){
-  let html = `<div class="panel"><div class="panelHeader">Actions</div><div class="panelBody">`;
+  let html = `<div class="panelTitle">Actions</div>`;
 
-  html += `<button onclick="deposit()">Deposit 500</button><br><br>`;
-  html += `<button onclick="withdraw()">Withdraw 500</button><br><br>`;
-
-  html += `<button onclick="borrow()">Borrow 1000</button><br><br>`;
-  html += `<button onclick="repay()">Repay 500</button><br><br>`;
-
-  cities.forEach(c=>{
-    html += `<div class="cityBtn">${c} <button onclick="travel('${c}')">Fly</button></div>`;
-  });
-
-  html += `</div></div>`;
-  return html;
-}
-
-function render(){
-  renderTop();
-  document.querySelector(".main").innerHTML =
-    renderMarket() + renderRight();
-
-  document.querySelector(".nav").innerHTML =
-    `<button class="btnGold" onclick="render()">Refresh</button>`;
-}
-
-function buy(i){
-  let item = items[i];
-  if(cash >= item.price){
-    cash -= item.price;
-    inventory[item.name] = (inventory[item.name]||0)+1;
-    log("Bought " + item.name);
-  } else {
-    log("Not enough cash");
-  }
-  render();
-}
-
-function sell(i){
-  let item = items[i];
-  if(inventory[item.name]){
-    cash += item.price;
-    inventory[item.name]--;
-    log("Sold " + item.name);
-  } else {
-    log("You do not have any " + item.name);
-  }
-  render();
-}
-
-function deposit(){
-  if(cash >= 500){
-    cash -= 500;
-    bank += 500;
-    log("Deposited 500");
-  } else {
-    log("Not enough cash to deposit");
-  }
-  render();
-}
-
-function withdraw(){
-  if(bank >= 500){
-    bank -= 500;
-    cash += 500;
-    log("Withdrew 500");
-  } else {
-    log("Not enough in the bank");
-  }
-  render();
-}
-
-function borrow(){
-  mobDebt += 1000;
-  cash += 1000;
-  log("Borrowed 1000 from the mob");
-  render();
-}
-
-function repay(){
-  if(cash >= 500 && mobDebt > 0){
-    cash -= 500;
-    mobDebt -= 500;
-    log("Paid 500 to the mob");
-  } else {
-    log("Cannot repay right now");
-  }
-  render();
-}
-
-function travel(c){
-  city = c;
-  day++;
-
-  if(mobDebt > 0){
-    let interest = Math.floor(mobDebt * 0.15);
-    mobDebt += interest;
-    log("Mob added interest $" + interest);
-  }
-
-  render();
-  log("Traveled to " + city);
-}
-
-render();
-log("Welcome to The Pusher");function log(msg){
-  document.getElementById("feed").innerHTML =
-    msg + "<br>" + document.getElementById("feed").innerHTML;
-}
-
-function renderTop(){
-  document.querySelector(".topbar").innerHTML = `
-    <div class="statBox">
-      <div class="statLabel">City</div>
-      <div class="statValue">${city}</div>
-    </div>
-
-    <div class="statBox">
-      <div class="statLabel">Cash</div>
-      <div class="statValue">$${cash}</div>
-    </div>
-
-    <div class="statBox">
-      <div class="statLabel">Bank</div>
-      <div class="statValue">$${bank}</div>
-    </div>
-
-    <div class="statBox">
-      <div class="statLabel">Debt</div>
-      <div class="statValue">$${mobDebt}</div>
-    </div>
+  html += `
+    <button onclick="deposit()">Deposit 500</button><br><br>
+    <button onclick="withdraw()">Withdraw 500</button><br><br>
+    <button onclick="borrow()">Borrow 1000</button><br><br>
+    <button onclick="repay()">Repay 500</button><br><br>
   `;
-}
 
-function renderMarket(){
-  let html = `<div class="panel"><div class="panelHeader">Market</div><div class="panelBody">`;
-
-  items.forEach((item,i)=>{
-    html += `
-      <div class="marketItem">
-        ${item.name} ($${item.price})
-        <div>
-          <button onclick="buy(${i})">Buy</button>
-          <button onclick="sell(${i})">Sell</button>
-        </div>
-      </div>
-    `;
-  });
-
-  html += `</div></div>`;
-  return html;
-}
-
-function renderRight(){
-  let html = `<div class="panel"><div class="panelHeader">Actions</div><div class="panelBody">`;
-
-  html += `<button onclick="deposit()">Deposit 500</button><br><br>`;
-  html += `<button onclick="withdraw()">Withdraw 500</button><br><br>`;
-
-  html += `<button onclick="borrow()">Borrow 1000</button><br><br>`;
-  html += `<button onclick="repay()">Repay 500</button><br><br>`;
+  html += `<div class="panelTitle">Travel</div>`;
 
   cities.forEach(c=>{
-    html += `<div class="cityBtn">${c} <button onclick="travel('${c}')">Fly</button></div>`;
+    html += `<div class="item">${c} <button onclick="travel('${c}')">Fly</button></div>`;
   });
 
-  html += `</div></div>`;
+  html += `<div class="panelTitle">Inventory</div>`;
+
+  if(Object.keys(inventory).length === 0){
+    html += "Empty";
+  } else {
+    for(let k in inventory){
+      html += `${k}: ${inventory[k]}<br>`;
+    }
+  }
+
   return html;
 }
 
 function render(){
   renderTop();
-  document.querySelector(".main").innerHTML =
-    renderMarket() + renderRight();
+  document.getElementById("market").innerHTML = renderMarket();
+  document.getElementById("right").innerHTML = renderRight();
+}
 
-  document.querySelector(".nav").innerHTML =
-    `<button class="btnGold" onclick="render()">Refresh</button>`;
-};
 function buy(i){
   let item = items[i];
+
   if(cash >= item.price){
     cash -= item.price;
     inventory[item.name] = (inventory[item.name]||0)+1;
@@ -367,18 +191,30 @@ function buy(i){
   } else {
     log("Not enough cash");
   }
+
   render();
 }
 
 function sell(i){
   let item = items[i];
+
   if(inventory[item.name]){
     cash += item.price;
     inventory[item.name]--;
+    if(inventory[item.name] === 0) delete inventory[item.name];
     log("Sold " + item.name);
   } else {
-    log("You do not have any " + item.name);
+    log("You don't have any");
   }
+
+  render();
+}
+
+function travel(c){
+  city = c;
+  day++;
+  log("Flew to " + c);
+  randomEvent();
   render();
 }
 
@@ -386,9 +222,6 @@ function deposit(){
   if(cash >= 500){
     cash -= 500;
     bank += 500;
-    log("Deposited 500");
-  } else {
-    log("Not enough cash to deposit");
   }
   render();
 }
@@ -397,44 +230,42 @@ function withdraw(){
   if(bank >= 500){
     bank -= 500;
     cash += 500;
-    log("Withdrew 500");
-  } else {
-    log("Not enough in the bank");
   }
   render();
 }
 
 function borrow(){
-  mobDebt += 1000;
+  debt += 1000;
   cash += 1000;
-  log("Borrowed 1000 from the mob");
+  log("Borrowed from the streets...");
   render();
 }
 
 function repay(){
-  if(cash >= 500 && mobDebt > 0){
+  if(cash >= 500 && debt > 0){
     cash -= 500;
-    mobDebt -= 500;
-    log("Paid 500 to the mob");
-  } else {
-    log("Cannot repay right now");
+    debt -= 500;
   }
   render();
 }
 
-function travel(c){
-  city = c;
-  day++;
+function randomEvent(){
+  let r = Math.random();
 
-  if(mobDebt > 0){
-    let interest = Math.floor(mobDebt * 0.15);
-    mobDebt += interest;
-    log("Mob added interest $" + interest);
+  if(r < 0.2){
+    log("🚔 Undercover cops seized your stash!");
+    inventory = {};
   }
-
-  render();
-  log("Traveled to " + city);
+  else if(r < 0.4){
+    let found = rand(500,2000);
+    cash += found;
+    log("💰 Jackpot! Found $" + found);
+  }
 }
 
 render();
-log("Welcome to The Pusher");
+
+</script>
+
+</body>
+</html>
