@@ -1,252 +1,440 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Pusher: The 90s Edition</title>
-
-<style>
-body {
-    margin:0;
-    font-family:Arial, sans-serif;
-    background:#0a0a0a;
-    color:#d4af37;
-}
-
-.topbar {
-    display:flex;
-    justify-content:space-between;
-    padding:10px;
-    background:#111;
-    border-bottom:1px solid #333;
-    font-size:14px;
-}
-
-.container {
-    display:flex;
-    flex-direction:column;
-    height:100vh;
-}
-
-.main {
-    flex:1;
-    display:flex;
-}
-
-.panel {
-    flex:1;
-    padding:10px;
-    overflow-y:auto;
-}
-
-.left { border-right:1px solid #222; }
-
-h3 { margin-top:0; }
-
-.item {
-    display:flex;
-    justify-content:space-between;
-    padding:8px;
-    border-bottom:1px solid #222;
-}
-
-button {
-    background:#222;
-    color:#d4af37;
-    border:1px solid #444;
-    padding:6px 10px;
-    margin-top:5px;
-    cursor:pointer;
-}
-
-button:hover { background:#333; }
-
-.bottom {
-    height:120px;
-    overflow-y:auto;
-    background:#050505;
-    border-top:1px solid #222;
-    padding:8px;
-    font-size:12px;
-}
-
-.nav {
-    display:flex;
-    justify-content:space-around;
-    padding:8px;
-    background:#111;
-    border-top:1px solid #222;
-}
-
-.flash {
-    animation:flash 0.3s;
-}
-
-@keyframes flash {
-    from { background:#333; }
-    to { background:transparent; }
-}
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <div class="container">
-
-<!-- TOP BAR -->
-<div class="topbar">
-    <div>📍 <span id="city">New York</span></div>
-    <div>💰 $<span id="cash">500</span></div>
-    <div>❤️ <span id="health">100</span></div>
-    <div>🔥 <span id="heat">Low</span></div>
+  <div class="topbar"></div>
+  <div class="main"></div>
+  <div id="feed"></div>
+  <div class="nav"></div>
 </div>
 
-<!-- MAIN -->
-<div class="main">
-
-<!-- MARKET -->
-<div class="panel left">
-    <h3>Market</h3>
-    <div id="market"></div>
-</div>
-
-<!-- INVENTORY -->
-<div class="panel">
-    <h3>Inventory</h3>
-    <div id="inventory"></div>
-</div>
-
-</div>
-
-<!-- STREET FEED -->
-<div class="bottom" id="feed"></div>
-
-<!-- NAV -->
-<div class="nav">
-    <button onclick="showMarket()">Market</button>
-    <button onclick="travel()">Travel</button>
-</div>
-
-</div>
-
-<script>
-
-// GAME STATE
-let cash = 500;
-let health = 100;
-let heat = "Low";
-let city = "New York";
-
-let inventory = {};
-
-let items = [
-    {name:"Pagers", price:120},
-    {name:"Sneakers", price:200},
-    {name:"Jewelry", price:500},
-    {name:"Electronics", price:350}
-];
-
-// SOUND
-const clickSound = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
-const cashSound = new Audio("https://actions.google.com/sounds/v1/cash/cash_register.ogg");
-const alertSound = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
-
-// VIBRATION
-function vibrate(strength=50){
-    if(navigator.vibrate) navigator.vibrate(strength);
-}
-
-// FEED
-function log(msg){
-    let feed = document.getElementById("feed");
-    let time = new Date().toLocaleTimeString();
-    feed.innerHTML = `[${time}] ${msg}<br>` + feed.innerHTML;
-}
-
-// RENDER
-function render(){
-    document.getElementById("cash").innerText = cash;
-    document.getElementById("city").innerText = city;
-
-    let marketHTML = "";
-    items.forEach((item,i)=>{
-        marketHTML += `
-        <div class="item">
-            <span>${item.name} ($${item.price})</span>
-            <div>
-                <button onclick="buy(${i})">Buy</button>
-                <button onclick="sell(${i})">Sell</button>
-            </div>
-        </div>`;
-    });
-    document.getElementById("market").innerHTML = marketHTML;
-
-    let invHTML = "";
-    for(let key in inventory){
-        invHTML += `<div class="item">${key} x${inventory[key]}</div>`;
-    }
-    document.getElementById("inventory").innerHTML = invHTML || "Empty";
-}
-
-// BUY
-function buy(i){
-    let item = items[i];
-    if(cash >= item.price){
-        cash -= item.price;
-        inventory[item.name] = (inventory[item.name]||0)+1;
-
-        cashSound.play();
-        vibrate(40);
-
-        log(`Bought ${item.name}`);
-    } else {
-        alertSound.play();
-        vibrate(100);
-        log("Not enough cash.");
-    }
-    render();
-}
-
-// SELL
-function sell(i){
-    let item = items[i];
-    if(inventory[item.name]){
-        cash += item.price;
-        inventory[item.name]--;
-
-        cashSound.play();
-        vibrate(30);
-
-        log(`Sold ${item.name}`);
-    }
-    render();
-}
-
-// TRAVEL
-function travel(){
-    let cities = ["Chicago","Miami","Los Angeles","Atlanta"];
-    city = cities[Math.floor(Math.random()*cities.length)];
-
-    clickSound.play();
-    vibrate(80);
-
-    log(`Flew to ${city}`);
-
-    // RANDOM EVENT
-    if(Math.random() < 0.4){
-        alertSound.play();
-        vibrate(120);
-        log("⚠ Trouble in the streets...");
-    }
-
-    render();
-}
-
-// INIT
-render();
-log("Welcome to The Pusher.");
-
-</script>
+<script src="game.js"></script>
 
 </body>
 </html>
+body{
+  margin:0;
+  background:#0a0a0a;
+  color:#d4af37;
+  font-family:Arial, Helvetica, sans-serif;
+}
+
+.container{
+  display:flex;
+  flex-direction:column;
+  height:100vh;
+}
+
+.topbar{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  padding:10px;
+  background:#111;
+  border-bottom:1px solid #333;
+}
+
+.statBox{
+  background:#151515;
+  border:1px solid #333;
+  padding:10px;
+}
+
+.statLabel{
+  font-size:11px;
+  color:#9b8340;
+}
+
+.statValue{
+  font-size:22px;
+  font-weight:bold;
+}
+
+.main{
+  display:grid;
+  grid-template-columns:1.2fr 0.8fr;
+  flex:1;
+  padding:10px;
+  gap:10px;
+}
+
+.panel{
+  background:#101010;
+  border:1px solid #333;
+}
+
+.panelHeader{
+  padding:10px;
+  border-bottom:1px solid #333;
+  font-weight:bold;
+}
+
+.panelBody{
+  padding:10px;
+}
+
+.marketItem, .cityBtn{
+  display:flex;
+  justify-content:space-between;
+  padding:8px;
+  border-bottom:1px solid #222;
+}
+
+button{
+  background:#222;
+  color:#d4af37;
+  border:1px solid #555;
+  padding:5px;
+  cursor:pointer;
+}
+
+.btnGold{
+  background:#b48a28;
+  color:#111;
+}
+
+#feed{
+  height:140px;
+  overflow:auto;
+  background:#080808;
+  padding:8px;
+}
+
+.nav{
+  display:flex;
+  gap:10px;
+  padding:10px;
+}
+let cash = 3000;
+let city = "New York";
+let day = 1;
+let health = 100;
+let heat = "Low";
+
+let inventory = {};
+
+let bank = 0;
+let mobDebt = 0;
+
+let cities = ["New York","Chicago","Miami","LA","Atlanta"];
+
+let items = [
+  {name:"Pagers", price:120},
+  {name:"Sneakers", price:200},
+  {name:"Jewelry", price:500},
+  {name:"Electronics", price:350}
+];
+
+function log(msg){
+  document.getElementById("feed").innerHTML =
+    msg + "<br>" + document.getElementById("feed").innerHTML;
+}
+
+function renderTop(){
+  document.querySelector(".topbar").innerHTML = `
+    <div class="statBox">
+      <div class="statLabel">City</div>
+      <div class="statValue">${city}</div>
+    </div>
+
+    <div class="statBox">
+      <div class="statLabel">Cash</div>
+      <div class="statValue">$${cash}</div>
+    </div>
+
+    <div class="statBox">
+      <div class="statLabel">Bank</div>
+      <div class="statValue">$${bank}</div>
+    </div>
+
+    <div class="statBox">
+      <div class="statLabel">Debt</div>
+      <div class="statValue">$${mobDebt}</div>
+    </div>
+  `;
+}
+
+function renderMarket(){
+  let html = `<div class="panel"><div class="panelHeader">Market</div><div class="panelBody">`;
+
+  items.forEach((item,i)=>{
+    html += `
+      <div class="marketItem">
+        ${item.name} ($${item.price})
+        <div>
+          <button onclick="buy(${i})">Buy</button>
+          <button onclick="sell(${i})">Sell</button>
+        </div>
+      </div>
+    `;
+  });
+
+  html += `</div></div>`;
+  return html;
+}
+
+function renderRight(){
+  let html = `<div class="panel"><div class="panelHeader">Actions</div><div class="panelBody">`;
+
+  html += `<button onclick="deposit()">Deposit 500</button><br><br>`;
+  html += `<button onclick="withdraw()">Withdraw 500</button><br><br>`;
+
+  html += `<button onclick="borrow()">Borrow 1000</button><br><br>`;
+  html += `<button onclick="repay()">Repay 500</button><br><br>`;
+
+  cities.forEach(c=>{
+    html += `<div class="cityBtn">${c} <button onclick="travel('${c}')">Fly</button></div>`;
+  });
+
+  html += `</div></div>`;
+  return html;
+}
+
+function render(){
+  renderTop();
+  document.querySelector(".main").innerHTML =
+    renderMarket() + renderRight();
+
+  document.querySelector(".nav").innerHTML =
+    `<button class="btnGold" onclick="render()">Refresh</button>`;
+}
+
+function buy(i){
+  let item = items[i];
+  if(cash >= item.price){
+    cash -= item.price;
+    inventory[item.name] = (inventory[item.name]||0)+1;
+    log("Bought " + item.name);
+  } else {
+    log("Not enough cash");
+  }
+  render();
+}
+
+function sell(i){
+  let item = items[i];
+  if(inventory[item.name]){
+    cash += item.price;
+    inventory[item.name]--;
+    log("Sold " + item.name);
+  } else {
+    log("You do not have any " + item.name);
+  }
+  render();
+}
+
+function deposit(){
+  if(cash >= 500){
+    cash -= 500;
+    bank += 500;
+    log("Deposited 500");
+  } else {
+    log("Not enough cash to deposit");
+  }
+  render();
+}
+
+function withdraw(){
+  if(bank >= 500){
+    bank -= 500;
+    cash += 500;
+    log("Withdrew 500");
+  } else {
+    log("Not enough in the bank");
+  }
+  render();
+}
+
+function borrow(){
+  mobDebt += 1000;
+  cash += 1000;
+  log("Borrowed 1000 from the mob");
+  render();
+}
+
+function repay(){
+  if(cash >= 500 && mobDebt > 0){
+    cash -= 500;
+    mobDebt -= 500;
+    log("Paid 500 to the mob");
+  } else {
+    log("Cannot repay right now");
+  }
+  render();
+}
+
+function travel(c){
+  city = c;
+  day++;
+
+  if(mobDebt > 0){
+    let interest = Math.floor(mobDebt * 0.15);
+    mobDebt += interest;
+    log("Mob added interest $" + interest);
+  }
+
+  render();
+  log("Traveled to " + city);
+}
+
+render();
+log("Welcome to The Pusher");function log(msg){
+  document.getElementById("feed").innerHTML =
+    msg + "<br>" + document.getElementById("feed").innerHTML;
+}
+
+function renderTop(){
+  document.querySelector(".topbar").innerHTML = `
+    <div class="statBox">
+      <div class="statLabel">City</div>
+      <div class="statValue">${city}</div>
+    </div>
+
+    <div class="statBox">
+      <div class="statLabel">Cash</div>
+      <div class="statValue">$${cash}</div>
+    </div>
+
+    <div class="statBox">
+      <div class="statLabel">Bank</div>
+      <div class="statValue">$${bank}</div>
+    </div>
+
+    <div class="statBox">
+      <div class="statLabel">Debt</div>
+      <div class="statValue">$${mobDebt}</div>
+    </div>
+  `;
+}
+
+function renderMarket(){
+  let html = `<div class="panel"><div class="panelHeader">Market</div><div class="panelBody">`;
+
+  items.forEach((item,i)=>{
+    html += `
+      <div class="marketItem">
+        ${item.name} ($${item.price})
+        <div>
+          <button onclick="buy(${i})">Buy</button>
+          <button onclick="sell(${i})">Sell</button>
+        </div>
+      </div>
+    `;
+  });
+
+  html += `</div></div>`;
+  return html;
+}
+
+function renderRight(){
+  let html = `<div class="panel"><div class="panelHeader">Actions</div><div class="panelBody">`;
+
+  html += `<button onclick="deposit()">Deposit 500</button><br><br>`;
+  html += `<button onclick="withdraw()">Withdraw 500</button><br><br>`;
+
+  html += `<button onclick="borrow()">Borrow 1000</button><br><br>`;
+  html += `<button onclick="repay()">Repay 500</button><br><br>`;
+
+  cities.forEach(c=>{
+    html += `<div class="cityBtn">${c} <button onclick="travel('${c}')">Fly</button></div>`;
+  });
+
+  html += `</div></div>`;
+  return html;
+}
+
+function render(){
+  renderTop();
+  document.querySelector(".main").innerHTML =
+    renderMarket() + renderRight();
+
+  document.querySelector(".nav").innerHTML =
+    `<button class="btnGold" onclick="render()">Refresh</button>`;
+};
+function buy(i){
+  let item = items[i];
+  if(cash >= item.price){
+    cash -= item.price;
+    inventory[item.name] = (inventory[item.name]||0)+1;
+    log("Bought " + item.name);
+  } else {
+    log("Not enough cash");
+  }
+  render();
+}
+
+function sell(i){
+  let item = items[i];
+  if(inventory[item.name]){
+    cash += item.price;
+    inventory[item.name]--;
+    log("Sold " + item.name);
+  } else {
+    log("You do not have any " + item.name);
+  }
+  render();
+}
+
+function deposit(){
+  if(cash >= 500){
+    cash -= 500;
+    bank += 500;
+    log("Deposited 500");
+  } else {
+    log("Not enough cash to deposit");
+  }
+  render();
+}
+
+function withdraw(){
+  if(bank >= 500){
+    bank -= 500;
+    cash += 500;
+    log("Withdrew 500");
+  } else {
+    log("Not enough in the bank");
+  }
+  render();
+}
+
+function borrow(){
+  mobDebt += 1000;
+  cash += 1000;
+  log("Borrowed 1000 from the mob");
+  render();
+}
+
+function repay(){
+  if(cash >= 500 && mobDebt > 0){
+    cash -= 500;
+    mobDebt -= 500;
+    log("Paid 500 to the mob");
+  } else {
+    log("Cannot repay right now");
+  }
+  render();
+}
+
+function travel(c){
+  city = c;
+  day++;
+
+  if(mobDebt > 0){
+    let interest = Math.floor(mobDebt * 0.15);
+    mobDebt += interest;
+    log("Mob added interest $" + interest);
+  }
+
+  render();
+  log("Traveled to " + city);
+}
+
+render();
+log("Welcome to The Pusher");
