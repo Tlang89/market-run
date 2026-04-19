@@ -97,6 +97,57 @@ button:hover { transform:translateY(-1px); filter:brightness(1.04); }
 .overlay-title { font-size:28px; color:var(--gold); margin-bottom:8px; font-weight:900; text-align:center; }
 .overlay-body { font-size:16px; line-height:1.45; color:#eef5ff; margin-bottom:16px; }
 .overlay-actions { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+ @media (max-width: 860px) {
+  html, body {
+    overflow: auto;
+  }
+
+  #app {
+    height: auto;
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .right { order: 1; }
+  .center { order: 2; }
+  .left { order: 3; }
+
+  #mapWrap {
+    aspect-ratio: 1.55 / 1;
+    min-height: 290px;
+    height: auto;
+  }
+
+  .card {
+    padding: 10px;
+    border-radius: 18px;
+  }
+
+  #heatText {
+    font-size: 24px;
+  }
+
+  #tradeLine,
+  #pressureLine,
+  #walletLine,
+  .value {
+    font-size: 16px;
+  }
+
+  .item-name,
+  .price {
+    font-size: 16px;
+  }
+
+  button {
+    font-size: 14px;
+    padding: 11px 8px;
+  }
+} 
 </style>
 </head>
 <body>
