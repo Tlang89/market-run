@@ -1,271 +1,866 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The Pusher: The 90s Edition</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <style>
+    :root{
+      --bg:#0a0a0a;
+      --panel:#111;
+      --panel2:#171717;
+      --line:#3a3a3a;
+      --gold:#d4af37;
+      --gold-soft:#9b8340;
+      --text:#f2d97a;
+      --good:#8ddc92;
+      --bad:#ff9b9b;
+      --warn:#ffc76d;
+    }
+
+    *{box-sizing:border-box}
+
     body{
       margin:0;
-      background:#0a0a0a;
-      color:#d4af37;
-      font-family:Arial;
+      background:linear-gradient(180deg,#0b0b0b,#050505 70%);
+      color:var(--gold);
+      font-family:Arial, Helvetica, sans-serif;
     }
 
-    .topbar{
+    .wrap{
+      max-width:1400px;
+      margin:0 auto;
+      min-height:100vh;
+      padding:10px;
+    }
+
+    .startOverlay{
+      position:fixed;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(0,0,0,.92);
+      z-index:9999;
+      padding:20px;
+    }
+
+    .startCard{
+      width:min(520px,92vw);
+      border:1px solid var(--line);
+      background:linear-gradient(180deg,#1a1a1a,#101010);
+      padding:28px;
+      text-align:center;
+      box-shadow:0 0 30px rgba(0,0,0,.4);
+    }
+
+    .startTitle{
+      font-size:34px;
+      font-weight:900;
+      color:var(--text);
+      letter-spacing:1px;
+      margin-bottom:6px;
+    }
+
+    .startSub{
+      color:#b65c5c;
+      font-weight:700;
+      letter-spacing:1px;
+      margin-bottom:18px;
+    }
+
+    .startText{
+      color:var(--gold-soft);
+      font-size:14px;
+      margin-bottom:20px;
+      line-height:1.45;
+    }
+
+    .startBtn{
+      background:#c89d31;
+      color:#111;
+      border:1px solid #e0bb57;
+      font-weight:900;
+      padding:14px 22px;
+      font-size:18px;
+      cursor:pointer;
+      min-width:220px;
+    }
+
+    .titlebar{
       display:flex;
       justify-content:space-between;
-      padding:10px;
-      border-bottom:1px solid #333;
-      background:#111;
-    }
-
-    .game{
-      display:flex;
-      height:70vh;
-    }
-
-    .left, .right{
-      flex:1;
-      padding:10px;
-      border-right:1px solid #222;
-    }
-
-    .right{
-      border-right:none;
-    }
-
-    .panelTitle{
-      font-weight:bold;
+      align-items:center;
+      gap:10px;
+      padding:12px 14px;
       margin-bottom:10px;
-      border-bottom:1px solid #333;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg,#181818,#101010);
     }
 
-    .item{
+    .gameTitle{
+      font-size:34px;
+      font-weight:900;
+      letter-spacing:1px;
+      color:var(--text);
+      line-height:1;
+    }
+
+    .gameSub{
+      font-size:14px;
+      color:#b65c5c;
+      font-weight:700;
+      margin-top:4px;
+      letter-spacing:1px;
+    }
+
+    .quote{
+      text-align:right;
+      color:var(--gold-soft);
+      font-size:13px;
+      max-width:300px;
+    }
+
+    .hud{
+      display:grid;
+      grid-template-columns:2fr 1.2fr 1fr 1.3fr 1.3fr;
+      gap:10px;
+      margin-bottom:10px;
+    }
+
+    .card{
+      border:1px solid var(--line);
+      background:linear-gradient(180deg,#171717,#101010);
+      padding:10px 12px;
+      min-height:76px;
+    }
+
+    .label{
+      font-size:11px;
+      text-transform:uppercase;
+      color:var(--gold-soft);
+      letter-spacing:1px;
+      margin-bottom:5px;
+    }
+
+    .value{
+      font-size:18px;
+      font-weight:800;
+      color:var(--text);
+    }
+
+    .big{
+      font-size:30px;
+      line-height:1;
+    }
+
+    .heat-low{color:#9de28e}
+    .heat-med{color:#ffc76d}
+    .heat-high{color:#ff8f8f}
+
+    .healthWrap{
+      margin-top:6px;
+    }
+
+    .healthBar{
+      height:12px;
+      width:100%;
+      background:#2a1313;
+      border:1px solid #4d2424;
+    }
+
+    .healthFill{
+      height:100%;
+      background:linear-gradient(90deg,#a32d2d,#d4af37);
+      transition:width .2s ease;
+    }
+
+    .main{
+      display:grid;
+      grid-template-columns:1.35fr 0.95fr;
+      gap:10px;
+      margin-bottom:10px;
+    }
+
+    .panel{
+      border:1px solid var(--line);
+      background:linear-gradient(180deg,#131313,#0c0c0c);
+      min-height:420px;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .panelHead{
       display:flex;
       justify-content:space-between;
-      padding:6px 0;
-      border-bottom:1px solid #222;
+      align-items:center;
+      padding:10px 12px;
+      border-bottom:1px solid var(--line);
+      background:#181818;
+      font-weight:800;
+      color:var(--text);
+    }
+
+    .panelBody{
+      padding:10px;
+      overflow:auto;
+    }
+
+    .marketRow{
+      display:grid;
+      grid-template-columns:1.4fr 0.7fr 0.9fr;
+      gap:10px;
+      align-items:center;
+      padding:10px 8px;
+      border-bottom:1px solid #252525;
+    }
+
+    .marketRow:hover{
+      background:#161616;
+    }
+
+    .name{
+      font-size:18px;
+      font-weight:800;
+      color:var(--text);
+    }
+
+    .meta{
+      font-size:12px;
+      color:var(--gold-soft);
+      margin-top:4px;
+    }
+
+    .price{
+      font-size:24px;
+      font-weight:900;
+      text-align:right;
+      color:var(--gold);
+    }
+
+    .btns{
+      display:flex;
+      gap:6px;
+      justify-content:flex-end;
+      flex-wrap:wrap;
     }
 
     button{
-      background:#111;
-      color:#d4af37;
-      border:1px solid #555;
-      padding:4px 8px;
+      border:1px solid #646464;
+      background:#191919;
+      color:var(--gold);
+      font-weight:800;
+      padding:7px 10px;
       cursor:pointer;
+      min-width:64px;
     }
 
     button:hover{
-      background:#222;
+      background:#252525;
     }
 
-    #feed{
-      height:120px;
-      overflow:auto;
+    .btnGold{
+      background:#b48a28;
+      color:#111;
+      border-color:#d4af37;
+    }
+
+    .rightGrid{
+      display:grid;
+      grid-template-rows:auto auto 1fr;
+      gap:10px;
+      height:100%;
+    }
+
+    .sub{
+      border:1px solid var(--line);
+      background:#111;
+    }
+
+    .subHead{
+      padding:8px 10px;
+      border-bottom:1px solid var(--line);
+      background:#181818;
+      font-weight:800;
+      color:var(--text);
+    }
+
+    .subBody{
       padding:10px;
-      background:#050505;
-      border-top:1px solid #222;
-      font-size:12px;
+    }
+
+    .stackRow{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      padding:8px 0;
+      border-bottom:1px solid #232323;
+    }
+
+    .stackRow:last-child{
+      border-bottom:none;
+    }
+
+    .travelRow{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      padding:8px 0;
+      border-bottom:1px solid #232323;
+    }
+
+    .travelRow:last-child{
+      border-bottom:none;
+    }
+
+    .feed{
+      border:1px solid var(--line);
+      background:#080808;
+      min-height:150px;
+    }
+
+    .feedHead{
+      padding:8px 10px;
+      border-bottom:1px solid var(--line);
+      background:#181818;
+      color:var(--text);
+      font-weight:800;
+    }
+
+    .feedBody{
+      padding:8px 10px;
+      height:145px;
+      overflow:auto;
+      font-size:13px;
+      line-height:1.45;
+    }
+
+    .entry{
+      padding:5px 0;
+      border-bottom:1px solid #1d1d1d;
+    }
+
+    .good{color:var(--good)}
+    .bad{color:var(--bad)}
+    .warn{color:var(--warn)}
+    .info{color:var(--gold)}
+
+    .empty{
+      color:var(--gold-soft);
+      font-style:italic;
+    }
+
+    @media (max-width: 980px){
+      .hud{
+        grid-template-columns:1fr 1fr;
+      }
+
+      .main{
+        grid-template-columns:1fr;
+      }
+
+      .quote{
+        display:none;
+      }
+
+      .titlebar{
+        align-items:flex-start;
+        flex-direction:column;
+      }
+    }
+
+    @media (max-width: 640px){
+      .gameTitle{font-size:26px}
+      .big{font-size:24px}
+      .marketRow{
+        grid-template-columns:1fr;
+      }
+      .price{text-align:left}
+      .btns{justify-content:flex-start}
     }
   </style>
 </head>
-
 <body>
+  <div class="startOverlay" id="startOverlay">
+    <div class="startCard">
+      <div class="startTitle">THE PUSHER</div>
+      <div class="startSub">THE 90s EDITION</div>
+      <div class="startText">
+        Sound and vibration unlock after you enter.
+        Start with cash, work the markets, dodge pressure, and build your stack.
+      </div>
+      <button class="startBtn" id="startBtn">ENTER THE STREETS</button>
+    </div>
+  </div>
 
-<div class="topbar" id="topbar"></div>
+  <div class="wrap">
+    <div class="titlebar">
+      <div>
+        <div class="gameTitle">THE PUSHER</div>
+        <div class="gameSub">THE 90s EDITION</div>
+      </div>
+      <div class="quote">“This city’s got money, but everybody wants a cut.”</div>
+    </div>
 
-<div class="game">
-  <div class="left" id="market"></div>
-  <div class="right" id="right"></div>
-</div>
+    <div class="hud" id="hud"></div>
 
-<div id="feed"></div>
+    <div class="main">
+      <div class="panel">
+        <div class="panelHead">
+          <span>Black Market</span>
+          <span id="marketCityLabel">New York</span>
+        </div>
+        <div class="panelBody" id="market"></div>
+      </div>
 
-<script>
+      <div class="panel">
+        <div class="panelHead">
+          <span>Operations</span>
+          <span id="opsCityLabel">New York</span>
+        </div>
+        <div class="panelBody" style="padding:0;">
+          <div class="rightGrid">
+            <div class="sub">
+              <div class="subHead">Inventory</div>
+              <div class="subBody" id="inventory"></div>
+            </div>
 
-let cash = 3000;
-let bank = 0;
-let debt = 0;
+            <div class="sub">
+              <div class="subHead">Money & Pressure</div>
+              <div class="subBody" id="moneyPanel"></div>
+            </div>
 
-let city = "New York";
-let day = 1;
-
-let inventory = {};
-
-let cities = ["New York","Chicago","Miami","LA","Atlanta","Detroit"];
-
-let items = [
-  {name:"Pagers", base:120},
-  {name:"Sneakers", base:200},
-  {name:"Jewelry", base:500},
-  {name:"Electronics", base:350},
-  {name:"Fake IDs", base:150},
-  {name:"Bootleg CDs", base:80},
-  {name:"Handguns", base:800},
-  {name:"Rifles", base:1500}
-];
-
-function log(msg){
-  let f = document.getElementById("feed");
-  f.innerHTML = msg + "<br>" + f.innerHTML;
-}
-
-function rand(min,max){
-  return Math.floor(Math.random()*(max-min)+min);
-}
-
-function renderTop(){
-  document.getElementById("topbar").innerHTML = `
-    <div>${city}</div>
-    <div>Cash $${cash}</div>
-    <div>Bank $${bank}</div>
-    <div>Debt $${debt}</div>
-    <div>Day ${day}</div>
-  `;
-}
-
-function renderMarket(){
-  let html = `<div class="panelTitle">Market</div>`;
-
-  items.forEach((item,i)=>{
-    let price = rand(item.base*0.6, item.base*1.6);
-    item.price = price;
-
-    html += `
-      <div class="item">
-        <div>${item.name} ($${price})</div>
-        <div>
-          <button onclick="buy(${i})">Buy</button>
-          <button onclick="sell(${i})">Sell</button>
+            <div class="sub">
+              <div class="subHead">Travel</div>
+              <div class="subBody" id="travelPanel"></div>
+            </div>
+          </div>
         </div>
       </div>
-    `;
-  });
+    </div>
 
-  return html;
-}
+    <div class="feed">
+      <div class="feedHead">Street Feed</div>
+      <div class="feedBody" id="feed"></div>
+    </div>
+  </div>
 
-function renderRight(){
-  let html = `<div class="panelTitle">Actions</div>`;
+  <script>
+    let cash = 3000;
+    let bank = 0;
+    let debt = 0;
 
-  html += `
-    <button onclick="deposit()">Deposit 500</button><br><br>
-    <button onclick="withdraw()">Withdraw 500</button><br><br>
-    <button onclick="borrow()">Borrow 1000</button><br><br>
-    <button onclick="repay()">Repay 500</button><br><br>
-  `;
+    let city = "New York";
+    let day = 1;
+    let health = 100;
+    let heat = "Low";
 
-  html += `<div class="panelTitle">Travel</div>`;
+    let inventory = {};
 
-  cities.forEach(c=>{
-    html += `<div class="item">${c} <button onclick="travel('${c}')">Fly</button></div>`;
-  });
+    const cities = [
+      "New York",
+      "Chicago",
+      "Miami",
+      "Los Angeles",
+      "Atlanta",
+      "Detroit"
+    ];
 
-  html += `<div class="panelTitle">Inventory</div>`;
+    const items = [
+      { name:"Pagers", base:120, risk:1 },
+      { name:"Sneakers", base:200, risk:1 },
+      { name:"Jewelry", base:500, risk:2 },
+      { name:"Electronics", base:350, risk:2 },
+      { name:"Bootleg Tapes", base:95, risk:2 },
+      { name:"Luxury Watches", base:900, risk:3 },
+      { name:"Hot Merchandise", base:1300, risk:4 },
+      { name:"Locked Cases", base:1600, risk:5 }
+    ];
 
-  if(Object.keys(inventory).length === 0){
-    html += "Empty";
-  } else {
-    for(let k in inventory){
-      html += `${k}: ${inventory[k]}<br>`;
+    let audioUnlocked = false;
+    let musicEnabled = false;
+
+    const sounds = {
+      click: new Audio("https://assets.mixkit.co/sfx/preview/mixkit-game-click-1114.mp3"),
+      travel: new Audio("https://assets.mixkit.co/sfx/preview/mixkit-fast-rocket-whoosh-1714.mp3"),
+      danger: new Audio("https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3"),
+      money: new Audio("https://assets.mixkit.co/sfx/preview/mixkit-coins-handling-1939.mp3")
+    };
+
+    const music = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3");
+    music.loop = true;
+    music.volume = 0.12;
+
+    function playSound(name){
+      if(!audioUnlocked || !sounds[name]) return;
+      try{
+        sounds[name].currentTime = 0;
+        sounds[name].play().catch(()=>{});
+      }catch(e){}
     }
-  }
 
-  return html;
-}
+    function startMusic(){
+      if(!audioUnlocked || musicEnabled) return;
+      musicEnabled = true;
+      music.play().catch(()=>{});
+    }
 
-function render(){
-  renderTop();
-  document.getElementById("market").innerHTML = renderMarket();
-  document.getElementById("right").innerHTML = renderRight();
-}
+    function vibrate(pattern=40){
+      if(navigator.vibrate){
+        navigator.vibrate(pattern);
+      }
+    }
 
-function buy(i){
-  let item = items[i];
+    function rand(min,max){
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
 
-  if(cash >= item.price){
-    cash -= item.price;
-    inventory[item.name] = (inventory[item.name]||0)+1;
-    log("Bought " + item.name);
-  } else {
-    log("Not enough cash");
-  }
+    function heatClass(){
+      if(heat === "Low") return "heat-low";
+      if(heat === "Medium") return "heat-med";
+      return "heat-high";
+    }
 
-  render();
-}
+    function log(msg,type="info"){
+      const feed = document.getElementById("feed");
+      const div = document.createElement("div");
+      div.className = `entry ${type}`;
+      div.innerHTML = `[Day ${day}] ${msg}`;
+      feed.prepend(div);
+    }
 
-function sell(i){
-  let item = items[i];
+    function refreshPrices(){
+      items.forEach(item=>{
+        let cityBoost = 1;
 
-  if(inventory[item.name]){
-    cash += item.price;
-    inventory[item.name]--;
-    if(inventory[item.name] === 0) delete inventory[item.name];
-    log("Sold " + item.name);
-  } else {
-    log("You don't have any");
-  }
+        if(city === "Miami" && item.name === "Luxury Watches") cityBoost = 1.25;
+        if(city === "Chicago" && item.name === "Sneakers") cityBoost = 1.2;
+        if(city === "Los Angeles" && item.name === "Electronics") cityBoost = 1.2;
+        if(city === "New York" && item.name === "Pagers") cityBoost = 1.18;
+        if(city === "Detroit" && item.name === "Hot Merchandise") cityBoost = 0.85;
 
-  render();
-}
+        item.price = Math.max(40, Math.floor(rand(item.base * 0.65, item.base * 1.55) * cityBoost));
+      });
+    }
 
-function travel(c){
-  city = c;
-  day++;
-  log("Flew to " + c);
-  randomEvent();
-  render();
-}
+    function renderHud(){
+      document.getElementById("hud").innerHTML = `
+        <div class="card">
+          <div class="label">Current City</div>
+          <div class="value big">${city}</div>
+        </div>
 
-function deposit(){
-  if(cash >= 500){
-    cash -= 500;
-    bank += 500;
-  }
-  render();
-}
+        <div class="card">
+          <div class="label">Cash</div>
+          <div class="value big">$${cash}</div>
+        </div>
 
-function withdraw(){
-  if(bank >= 500){
-    bank -= 500;
-    cash += 500;
-  }
-  render();
-}
+        <div class="card">
+          <div class="label">Bank</div>
+          <div class="value big">$${bank}</div>
+        </div>
 
-function borrow(){
-  debt += 1000;
-  cash += 1000;
-  log("Borrowed from the streets...");
-  render();
-}
+        <div class="card">
+          <div class="label">Debt</div>
+          <div class="value big" style="color:#ff9b9b">$${debt}</div>
+        </div>
 
-function repay(){
-  if(cash >= 500 && debt > 0){
-    cash -= 500;
-    debt -= 500;
-  }
-  render();
-}
+        <div class="card">
+          <div class="label">Day / Heat / Health</div>
+          <div class="value" style="font-size:16px;">Day ${day} • <span class="${heatClass()}">${heat}</span></div>
+          <div class="healthWrap">
+            <div class="healthBar"><div class="healthFill" style="width:${health}%"></div></div>
+          </div>
+        </div>
+      `;
+    }
 
-function randomEvent(){
-  let r = Math.random();
+    function renderMarket(){
+      document.getElementById("marketCityLabel").textContent = city;
+      let html = "";
 
-  if(r < 0.2){
-    log("🚔 Undercover cops seized your stash!");
-    inventory = {};
-  }
-  else if(r < 0.4){
-    let found = rand(500,2000);
-    cash += found;
-    log("💰 Jackpot! Found $" + found);
-  }
-}
+      items.forEach((item,i)=>{
+        html += `
+          <div class="marketRow">
+            <div>
+              <div class="name">${item.name}</div>
+              <div class="meta">Risk ${item.risk}/5 • Street demand shifts by city</div>
+            </div>
+            <div class="price">$${item.price}</div>
+            <div class="btns">
+              <button class="btnGold" onclick="buyItem(${i})">Buy</button>
+              <button onclick="sellItem(${i})">Sell</button>
+            </div>
+          </div>
+        `;
+      });
 
-render();
+      document.getElementById("market").innerHTML = html;
+    }
 
-</script>
+    function renderInventory(){
+      let html = "";
+      const keys = Object.keys(inventory).filter(k => inventory[k] > 0);
 
+      if(keys.length === 0){
+        html = `<div class="empty">You’re carrying nothing. Make a move.</div>`;
+      } else {
+        keys.forEach(name=>{
+          html += `
+            <div class="stackRow">
+              <div>${name}</div>
+              <div>x${inventory[name]}</div>
+            </div>
+          `;
+        });
+      }
+
+      document.getElementById("inventory").innerHTML = html;
+    }
+
+    function renderMoneyPanel(){
+      document.getElementById("moneyPanel").innerHTML = `
+        <div class="stackRow">
+          <div>Deposit $500</div>
+          <div><button onclick="deposit()">Do It</button></div>
+        </div>
+        <div class="stackRow">
+          <div>Withdraw $500</div>
+          <div><button onclick="withdraw()">Do It</button></div>
+        </div>
+        <div class="stackRow">
+          <div>Borrow $1000</div>
+          <div><button onclick="borrow()">Take It</button></div>
+        </div>
+        <div class="stackRow">
+          <div>Repay $500</div>
+          <div><button onclick="repay()">Pay It</button></div>
+        </div>
+      `;
+    }
+
+    function renderTravel(){
+      document.getElementById("opsCityLabel").textContent = city;
+      let html = "";
+
+      cities.forEach(c=>{
+        html += `
+          <div class="travelRow">
+            <div>${c}</div>
+            <div><button onclick="travel('${c}')">Fly</button></div>
+          </div>
+        `;
+      });
+
+      document.getElementById("travelPanel").innerHTML = html;
+    }
+
+    function renderAll(){
+      renderHud();
+      renderMarket();
+      renderInventory();
+      renderMoneyPanel();
+      renderTravel();
+    }
+
+    function raiseHeat(){
+      if(heat === "Low") heat = "Medium";
+      else if(heat === "Medium") heat = "High";
+    }
+
+    function lowerHeat(){
+      if(heat === "High") heat = "Medium";
+      else if(heat === "Medium") heat = "Low";
+    }
+
+    function buyItem(i){
+      const item = items[i];
+      playSound("click");
+
+      if(cash >= item.price){
+        cash -= item.price;
+        inventory[item.name] = (inventory[item.name] || 0) + 1;
+        playSound("money");
+        vibrate(30);
+        log(`Bought ${item.name} for $${item.price}.`, "good");
+
+        if(Math.random() < item.risk * 0.08){
+          raiseHeat();
+          playSound("danger");
+          vibrate([80,30,80]);
+          log(`That move brought attention. Heat is rising.`, "warn");
+        }
+      } else {
+        playSound("danger");
+        vibrate(60);
+        log(`Not enough cash for ${item.name}.`, "bad");
+      }
+
+      renderAll();
+    }
+
+    function sellItem(i){
+      const item = items[i];
+      playSound("click");
+
+      if(inventory[item.name] > 0){
+        inventory[item.name]--;
+        if(inventory[item.name] === 0) delete inventory[item.name];
+        cash += item.price;
+        playSound("money");
+        vibrate(25);
+        log(`Sold ${item.name} for $${item.price}.`, "good");
+
+        if(item.risk >= 4 && Math.random() < 0.16){
+          raiseHeat();
+          playSound("danger");
+          vibrate([100,40,100]);
+          log(`That sale felt hot. Eyes are on you.`, "warn");
+        }
+      } else {
+        playSound("danger");
+        vibrate(50);
+        log(`You don’t have any ${item.name}.`, "bad");
+      }
+
+      renderAll();
+    }
+
+    function deposit(){
+      playSound("click");
+      if(cash >= 500){
+        cash -= 500;
+        bank += 500;
+        playSound("money");
+        vibrate(20);
+        log(`Moved $500 into the bank.`, "good");
+      } else {
+        playSound("danger");
+        log(`Not enough cash to deposit.`, "bad");
+      }
+      renderAll();
+    }
+
+    function withdraw(){
+      playSound("click");
+      if(bank >= 500){
+        bank -= 500;
+        cash += 500;
+        playSound("money");
+        vibrate(20);
+        log(`Pulled $500 out of the bank.`, "info");
+      } else {
+        playSound("danger");
+        log(`Not enough in the bank.`, "bad");
+      }
+      renderAll();
+    }
+
+    function borrow(){
+      playSound("click");
+      debt += 1000;
+      cash += 1000;
+      raiseHeat();
+      playSound("danger");
+      vibrate([70,25,70]);
+      log(`Borrowed $1000. The streets will want it back.`, "warn");
+      renderAll();
+    }
+
+    function repay(){
+      playSound("click");
+      if(cash >= 500 && debt > 0){
+        cash -= 500;
+        debt -= 500;
+        if(debt < 0) debt = 0;
+        lowerHeat();
+        playSound("money");
+        vibrate(25);
+        log(`Paid back $500.`, "good");
+      } else {
+        playSound("danger");
+        log(`You can’t repay right now.`, "bad");
+      }
+      renderAll();
+    }
+
+    function randomEvent(){
+      const r = Math.random();
+
+      if(r < 0.16){
+        let found = rand(400,1800);
+        cash += found;
+        playSound("money");
+        vibrate([20,20,20]);
+        log(`Jackpot. You stumbled onto a score worth $${found}.`, "good");
+      } else if(r < 0.30){
+        inventory = {};
+        raiseHeat();
+        playSound("danger");
+        vibrate([120,40,120]);
+        log(`Undercover sweep. Anything on you got burned.`, "bad");
+      } else if(r < 0.42){
+        let loss = Math.min(cash, rand(150,500));
+        cash -= loss;
+        playSound("danger");
+        vibrate([90,30,90]);
+        log(`Street pressure cost you $${loss}.`, "bad");
+      } else if(r < 0.54){
+        health = Math.max(20, health - rand(5,12));
+        raiseHeat();
+        playSound("danger");
+        vibrate([100,40,100]);
+        log(`Things got rough after landing. You took a hit.`, "bad");
+      } else if(r < 0.68){
+        health = Math.min(100, health + 5);
+        lowerHeat();
+        vibrate(20);
+        log(`You laid low and recovered a bit.`, "good");
+      } else {
+        log(`No major action. Quiet move through ${city}.`, "info");
+      }
+    }
+
+    function travel(nextCity){
+      playSound("click");
+
+      if(nextCity === city){
+        log(`You’re already in ${city}.`, "info");
+        return;
+      }
+
+      city = nextCity;
+      day += 1;
+
+      playSound("travel");
+      vibrate([50,30,70]);
+
+      if(debt > 0){
+        const interest = Math.floor(debt * 0.15);
+        debt += interest;
+        log(`Debt grew by $${interest}.`, "bad");
+      }
+
+      refreshPrices();
+      randomEvent();
+      renderAll();
+      log(`Flew into ${city}.`, "info");
+    }
+
+    document.getElementById("startBtn").addEventListener("click", () => {
+      audioUnlocked = true;
+      startMusic();
+      playSound("click");
+      vibrate(30);
+      document.getElementById("startOverlay").style.display = "none";
+      log(`Sound live. Streets open.`, "info");
+    });
+
+    refreshPrices();
+    renderAll();
+    log(`Welcome to The Pusher: The 90s Edition.`, "info");
+  </script>
 </body>
 </html>
