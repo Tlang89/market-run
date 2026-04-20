@@ -21,11 +21,14 @@
   *{box-sizing:border-box}
 
   body{
-    margin:0;
-    background:linear-gradient(180deg,#0b0b0b,#050505 70%);
-    color:var(--gold);
-    font-family:Arial, Helvetica, sans-serif;
-  }
+  margin:0;
+  background:#000;
+  background-size:cover;
+  background-position:center;
+  transition:background 0.4s ease;
+  color:var(--text);
+  font-family:Arial, Helvetica, sans-serif;
+}
 
   .wrap{
     max-width:1400px;
@@ -488,11 +491,14 @@
 </audio>
 
 <script>
- const ASSETS = {
+const ASSETS = {
   tonie: 'tonie.png',
   eddy: 'eddy_silent.png',
   rico: 'Rico.png',
-  comedian: 'The Comedian.png'
+  comedian: 'The Comedian.png',
+
+  ny_alley: 'New York Alley.png',
+  ny_street: 'New York Street.png'
 };
 
   let cash = 3000;
