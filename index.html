@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Pusher – 90s Edition</title>
 
@@ -10,87 +9,85 @@ body{
   margin:0;
   background:#0a0a0a;
   color:#d4af37;
-  font-family:Arial, sans-serif;
+  font-family:Arial;
 }
 
-.container{
-  padding:10px;
-}
-
-/* TOP HUD */
+/* HUD */
 .hud{
   display:grid;
-  grid-template-columns: repeat(5,1fr);
-  gap:8px;
-  margin-bottom:10px;
+  grid-template-columns:repeat(5,1fr);
+  gap:6px;
+  padding:8px;
 }
 .box{
   border:1px solid #d4af37;
-  padding:8px;
+  padding:6px;
   text-align:center;
 }
 
-/* MAIN LAYOUT */
+/* CORE LAYOUT */
 .main{
-  display:grid;
-  grid-template-columns:1.45fr 0.95fr;
+  display:flex;
   gap:10px;
-  align-items:start;
+  padding:10px;
 }
 
+/* LEFT = MARKET */
+.left{
+  flex:1.5;
+  border:1px solid #d4af37;
+  padding:10px;
+}
+
+/* RIGHT = OPS */
+.right{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+/* PANELS */
 .panel{
   border:1px solid #d4af37;
   padding:10px;
 }
 
-.panel h3{
-  margin:0 0 8px 0;
-}
-
-/* RIGHT SIDE STACK */
-.rightGrid{
-  display:grid;
-  grid-template-rows:auto auto auto;
-  gap:10px;
-}
-
-/* BUTTONS */
 button{
   background:none;
   border:1px solid #d4af37;
   color:#d4af37;
   padding:4px 8px;
-  cursor:pointer;
 }
 button:hover{
   background:#d4af37;
   color:#000;
 }
 
-/* MOBILE FIX */
-@media (max-width: 980px){
-
-  .hud{
-    grid-template-columns:1fr 1fr;
-  }
-
+/* MOBILE = KEEP STRUCTURE BUT STACK CLEAN */
+@media(max-width:900px){
   .main{
-    grid-template-columns:1fr;
+    flex-direction:column;
   }
+}
 
-  .panel{
-    min-height:auto;
-  }
-
-  .rightGrid{
-    grid-template-rows:auto auto auto;
-  }
+/* TONIE */
+.tonie{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:black;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
 }
 </style>
 </head>
 
 <body>
-<div class="container">
 
 <!-- HUD -->
 <div class="hud">
@@ -98,24 +95,23 @@ button:hover{
   <div class="box">Cash: $<span id="cash"></span></div>
   <div class="box">Bank: $0</div>
   <div class="box">Debt: $0</div>
-  <div class="box">Day 1 • Low</div>
+  <div class="box">Day <span id="day"></span> • Low</div>
 </div>
 
-<!-- MAIN -->
 <div class="main">
 
-<!-- LEFT MARKET -->
-<div class="panel">
+<!-- LEFT -->
+<div class="left">
   <h3>Market</h3>
   <div id="market"></div>
 </div>
 
-<!-- RIGHT SIDE -->
-<div class="rightGrid">
+<!-- RIGHT -->
+<div class="right">
 
   <div class="panel">
     <h3>Inventory</h3>
-    <div id="inventory">You're carrying nothing. Make a move.</div>
+    <div id="inventory">You're carrying nothing.</div>
   </div>
 
   <div class="panel">
@@ -135,23 +131,21 @@ button:hover{
 </div>
 
 <!-- FEED -->
-<div class="panel" style="margin-top:10px;">
+<div class="panel" style="margin:10px;">
   <h3>Street Feed</h3>
   <div id="feed"></div>
 </div>
 
-</div>
-
 <!-- AUDIO -->
-<audio id="bgMusic" loop>
-  <source src="" type="audio/mpeg">
+<audio id="music" loop>
+  <source src="">
 </audio>
 
 <script>
 let cash = 3000;
 let city = "New York";
-let inventory = {};
 let day = 1;
+let inventory = {};
 
 const cities = ["New York","Chicago","Miami","Los Angeles","Atlanta","Detroit"];
 
@@ -169,37 +163,38 @@ const items = [
 function render(){
   document.getElementById("city").innerText = city;
   document.getElementById("cash").innerText = cash;
+  document.getElementById("day").innerText = day;
 
   // MARKET
-  let m = "";
+  let m="";
   items.forEach((item,i)=>{
-    m += `${item.name} ($${item.price})
-      <button onclick="buy(${i})">Buy</button>
-      <button onclick="sell(${i})">Sell</button><br><br>`;
+    m+=`${item.name} ($${item.price})
+    <button onclick="buy(${i})">Buy</button>
+    <button onclick="sell(${i})">Sell</button><br><br>`;
   });
-  document.getElementById("market").innerHTML = m;
+  document.getElementById("market").innerHTML=m;
 
   // TRAVEL
-  let t = "";
+  let t="";
   cities.forEach(c=>{
-    t += `${c} <button onclick="travel('${c}')">Fly</button><br><br>`;
+    t+=`${c} <button onclick="travel('${c}')">Fly</button><br><br>`;
   });
-  document.getElementById("travel").innerHTML = t;
+  document.getElementById("travel").innerHTML=t;
 
   // INVENTORY
-  let inv = "";
+  let inv="";
   for(let i in inventory){
-    inv += `${i} x${inventory[i]}<br>`;
+    inv+=`${i} x${inventory[i]}<br>`;
   }
-  document.getElementById("inventory").innerHTML =
-    inv || "You're carrying nothing. Make a move.";
+  document.getElementById("inventory").innerHTML=
+    inv || "You're carrying nothing.";
 }
 
 function buy(i){
-  let item = items[i];
-  if(cash >= item.price){
-    cash -= item.price;
-    inventory[item.name] = (inventory[item.name]||0)+1;
+  let item=items[i];
+  if(cash>=item.price){
+    cash-=item.price;
+    inventory[item.name]=(inventory[item.name]||0)+1;
     log("Bought "+item.name);
     vibe();
   }
@@ -207,9 +202,9 @@ function buy(i){
 }
 
 function sell(i){
-  let item = items[i];
+  let item=items[i];
   if(inventory[item.name]){
-    cash += item.price;
+    cash+=item.price;
     inventory[item.name]--;
     log("Sold "+item.name);
     vibe();
@@ -218,11 +213,11 @@ function sell(i){
 }
 
 function travel(c){
-  city = c;
+  city=c;
   day++;
   log("Flew to "+c);
-  vibe();
   maybeTonie();
+  vibe();
   render();
 }
 
@@ -232,8 +227,9 @@ function borrow(){ cash+=1000; log("Borrowed"); render(); }
 function repay(){ cash-=500; log("Paid"); render(); }
 
 function log(msg){
-  document.getElementById("feed").innerHTML =
-    "[Day "+day+"] "+msg+"<br>" + document.getElementById("feed").innerHTML;
+  document.getElementById("feed").innerHTML=
+  "[Day "+day+"] "+msg+"<br>"+
+  document.getElementById("feed").innerHTML;
 }
 
 /* VIBRATION */
@@ -241,37 +237,28 @@ function vibe(){
   if(navigator.vibrate) navigator.vibrate(50);
 }
 
-/* TONIE EVENT */
+/* TONIE */
 function maybeTonie(){
-  if(Math.random() < 0.3){
+  if(Math.random()<0.35){
     showTonie();
   }
 }
 
 function showTonie(){
-  let div = document.createElement("div");
-  div.style.position="fixed";
-  div.style.top="0";
-  div.style.left="0";
-  div.style.width="100%";
-  div.style.height="100%";
-  div.style.background="rgba(0,0,0,0.9)";
-  div.style.display="flex";
-  div.style.flexDirection="column";
-  div.style.alignItems="center";
-  div.style.justifyContent="center";
-  div.innerHTML = `
+  let t=document.createElement("div");
+  t.className="tonie";
+  t.innerHTML=`
     <img src="tonie.png" style="max-width:300px"><br><br>
-    <button onclick="payTonie()">Pay</button>
-    <button onclick="fightTonie()">Fight</button>
-    <button onclick="runTonie()">Run</button>
+    <button onclick="pay()">Pay</button>
+    <button onclick="fight()">Fight</button>
+    <button onclick="run()">Run</button>
   `;
-  document.body.appendChild(div);
+  document.body.appendChild(t);
 }
 
-function payTonie(){ cash-=500; log("Paid Tonie"); location.reload(); }
-function fightTonie(){ log("Fight survived"); location.reload(); }
-function runTonie(){ log("You ran"); location.reload(); }
+function pay(){ cash-=500; location.reload(); }
+function fight(){ location.reload(); }
+function run(){ location.reload(); }
 
 /* START */
 render();
