@@ -6,531 +6,485 @@
 <title>The Pusher</title>
 <style>
   :root{
-    --bg:#0a0a0a;
-    --panel:#111;
-    --panel2:#171717;
-    --line:#3a3a3a;
     --gold:#d4af37;
-    --gold-soft:#9b8340;
+    --goldSoft:#9b8340;
     --text:#f2d97a;
+    --panel:rgba(10,10,10,0.82);
+    --panelStrong:rgba(10,10,10,0.92);
+    --line:rgba(212,175,55,0.35);
+    --red:#c25a5a;
     --good:#8ddc92;
-    --bad:#ff9b9b;
     --warn:#ffc76d;
+    --bad:#ff9b9b;
   }
 
   *{box-sizing:border-box}
 
-  body{
-  margin:0;
-  background:#000;
-  background-size:cover;
-  background-position:center;
-  transition:background 0.4s ease;
-  color:var(--text);
-  font-family:Arial, Helvetica, sans-serif;
-}
-
-  .wrap{
-    max-width:1400px;
-    margin:0 auto;
-    min-height:100vh;
-    padding:10px;
-  }
-
-  .startOverlay{
-    position:fixed;
-    inset:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:rgba(0,0,0,.94);
-    z-index:9999;
-    padding:20px;
-  }
-
-  .startCard{
-    width:min(560px,92vw);
-    border:1px solid var(--line);
-    background:linear-gradient(180deg,#1a1a1a,#101010);
-    padding:28px;
-    text-align:center;
-    box-shadow:0 0 30px rgba(0,0,0,.4);
-  }
-
-  .startTitle{
-    font-size:36px;
-    font-weight:900;
+  html,body{
+    margin:0;
+    min-height:100%;
+    font-family:Arial, Helvetica, sans-serif;
     color:var(--text);
-    letter-spacing:1px;
-    margin-bottom:6px;
+    background:#000;
   }
 
-  .startSub{
-    color:#b65c5c;
-    font-weight:700;
-    letter-spacing:1px;
-    margin-bottom:18px;
+  body{
+    background-image:url('New York Street.png');
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    background-attachment:fixed;
   }
 
-  .startText{
-    color:var(--gold-soft);
-    font-size:14px;
-    margin-bottom:20px;
-    line-height:1.45;
+  .backdrop{
+    min-height:100vh;
+    background:rgba(0,0,0,0.62);
+    padding:14px;
   }
 
-  .startBtn{
-    background:#c89d31;
-    color:#111;
-    border:1px solid #e0bb57;
-    font-weight:900;
-    padding:14px 22px;
-    font-size:18px;
-    cursor:pointer;
-    min-width:240px;
+  .shell{
+    max-width:950px;
+    margin:0 auto;
   }
 
-  .titlebar{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:10px;
-    padding:12px 14px;
-    margin-bottom:10px;
+  .hero{
     border:1px solid var(--line);
-    background:linear-gradient(180deg,#181818,#101010);
+    background:var(--panel);
+    padding:18px;
+    text-align:center;
+    margin-bottom:12px;
   }
 
-  .gameTitle{
-    font-size:34px;
+  .title{
+    font-size:48px;
     font-weight:900;
-    letter-spacing:1px;
+    letter-spacing:2px;
     color:var(--text);
     line-height:1;
+    margin-bottom:8px;
   }
 
-  .gameSub{
-    font-size:14px;
-    color:#b65c5c;
-    font-weight:700;
-    margin-top:4px;
-    letter-spacing:1px;
-  }
-
-  .quote{
-    text-align:right;
-    color:var(--gold-soft);
-    font-size:13px;
-    max-width:340px;
-  }
-
-  .alertBar{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:10px;
-    padding:10px 12px;
-    margin-bottom:10px;
-    border:1px solid var(--line);
-    background:#101010;
-    min-height:48px;
-  }
-
-  .alertText{
+  .subtitle{
+    color:var(--red);
+    font-size:18px;
     font-weight:800;
-    color:var(--warn);
+    letter-spacing:1px;
+    margin-bottom:12px;
   }
 
-  .cityMood{
-    color:var(--gold-soft);
-    font-size:13px;
-    text-align:right;
+  .tagline{
+    color:var(--goldSoft);
+    font-size:15px;
+    line-height:1.45;
+    max-width:700px;
+    margin:0 auto;
   }
 
   .hud{
     display:grid;
-    grid-template-columns:1.7fr 1fr 1fr 1fr 1.2fr;
+    grid-template-columns:repeat(5,1fr);
     gap:10px;
-    margin-bottom:10px;
+    margin-bottom:12px;
   }
 
   .card{
     border:1px solid var(--line);
-    background:linear-gradient(180deg,#171717,#101010);
-    padding:10px 12px;
-    min-height:82px;
+    background:var(--panel);
+    padding:12px;
+    min-height:84px;
   }
 
   .label{
     font-size:11px;
     text-transform:uppercase;
-    color:var(--gold-soft);
+    color:var(--goldSoft);
     letter-spacing:1px;
-    margin-bottom:5px;
+    margin-bottom:6px;
   }
 
   .value{
     font-size:18px;
-    font-weight:800;
+    font-weight:900;
     color:var(--text);
+    line-height:1.2;
   }
 
-  .big{
-    font-size:30px;
-    line-height:1;
-  }
-
-  .main{
-    display:grid;
-    grid-template-columns:1.45fr 0.95fr;
-    gap:10px;
-    margin-bottom:10px;
-    align-items:start;
-  }
-
-  .panel{
+  .mainPanel{
     border:1px solid var(--line);
-    background:linear-gradient(180deg,#131313,#0c0c0c);
-    min-height:520px;
-    display:flex;
-    flex-direction:column;
+    background:var(--panelStrong);
+    padding:14px;
+    margin-bottom:12px;
   }
 
-  .panelHead{
+  .scene{
+    border:1px solid var(--line);
+    background:rgba(0,0,0,0.45);
+    min-height:210px;
     display:flex;
-    justify-content:space-between;
-    align-items:center;
+    align-items:flex-end;
+    justify-content:flex-start;
+    padding:16px;
+    margin-bottom:12px;
+  }
+
+  .sceneText{
+    background:rgba(0,0,0,0.68);
+    border:1px solid var(--line);
     padding:10px 12px;
-    border-bottom:1px solid var(--line);
-    background:#181818;
-    font-weight:800;
+    max-width:460px;
+  }
+
+  .sceneTitle{
+    font-size:22px;
+    font-weight:900;
     color:var(--text);
+    margin-bottom:4px;
   }
 
-  .panelBody{
-    padding:10px;
-    overflow:auto;
+  .sceneSub{
+    color:var(--goldSoft);
+    font-size:14px;
+    line-height:1.35;
   }
 
-  .marketRow{
+  .actionGrid{
     display:grid;
-    grid-template-columns:1.5fr 0.6fr 0.9fr;
-    gap:10px;
-    align-items:center;
-    padding:10px 8px;
-    border-bottom:1px solid #252525;
+    grid-template-columns:1.2fr 0.8fr;
+    gap:12px;
   }
 
-  .marketRow:hover{ background:#161616; }
+  .panelBlock{
+    border:1px solid var(--line);
+    background:rgba(0,0,0,0.45);
+    padding:12px;
+  }
 
-  .name{
-    font-size:18px;
-    font-weight:800;
+  .blockTitle{
     color:var(--text);
-  }
-
-  .meta{
-    font-size:12px;
-    color:var(--gold-soft);
-    margin-top:4px;
-  }
-
-  .price{
     font-size:24px;
     font-weight:900;
-    text-align:right;
-    color:var(--gold);
-    white-space:nowrap;
+    margin-bottom:10px;
   }
 
-  .btns{
+  .hotItem{
+    border:1px solid var(--line);
+    padding:12px;
+    background:rgba(0,0,0,0.45);
+    margin-bottom:10px;
+  }
+
+  .itemName{
+    font-size:26px;
+    font-weight:900;
+    color:var(--text);
+    margin-bottom:4px;
+  }
+
+  .itemMeta{
+    color:var(--goldSoft);
+    font-size:13px;
+    margin-bottom:10px;
+  }
+
+  .itemPrice{
+    font-size:34px;
+    font-weight:900;
+    color:var(--gold);
+    margin-bottom:10px;
+  }
+
+  .btnRow{
     display:flex;
-    gap:6px;
-    justify-content:flex-end;
     flex-wrap:wrap;
+    gap:8px;
   }
 
   button{
-    border:1px solid #646464;
-    background:#191919;
+    appearance:none;
+    border:1px solid var(--gold);
+    background:#161616;
     color:var(--gold);
-    font-weight:800;
-    padding:8px 10px;
+    font-weight:900;
+    padding:11px 14px;
     cursor:pointer;
-    min-width:68px;
+    font-size:15px;
   }
 
-  button:hover{ background:#252525; }
+  button:active{
+    transform:translateY(1px);
+  }
 
-  .btnGold{
-    background:#b48a28;
+  .goldBtn{
+    background:var(--gold);
     color:#111;
-    border-color:#d4af37;
   }
 
-  .rightGrid{
+  .smallList{
     display:grid;
-    grid-template-rows:auto auto auto;
-    gap:10px;
-    height:100%;
+    gap:8px;
   }
 
-  .sub{
-    border:1px solid var(--line);
-    background:#111;
-  }
-
-  .subHead{
-    padding:8px 10px;
-    border-bottom:1px solid var(--line);
-    background:#181818;
-    font-weight:800;
-    color:var(--text);
-  }
-
-  .subBody{ padding:10px; }
-
-  .stackRow,.travelRow{
+  .row{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    gap:8px;
+    gap:10px;
     padding:8px 0;
-    border-bottom:1px solid #232323;
+    border-bottom:1px solid rgba(255,255,255,0.06);
   }
 
-  .stackRow:last-child,.travelRow:last-child{ border-bottom:none; }
+  .row:last-child{
+    border-bottom:none;
+  }
 
   .feed{
     border:1px solid var(--line);
-    background:#080808;
-    min-height:170px;
+    background:var(--panel);
+    padding:12px;
   }
 
-  .feedHead{
-    padding:8px 10px;
-    border-bottom:1px solid var(--line);
-    background:#181818;
+  .feedTitle{
     color:var(--text);
-    font-weight:800;
+    font-size:22px;
+    font-weight:900;
+    margin-bottom:10px;
   }
 
-  .feedBody{
-    padding:8px 10px;
-    height:180px;
-    overflow:auto;
-    font-size:13px;
-    line-height:1.45;
+  .feedList{
+    display:grid;
+    gap:8px;
   }
 
-  .entry{
-    padding:6px 0;
-    border-bottom:1px solid #1d1d1d;
+  .feedEntry{
+    border-bottom:1px solid rgba(255,255,255,0.06);
+    padding-bottom:8px;
+    color:var(--gold);
+    line-height:1.35;
+  }
+
+  .feedEntry:last-child{
+    border-bottom:none;
+    padding-bottom:0;
   }
 
   .good{color:var(--good)}
-  .bad{color:var(--bad)}
   .warn{color:var(--warn)}
-  .info{color:var(--gold)}
-
-  .empty{
-    color:var(--gold-soft);
-    font-style:italic;
-  }
+  .bad{color:var(--bad)}
 
   .overlay{
     position:fixed;
     inset:0;
-    background:rgba(0,0,0,0.92);
-    display:flex;
+    background:rgba(0,0,0,0.78);
+    display:none;
     align-items:center;
     justify-content:center;
-    z-index:10000;
-    padding:20px;
+    z-index:9999;
+    padding:18px;
   }
 
-  .characterBox{
-    width:min(460px,92vw);
+  .overlay.show{
+    display:flex;
+  }
+
+  .popup{
+    width:min(440px,95vw);
     background:#111;
     border:2px solid var(--gold);
-    box-shadow:0 0 30px rgba(0,0,0,.45);
-    padding:18px;
+    box-shadow:0 0 30px rgba(0,0,0,0.5);
+    padding:16px;
     text-align:center;
   }
 
- .characterImg{
-  width:100%;
-  max-height:260px;
-  object-fit:contain;
-  display:block;
-  border:2px solid gold;
-  border-radius:6px;
-  background:#000;
-  box-shadow:0 0 12px rgba(255,215,0,0.2);
-}
+  .popup img{
+    width:100%;
+    max-height:260px;
+    object-fit:contain;
+    display:block;
+    margin:0 auto 12px auto;
+    border:1px solid var(--line);
+    background:#000;
+  }
 
-  .characterTitle{
-    color:var(--text);
-    font-size:28px;
+  .popupName{
+    font-size:32px;
     font-weight:900;
+    color:var(--text);
     margin-bottom:8px;
   }
 
-  .characterText{
-    color:var(--gold-soft);
-    line-height:1.45;
+  .popupText{
+    color:var(--goldSoft);
+    font-size:15px;
+    line-height:1.4;
     margin-bottom:14px;
   }
 
-  .characterActions{
+  .popupActions{
     display:flex;
-    gap:8px;
     justify-content:center;
     flex-wrap:wrap;
+    gap:8px;
   }
 
-  @media (max-width: 980px){
-    .hud{ grid-template-columns:1fr 1fr; }
-    .main{ grid-template-columns:1fr; }
-    .panel{ min-height:auto; }
-    .panelBody{ overflow:visible; }
-    .rightGrid{ grid-template-rows:auto auto auto; }
-    .quote{ display:none; }
-    .titlebar{
-      align-items:flex-start;
-      flex-direction:column;
+  @media (max-width: 900px){
+    .hud{
+      grid-template-columns:repeat(2,1fr);
+    }
+    .actionGrid{
+      grid-template-columns:1fr;
     }
   }
 
-  @media (max-width: 640px){
-    .gameTitle{font-size:26px}
-    .big{font-size:24px}
-    .marketRow{ grid-template-columns:1fr; }
-    .price{text-align:left}
-    .btns{justify-content:flex-start}
-    .alertBar{
-      flex-direction:column;
-      align-items:flex-start;
+  @media (max-width: 560px){
+    .title{
+      font-size:34px;
     }
-    .cityMood{text-align:left}
+    .itemName{
+      font-size:22px;
+    }
+    .itemPrice{
+      font-size:28px;
+    }
+    .hud{
+      grid-template-columns:1fr 1fr;
+    }
   }
 </style>
 </head>
 <body>
-<div class="startOverlay" id="startOverlay">
-  <div class="startCard">
-    <div class="startTitle">THE PUSHER</div>
-    <div class="startSub">NIGHT TEST BUILD</div>
-    <div class="startText">
-      Music, cities, market action, and character interruptions.
-      Tonie runs the pressure. Rico and Eddy test you. The Comedian changes luck.
-    </div>
-    <button class="startBtn" id="startBtn">ENTER THE STREETS</button>
-  </div>
-</div>
+<div class="backdrop">
+  <div class="shell">
 
-<div class="wrap">
-  <div class="titlebar">
-    <div>
-      <div class="gameTitle">THE PUSHER</div>
-      <div class="gameSub">NIGHT TEST BUILD</div>
-    </div>
-    <div class="quote">“This city’s got money, but everybody wants a cut.”</div>
-  </div>
-
-  <div class="alertBar">
-    <div class="alertText" id="alertText">Quiet move. Nothing loud yet.</div>
-    <div class="cityMood" id="cityMood">New York: watched, profitable, tense.</div>
-  </div>
-
-  <div class="hud" id="hud"></div>
-
-  <div class="main">
-    <div class="panel">
-      <div class="panelHead">
-        <span>Black Market</span>
-        <span id="marketCityLabel">New York</span>
+    <div class="hero">
+      <div class="title">THE PUSHER</div>
+      <div class="subtitle">90S STREET TEST BUILD</div>
+      <div class="tagline">
+        Move fast. Buy low. Sell high. Watch your back. The city changes, the streets react, and the wrong face can stop your whole run.
       </div>
-      <div class="panelBody" id="market"></div>
     </div>
 
-    <div class="panel">
-      <div class="panelHead">
-        <span>Operations</span>
-        <span id="opsCityLabel">New York</span>
+    <div class="hud">
+      <div class="card">
+        <div class="label">City</div>
+        <div class="value" id="hudCity">New York</div>
       </div>
-      <div class="panelBody" style="padding:0;">
-        <div class="rightGrid">
-          <div class="sub">
-            <div class="subHead">Inventory</div>
-            <div class="subBody" id="inventory"></div>
+      <div class="card">
+        <div class="label">Cash</div>
+        <div class="value" id="hudCash">$3000</div>
+      </div>
+      <div class="card">
+        <div class="label">Bank</div>
+        <div class="value" id="hudBank">$0</div>
+      </div>
+      <div class="card">
+        <div class="label">Debt</div>
+        <div class="value" id="hudDebt">$0</div>
+      </div>
+      <div class="card">
+        <div class="label">Day / Heat / Health</div>
+        <div class="value" id="hudStatus">Day 1 • Low • 100</div>
+      </div>
+    </div>
+
+    <div class="mainPanel">
+      <div class="scene">
+        <div class="sceneText">
+          <div class="sceneTitle" id="sceneTitle">New York</div>
+          <div class="sceneSub" id="sceneSub">Watched, profitable, tense.</div>
+        </div>
+      </div>
+
+      <div class="actionGrid">
+        <div class="panelBlock">
+          <div class="blockTitle">Hot Item</div>
+          <div class="hotItem">
+            <div class="itemName" id="itemName">Pagers</div>
+            <div class="itemMeta" id="itemMeta">Risk 1/5</div>
+            <div class="itemPrice" id="itemPrice">$120</div>
+            <div class="btnRow">
+              <button class="goldBtn" id="buyBtn">Buy</button>
+              <button id="sellBtn">Sell</button>
+              <button id="nextItemBtn">Next Item</button>
+            </div>
           </div>
 
-          <div class="sub">
-            <div class="subHead">Money & Pressure</div>
-            <div class="subBody" id="moneyPanel"></div>
+          <div class="blockTitle">Inventory</div>
+          <div class="smallList" id="inventoryList"></div>
+        </div>
+
+        <div class="panelBlock">
+          <div class="blockTitle">Quick Moves</div>
+          <div class="smallList">
+            <div class="row"><span>Deposit $500</span><button id="depositBtn">Do It</button></div>
+            <div class="row"><span>Withdraw $500</span><button id="withdrawBtn">Do It</button></div>
+            <div class="row"><span>Borrow $1000</span><button id="borrowBtn">Take It</button></div>
+            <div class="row"><span>Repay $500</span><button id="repayBtn">Pay It</button></div>
           </div>
 
-          <div class="sub">
-            <div class="subHead">Travel</div>
-            <div class="subBody" id="travelPanel"></div>
+          <div class="blockTitle" style="margin-top:14px;">Travel</div>
+          <div class="smallList" id="travelList"></div>
+
+          <div class="blockTitle" style="margin-top:14px;">Test Characters</div>
+          <div class="btnRow">
+            <button id="testTonie">Tonie</button>
+            <button id="testRico">Rico</button>
+            <button id="testEddy">Eddy</button>
+            <button id="testComedian">Comedian</button>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="feed">
-    <div class="feedHead">Street Feed</div>
-    <div class="feedBody" id="feed"></div>
+    <div class="feed">
+      <div class="feedTitle">Street Feed</div>
+      <div class="feedList" id="feedList"></div>
+    </div>
+
   </div>
 </div>
 
-<audio id="bgMusic" loop>
+<div class="overlay" id="overlay">
+  <div class="popup">
+    <img id="popupImg" src="" alt="">
+    <div class="popupName" id="popupName">Character</div>
+    <div class="popupText" id="popupText">Text</div>
+    <div class="popupActions" id="popupActions"></div>
+  </div>
+</div>
+
+<audio id="sndClick" preload="auto">
   <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_6c9b9b4e3c.mp3" type="audio/mpeg">
 </audio>
 
+<audio id="sndAlert" preload="auto">
+  <source src="https://cdn.pixabay.com/audio/2022/01/18/audio_d16737c2a8.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="sndWin" preload="auto">
+  <source src="https://cdn.pixabay.com/audio/2022/03/10/audio_c8c8a73467.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="sndTravel" preload="auto">
+  <source src="https://cdn.pixabay.com/audio/2021/08/04/audio_c06377a8a5.mp3" type="audio/mpeg">
+</audio>
+
 <script>
-const ASSETS = {
-  tonie: 'tonie.png',
-  eddy: 'eddy_silent.png',
-  rico: 'Rico.png',
-  comedian: 'The Comedian.png',
-
-  ny_alley: 'New York Alley.png',
-  ny_street: 'New York Street.png'
-};
-
-  let cash = 3000;
-  let bank = 0;
-  let debt = 0;
-  let city = "New York";
-  let day = 1;
-  let health = 100;
-  let heat = "Low";
-  let inventory = {};
-  let currentAlert = "Quiet move. Nothing loud yet.";function setCityBackground(city){
-  function setCityBackground(city){
-  let bg = "";
-
-  if(city === "New York"){
-    bg = "url('New York Street.png')";
-  }
-
-  document.body.style.backgroundImage = bg;
-}
-
-setCityBackground(city);
-
-  const cityProfiles = {
-    "New York":"watched, profitable, tense.",
-    "Chicago":"cold, dark, windy pressure.",
-    "Miami":"humid money and quiet danger.",
-    "Los Angeles":"haze, movement, long plays.",
-    "Atlanta":"steady, warm, risky."
+  const ASSETS = {
+    tonie: 'tonie.png',
+    eddy: 'eddy_silent.png',
+    rico: 'Rico.png',
+    comedian: 'The Comedian.png',
+    ny_street: 'New York Street.png',
+    ny_alley: 'New York Alley.png'
   };
 
-  const cities = Object.keys(cityProfiles);
+  const cityProfiles = {
+    "New York":"Watched, profitable, tense.",
+    "Chicago":"Cold, dark, windy pressure.",
+    "Miami":"Humid money and quiet danger.",
+    "Los Angeles":"Haze, movement, long plays.",
+    "Atlanta":"Steady, warm, risky."
+  };
 
   const items = [
     { name:"Pagers", base:120, risk:1 },
@@ -542,224 +496,220 @@ setCityBackground(city);
     { name:"Hot Merchandise", base:1300, risk:4 }
   ];
 
-  function rand(min,max){
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+  let cash = 3000;
+  let bank = 0;
+  let debt = 0;
+  let city = "New York";
+  let day = 1;
+  let health = 100;
+  let heat = "Low";
+  let inventory = {};
+  let currentItemIndex = 0;
+
+  function playSound(id, volume=0.35){
+    const a = document.getElementById(id);
+    if(!a) return;
+    try{
+      a.pause();
+      a.currentTime = 0;
+      a.volume = volume;
+      a.play().catch(()=>{});
+    }catch(e){}
   }
 
-  function setAlert(text){
-    currentAlert = text;
-    document.getElementById("alertText").textContent = text;
+  function buzz(ms=40){
+    if(navigator.vibrate) navigator.vibrate(ms);
   }
 
-  function log(msg,type="info"){
-    const feed = document.getElementById("feed");
-    const div = document.createElement("div");
-    div.className = `entry ${type}`;
-    div.innerHTML = `[Day ${day}] ${msg}`;
-    feed.prepend(div);
+  function setSceneForCity(){
+    if(city === "New York"){
+      document.body.style.backgroundImage = "url('New York Street.png')";
+    } else {
+      document.body.style.backgroundImage = "url('New York Street.png')";
+    }
+  }
+
+  function setDangerScene(){
+    document.body.style.backgroundImage = "url('New York Alley.png')";
   }
 
   function refreshPrices(){
     items.forEach(item=>{
       let boost = 1;
-      if(city === "Miami" && item.name === "Luxury Watches") boost = 1.22;
-      if(city === "Chicago" && item.name === "Sneakers") boost = 1.18;
-      if(city === "Los Angeles" && item.name === "Electronics") boost = 1.2;
-      if(city === "New York" && item.name === "Pagers") boost = 1.15;
-      item.price = Math.max(40, Math.floor(rand(item.base * 0.7, item.base * 1.5) * boost));
+      if(city === "Miami" && item.name === "Luxury Watches") boost = 1.2;
+      if(city === "Chicago" && item.name === "Sneakers") boost = 1.15;
+      if(city === "Los Angeles" && item.name === "Electronics") boost = 1.18;
+      if(city === "New York" && item.name === "Pagers") boost = 1.12;
+      item.price = Math.max(40, Math.floor((item.base * (0.75 + Math.random()*0.7)) * boost));
     });
   }
 
-  function renderHud(){
-    document.getElementById("hud").innerHTML = `
-      <div class="card">
-        <div class="label">Current City</div>
-        <div class="value big">${city}</div>
-      </div>
-      <div class="card">
-        <div class="label">Cash</div>
-        <div class="value big">$${cash}</div>
-      </div>
-      <div class="card">
-        <div class="label">Bank</div>
-        <div class="value big">$${bank}</div>
-      </div>
-      <div class="card">
-        <div class="label">Debt</div>
-        <div class="value big">$${debt}</div>
-      </div>
-      <div class="card">
-        <div class="label">Day / Heat / Health</div>
-        <div class="value">Day ${day} • ${heat}</div>
-        <div class="value">Health ${health}</div>
-      </div>
-    `;
+  function addFeed(text, cls=''){
+    const feed = document.getElementById('feedList');
+    const div = document.createElement('div');
+    div.className = 'feedEntry ' + cls;
+    div.textContent = `[Day ${day}] ${text}`;
+    feed.prepend(div);
   }
 
-  function renderMarket(){
-    document.getElementById("marketCityLabel").textContent = city;
-    let html = "";
+  function renderHUD(){
+    document.getElementById('hudCity').textContent = city;
+    document.getElementById('hudCash').textContent = `$${cash}`;
+    document.getElementById('hudBank').textContent = `$${bank}`;
+    document.getElementById('hudDebt').textContent = `$${debt}`;
+    document.getElementById('hudStatus').textContent = `Day ${day} • ${heat} • ${health}`;
+    document.getElementById('sceneTitle').textContent = city;
+    document.getElementById('sceneSub').textContent = cityProfiles[city] || 'The city is moving.';
+  }
 
-    items.forEach((item,i)=>{
-      html += `
-        <div class="marketRow">
-          <div>
-            <div class="name">${item.name}</div>
-            <div class="meta">Risk ${item.risk}/5</div>
-          </div>
-          <div class="price">$${item.price}</div>
-          <div class="btns">
-            <button class="btnGold" onclick="buyItem(${i})">Buy</button>
-            <button onclick="sellItem(${i})">Sell</button>
-          </div>
-        </div>
-      `;
-    });
-
-    document.getElementById("market").innerHTML = html;
+  function renderItem(){
+    const item = items[currentItemIndex];
+    document.getElementById('itemName').textContent = item.name;
+    document.getElementById('itemMeta').textContent = `Risk ${item.risk}/5`;
+    document.getElementById('itemPrice').textContent = `$${item.price}`;
   }
 
   function renderInventory(){
-    let html = "";
+    const el = document.getElementById('inventoryList');
     const keys = Object.keys(inventory).filter(k => inventory[k] > 0);
-
     if(keys.length === 0){
-      html = `<div class="empty">You’re carrying nothing. Make a move.</div>`;
-    } else {
-      keys.forEach(name=>{
-        html += `<div class="stackRow"><div>${name}</div><div>x${inventory[name]}</div></div>`;
-      });
+      el.innerHTML = `<div class="row"><span>You’re carrying nothing.</span><span></span></div>`;
+      return;
     }
-
-    document.getElementById("inventory").innerHTML = html;
-  }
-
-  function renderMoneyPanel(){
-    document.getElementById("moneyPanel").innerHTML = `
-      <div class="stackRow"><div>Deposit $500</div><div><button onclick="deposit()">Do It</button></div></div>
-      <div class="stackRow"><div>Withdraw $500</div><div><button onclick="withdraw()">Do It</button></div></div>
-      <div class="stackRow"><div>Borrow $1000</div><div><button onclick="borrow()">Take It</button></div></div>
-      <div class="stackRow"><div>Repay $500</div><div><button onclick="repay()">Pay It</button></div></div>
-      <div class="stackRow"><div>Test Tonie</div><div><button onclick="showTonie()">Test</button></div></div>
-    `;
+    el.innerHTML = keys.map(k => `<div class="row"><span>${k}</span><span>x${inventory[k]}</span></div>`).join('');
   }
 
   function renderTravel(){
-    document.getElementById("opsCityLabel").textContent = city;
-    document.getElementById("cityMood").textContent = `${city}: ${cityProfiles[city]}`;
-
-    let html = "";
-    cities.forEach(c=>{
-      html += `<div class="travelRow"><div>${c}</div><div><button onclick="travel('${c}')">Fly</button></div></div>`;
-    });
-
-    document.getElementById("travelPanel").innerHTML = html;
+    const list = document.getElementById('travelList');
+    const cities = Object.keys(cityProfiles);
+    list.innerHTML = cities.map(c => `
+      <div class="row">
+        <span>${c}</span>
+        <button onclick="travelTo('${c.replace(/'/g,"\\'")}')">Fly</button>
+      </div>
+    `).join('');
   }
 
   function renderAll(){
-    renderHud();
-    renderMarket();
+    renderHUD();
+    renderItem();
     renderInventory();
-    renderMoneyPanel();
     renderTravel();
-    setAlert(currentAlert);
   }
 
-  function buyItem(i){
-    const item = items[i];
+  function buyCurrent(){
+    const item = items[currentItemIndex];
+    playSound('sndClick', 0.25);
+    buzz(25);
+
     if(cash >= item.price){
       cash -= item.price;
       inventory[item.name] = (inventory[item.name] || 0) + 1;
-      log(`Bought ${item.name} for $${item.price}.`, "good");
+      addFeed(`Bought ${item.name} for $${item.price}.`, 'good');
+      maybeEncounter('buy');
     } else {
-      log(`Not enough cash for ${item.name}.`, "bad");
+      addFeed(`Not enough cash for ${item.name}.`, 'bad');
+      playSound('sndAlert', 0.3);
     }
     renderAll();
   }
 
-  function sellItem(i){
-    const item = items[i];
-    if(inventory[item.name] > 0){
+  function sellCurrent(){
+    const item = items[currentItemIndex];
+    playSound('sndClick', 0.25);
+    buzz(20);
+
+    if((inventory[item.name] || 0) > 0){
       inventory[item.name]--;
-      if(inventory[item.name] === 0) delete inventory[item.name];
       cash += item.price;
-      log(`Sold ${item.name} for $${item.price}.`, "good");
+      addFeed(`Sold ${item.name} for $${item.price}.`, 'good');
+      if(inventory[item.name] <= 0) delete inventory[item.name];
+      if(item.price >= 800){
+        playSound('sndWin', 0.45);
+        buzz(90);
+      }
     } else {
-      log(`You don’t have any ${item.name}.`, "bad");
+      addFeed(`You don’t have any ${item.name}.`, 'warn');
     }
     renderAll();
   }
 
-  function deposit(){
+  function nextItem(){
+    currentItemIndex = (currentItemIndex + 1) % items.length;
+    playSound('sndClick', 0.2);
+    renderItem();
+  }
+
+  function depositMoney(){
+    playSound('sndClick', 0.2);
     if(cash >= 500){
       cash -= 500;
       bank += 500;
-      log(`Deposited $500.`, "info");
+      addFeed('Deposited $500.', 'good');
     } else {
-      log(`Not enough cash to deposit.`, "bad");
+      addFeed('Not enough cash to deposit.', 'bad');
     }
     renderAll();
   }
 
-  function withdraw(){
+  function withdrawMoney(){
+    playSound('sndClick', 0.2);
     if(bank >= 500){
       bank -= 500;
       cash += 500;
-      log(`Withdrew $500.`, "info");
+      addFeed('Withdrew $500.', 'good');
     } else {
-      log(`Bank too low.`, "bad");
+      addFeed('Bank too low.', 'bad');
     }
     renderAll();
   }
 
-  function borrow(){
+  function borrowMoney(){
+    playSound('sndAlert', 0.25);
     debt += 1000;
     cash += 1000;
-    heat = "Medium";
-    log(`Borrowed $1000.`, "warn");
+    heat = 'Medium';
+    addFeed('Borrowed $1000.', 'warn');
     renderAll();
   }
 
-  function repay(){
+  function repayMoney(){
+    playSound('sndClick', 0.2);
     if(cash >= 500 && debt > 0){
       cash -= 500;
       debt -= 500;
       if(debt < 0) debt = 0;
-      if(debt === 0) heat = "Low";
-      log(`Repaid $500.`, "good");
+      if(debt === 0) heat = 'Low';
+      addFeed('Repaid $500.', 'good');
     } else {
-      log(`Can't repay right now.`, "bad");
+      addFeed('Can’t repay right now.', 'bad');
     }
     renderAll();
   }
 
-  function closeCharacter(){
-    const existing = document.querySelector(".overlay");
-    if(existing) existing.remove();
+  function showPopup(name, img, text, buttonsHtml){
+    setDangerScene();
+    playSound('sndAlert', 0.3);
+    buzz(70);
+    document.getElementById('popupName').textContent = name;
+    document.getElementById('popupImg').src = img;
+    document.getElementById('popupText').textContent = text;
+    document.getElementById('popupActions').innerHTML = buttonsHtml;
+    document.getElementById('overlay').classList.add('show');
   }
 
-  function showCharacter(title, image, text, actions){
-    closeCharacter();
-    const html = `
-      <div class="overlay">
-        <div class="characterBox">
-          <img src="${image}" class="characterImg" alt="${title}">
-          <div class="characterTitle">${title}</div>
-          <div class="characterText">${text}</div>
-          <div class="characterActions">${actions}</div>
-        </div>
-      </div>
-    `;
-    document.body.insertAdjacentHTML("beforeend", html);
+  function closePopup(){
+    document.getElementById('overlay').classList.remove('show');
+    setSceneForCity();
   }
 
   function showTonie(){
-    showCharacter(
+    showPopup(
       'Tonie Two-Toe',
       ASSETS.tonie,
       '“You been moving in my city… you pay up, or we settle it.”',
       `
-        <button onclick="toniePay()">Pay</button>
+        <button class="goldBtn" onclick="toniePay()">Pay</button>
         <button onclick="tonieFight()">Fight</button>
         <button onclick="tonieRun()">Run</button>
       `
@@ -770,34 +720,33 @@ setCityBackground(city);
     if(cash >= 1000){
       cash -= 1000;
       debt = Math.max(0, debt - 1000);
-      heat = debt > 0 ? "Medium" : "Low";
-      log('You paid Tonie.', 'warn');
+      addFeed('You paid Tonie.', 'warn');
     } else {
-      log('Not enough cash for Tonie.', 'bad');
+      addFeed('Not enough cash for Tonie.', 'bad');
     }
-    closeCharacter();
+    closePopup();
     renderAll();
   }
 
   function tonieFight(){
     health = Math.max(10, health - 30);
     cash = Math.max(0, cash - 400);
-    heat = "High";
-    log("Tonie's crew crushed you.", 'bad');
-    closeCharacter();
+    heat = 'High';
+    addFeed("Tonie's crew crushed you.", 'bad');
+    closePopup();
     renderAll();
   }
 
   function tonieRun(){
     cash = Math.max(0, cash - 200);
-    heat = "High";
-    log('You ran from Tonie and dropped money on the way.', 'warn');
-    closeCharacter();
+    heat = 'High';
+    addFeed('You ran from Tonie and dropped money on the way.', 'warn');
+    closePopup();
     renderAll();
   }
 
   function showRico(){
-    showCharacter(
+    showPopup(
       'Rico "The Bat"',
       ASSETS.rico,
       '“Wrong block, wrong time.”',
@@ -811,19 +760,19 @@ setCityBackground(city);
   function ricoFight(){
     health = Math.max(10, health - 18);
     cash = Math.max(0, cash - 150);
-    log('You fought Rico and paid for it.', 'bad');
-    closeCharacter();
+    addFeed('You fought Rico and paid for it.', 'bad');
+    closePopup();
     renderAll();
   }
 
   function ricoRun(){
-    log('You slipped away from Rico.', 'info');
-    closeCharacter();
+    addFeed('You slipped away from Rico.', 'warn');
+    closePopup();
     renderAll();
   }
 
   function showEddy(){
-    showCharacter(
+    showPopup(
       'Eddy "Silent"',
       ASSETS.eddy,
       'He was already there before you noticed.',
@@ -836,24 +785,24 @@ setCityBackground(city);
 
   function eddyFreeze(){
     cash = Math.max(0, cash - 250);
-    log('You froze. Eddy took $250.', 'bad');
-    closeCharacter();
+    addFeed('You froze. Eddy took $250.', 'bad');
+    closePopup();
     renderAll();
   }
 
   function eddyRun(){
-    log('You backed off before Eddy made it worse.', 'warn');
-    closeCharacter();
+    addFeed('You backed off before Eddy made it worse.', 'warn');
+    closePopup();
     renderAll();
   }
 
   function showComedian(){
-    showCharacter(
+    showPopup(
       'The Comedian',
       ASSETS.comedian,
       '“Funny thing about luck… it don’t knock twice.”',
       `
-        <button onclick="comedianPlay()">Play a Hand</button>
+        <button class="goldBtn" onclick="comedianPlay()">Play a Hand</button>
         <button onclick="comedianIgnore()">Ignore</button>
       `
     );
@@ -861,53 +810,74 @@ setCityBackground(city);
 
   function comedianPlay(){
     if(Math.random() < 0.5){
-      const win = rand(500,1500);
+      const win = Math.floor(500 + Math.random() * 1000);
       cash += win;
-      log(`The Comedian flipped you $${win}.`, 'good');
+      addFeed(`The Comedian flipped you $${win}.`, 'good');
+      playSound('sndWin', 0.45);
+      buzz(90);
     } else {
-      log('The Comedian laughed and vanished.', 'warn');
+      addFeed('The Comedian laughed and vanished.', 'warn');
     }
-    closeCharacter();
+    closePopup();
     renderAll();
   }
 
   function comedianIgnore(){
-    log('You walked past luck.', 'info');
-    closeCharacter();
+    addFeed('You walked past luck.', 'warn');
+    closePopup();
     renderAll();
   }
 
-  function travel(nextCity){
+  function maybeEncounter(mode){
+    const r = Math.random();
+    if(mode === 'buy'){
+      if(r < 0.15) showRico();
+      else if(r < 0.25) showEddy();
+      else if(r < 0.33) showComedian();
+    }
+  }
+
+  function travelTo(nextCity){
+    playSound('sndTravel', 0.35);
+    buzz(45);
+
     if(nextCity === city){
-      log(`You’re already in ${city}.`, "info");
+      addFeed(`You’re already in ${city}.`, 'warn');
       return;
     }
 
     city = nextCity;
     day += 1;
     refreshPrices();
-    log(`Flew into ${city}.`, "info");
+    setSceneForCity();
+    addFeed(`Flew into ${city}.`, 'good');
 
     const r = Math.random();
     if(r < 0.18) showRico();
     else if(r < 0.32) showEddy();
-    else if(r < 0.52) showTonie();
+    else if(r < 0.50) showTonie();
     else if(r < 0.62) showComedian();
 
     renderAll();
   }
 
-  document.getElementById("startBtn").addEventListener("click", () => {
-    document.getElementById("startOverlay").style.display = "none";
-    setAlert("Sound live. Streets open.");
-    log('Night test build loaded.', 'info');
-    const music = document.getElementById("bgMusic");
-    music.volume = 0.35;
-    music.play().catch(()=>{});
-  });
+  document.getElementById('buyBtn').addEventListener('click', buyCurrent);
+  document.getElementById('sellBtn').addEventListener('click', sellCurrent);
+  document.getElementById('nextItemBtn').addEventListener('click', nextItem);
+  document.getElementById('depositBtn').addEventListener('click', depositMoney);
+  document.getElementById('withdrawBtn').addEventListener('click', withdrawMoney);
+  document.getElementById('borrowBtn').addEventListener('click', borrowMoney);
+  document.getElementById('repayBtn').addEventListener('click', repayMoney);
+
+  document.getElementById('testTonie').addEventListener('click', showTonie);
+  document.getElementById('testRico').addEventListener('click', showRico);
+  document.getElementById('testEddy').addEventListener('click', showEddy);
+  document.getElementById('testComedian').addEventListener('click', showComedian);
 
   refreshPrices();
+  setSceneForCity();
   renderAll();
+  addFeed('Night reset loaded.', 'good');
 </script>
 </body>
 </html>
