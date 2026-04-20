@@ -510,6 +510,7 @@ const ASSETS = {
   let heat = "Low";
   let inventory = {};
   let currentAlert = "Quiet move. Nothing loud yet.";function setCityBackground(city){
+  function setCityBackground(city){
   let bg = "";
 
   if(city === "New York"){
@@ -517,7 +518,9 @@ const ASSETS = {
   }
 
   document.body.style.backgroundImage = bg;
+}
 
+setCityBackground(city);
 
   const cityProfiles = {
     "New York":"watched, profitable, tense.",
