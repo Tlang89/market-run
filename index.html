@@ -509,7 +509,15 @@ const ASSETS = {
   let health = 100;
   let heat = "Low";
   let inventory = {};
-  let currentAlert = "Quiet move. Nothing loud yet.";
+  let currentAlert = "Quiet move. Nothing loud yet.";function setCityBackground(city){
+  let bg = "";
+
+  if(city === "New York"){
+    bg = "url('New York Street.png')";
+  }
+
+  document.body.style.backgroundImage = bg;
+
 
   const cityProfiles = {
     "New York":"watched, profitable, tense.",
