@@ -1,967 +1,283 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>The Pusher: The 90s Edition</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Pusher – 90s Edition</title>
+
 <style>
-:root{
-  --bg:#090909;
-  --panel:#111;
-  --panel2:#171717;
-  --line:#3a3a3a;
-  --gold:#d4af37;
-  --gold-soft:#9b8340;
-  --text:#f2d97a;
-  --good:#8ddc92;
-  --bad:#ff9b9b;
-  --warn:#ffc76d;
-  --red:#b13b3b;
-}
-*{box-sizing:border-box}
 body{
   margin:0;
-  background:linear-gradient(180deg,#0b0b0b,#050505 70%);
-  color:var(--gold);
-  font-family:Arial, Helvetica, sans-serif;
+  background:#0a0a0a;
+  color:#d4af37;
+  font-family:Arial, sans-serif;
 }
-.wrap{
-  max-width:1400px;
-  margin:0 auto;
-  min-height:100vh;
+
+.container{
   padding:10px;
 }
-.startOverlay{
-  position:fixed;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:rgba(0,0,0,.94);
-  z-index:9999;
-  padding:20px;
-}
-.startCard{
-  width:min(560px,92vw);
-  border:1px solid var(--line);
-  background:linear-gradient(180deg,#1a1a1a,#101010);
-  padding:28px;
-  text-align:center;
-  box-shadow:0 0 30px rgba(0,0,0,.4);
-}
-.startTitle{
-  font-size:36px;
-  font-weight:900;
-  color:var(--text);
-  letter-spacing:1px;
-  margin-bottom:6px;
-}
-.startSub{
-  color:#b65c5c;
-  font-weight:700;
-  letter-spacing:1px;
-  margin-bottom:18px;
-}
-.startText{
-  color:var(--gold-soft);
-  font-size:14px;
-  margin-bottom:20px;
-  line-height:1.45;
-}
-.startBtn{
-  background:#c89d31;
-  color:#111;
-  border:1px solid #e0bb57;
-  font-weight:900;
-  padding:14px 22px;
-  font-size:18px;
-  cursor:pointer;
-  min-width:240px;
-}
-.titlebar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-  padding:12px 14px;
-  margin-bottom:10px;
-  border:1px solid var(--line);
-  background:linear-gradient(180deg,#181818,#101010);
-}
-.gameTitle{
-  font-size:34px;
-  font-weight:900;
-  letter-spacing:1px;
-  color:var(--text);
-  line-height:1;
-}
-.gameSub{
-  font-size:14px;
-  color:#b65c5c;
-  font-weight:700;
-  margin-top:4px;
-  letter-spacing:1px;
-}
-.quote{
-  text-align:right;
-  color:var(--gold-soft);
-  font-size:13px;
-  max-width:340px;
-}
-.alertBar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-  padding:10px 12px;
-  margin-bottom:10px;
-  border:1px solid var(--line);
-  background:#101010;
-  min-height:48px;
-}
-.alertText{
-  font-weight:800;
-  color:var(--warn);
-}
-.cityMood{
-  color:var(--gold-soft);
-  font-size:13px;
-  text-align:right;
-}
+
+/* TOP HUD */
 .hud{
   display:grid;
-  grid-template-columns:1.8fr 1.1fr 1fr 1.1fr 1.4fr;
-  gap:10px;
+  grid-template-columns: repeat(5,1fr);
+  gap:8px;
   margin-bottom:10px;
 }
-.card{
-  border:1px solid var(--line);
-  background:linear-gradient(180deg,#171717,#101010);
-  padding:10px 12px;
-  min-height:82px;
+.box{
+  border:1px solid #d4af37;
+  padding:8px;
+  text-align:center;
 }
-.label{
-  font-size:11px;
-  text-transform:uppercase;
-  color:var(--gold-soft);
-  letter-spacing:1px;
-  margin-bottom:5px;
-}
-.value{
-  font-size:18px;
-  font-weight:800;
-  color:var(--text);
-}
-.big{
-  font-size:30px;
-  line-height:1;
-}
-.heat-low{color:#9de28e}
-.heat-med{color:#ffc76d}
-.heat-high{color:#ff8f8f}
-.dangerPulse{
-  animation:pulseRed 1s infinite;
-}
-@keyframes pulseRed{
-  0%{ box-shadow:0 0 0 rgba(177,59,59,0); }
-  50%{ box-shadow:0 0 16px rgba(177,59,59,.35); }
-  100%{ box-shadow:0 0 0 rgba(177,59,59,0); }
-}
-.healthWrap{ margin-top:6px; }
-.healthBar{
-  height:12px;
-  width:100%;
-  background:#2a1313;
-  border:1px solid #4d2424;
-  overflow:hidden;
-}
-.healthFill{
-  height:100%;
-  background:linear-gradient(90deg,#a32d2d,#d4af37);
-  transition:width .2s ease;
-}
+
+/* MAIN LAYOUT */
 .main{
   display:grid;
   grid-template-columns:1.45fr 0.95fr;
   gap:10px;
-  margin-bottom:10px;
+  align-items:start;
 }
+
 .panel{
-  border:1px solid var(--line);
-  background:linear-gradient(180deg,#131313,#0c0c0c);
-  min-height:520px;
-  display:flex;
-  flex-direction:column;
-}
-.panelHead{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:10px 12px;
-  border-bottom:1px solid var(--line);
-  background:#181818;
-  font-weight:800;
-  color:var(--text);
-}
-.panelBody{
+  border:1px solid #d4af37;
   padding:10px;
-  overflow:auto;
 }
-.marketRow{
-  display:grid;
-  grid-template-columns:1.5fr 0.6fr 0.9fr;
-  gap:10px;
-  align-items:center;
-  padding:10px 8px;
-  border-bottom:1px solid #252525;
+
+.panel h3{
+  margin:0 0 8px 0;
 }
-.marketRow:hover{ background:#161616; }
-.name{
-  font-size:18px;
-  font-weight:800;
-  color:var(--text);
-}
-.meta{
-  font-size:12px;
-  color:var(--gold-soft);
-  margin-top:4px;
-}
-.price{
-  font-size:24px;
-  font-weight:900;
-  text-align:right;
-  color:var(--gold);
-  white-space:nowrap;
-}
-.btns{
-  display:flex;
-  gap:6px;
-  justify-content:flex-end;
-  flex-wrap:wrap;
-}
-button{
-  border:1px solid #646464;
-  background:#191919;
-  color:var(--gold);
-  font-weight:800;
-  padding:8px 10px;
-  cursor:pointer;
-  min-width:68px;
-}
-button:hover{ background:#252525; }
-.btnGold{
-  background:#b48a28;
-  color:#111;
-  border-color:#d4af37;
-}
+
+/* RIGHT SIDE STACK */
 .rightGrid{
   display:grid;
-  grid-template-rows:auto auto 1fr;
+  grid-template-rows:auto auto auto;
   gap:10px;
-  height:100%;
 }
-.sub{
-  border:1px solid var(--line);
-  background:#111;
+
+/* BUTTONS */
+button{
+  background:none;
+  border:1px solid #d4af37;
+  color:#d4af37;
+  padding:4px 8px;
+  cursor:pointer;
 }
-.subHead{
-  padding:8px 10px;
-  border-bottom:1px solid var(--line);
-  background:#181818;
-  font-weight:800;
-  color:var(--text);
+button:hover{
+  background:#d4af37;
+  color:#000;
 }
-.subBody{ padding:10px; }
-.stackRow, .travelRow{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:8px;
-  padding:8px 0;
-  border-bottom:1px solid #232323;
-}
-.stackRow:last-child, .travelRow:last-child{ border-bottom:none; }
-.feed{
-  border:1px solid var(--line);
-  background:#080808;
-  min-height:170px;
-}
-.feedHead{
-  padding:8px 10px;
-  border-bottom:1px solid var(--line);
-  background:#181818;
-  color:var(--text);
-  font-weight:800;
-}
-.feedBody{
-  padding:8px 10px;
-  height:165px;
-  overflow:auto;
-  font-size:13px;
-  line-height:1.45;
-}
-.entry{
-  padding:6px 0;
-  border-bottom:1px solid #1d1d1d;
-}
-.good{color:var(--good)}
-.bad{color:var(--bad)}
-.warn{color:var(--warn)}
-.info{color:var(--gold)}
-.empty{
-  color:var(--gold-soft);
-  font-style:italic;
-}
-.overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.9);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:10000;
-  padding:20px;
-}
-.tonieBox{
-  width:min(460px,92vw);
-  background:#111;
-  border:2px solid #d4af37;
-  box-shadow:0 0 30px rgba(0,0,0,.45);
-  padding:18px;
-  text-align:center;
-}
-.tonieImg{
-  width:100%;
-  height:auto;
-  border:1px solid #3a3a3a;
-  margin-bottom:14px;
-  display:block;
-}
-.tonieText{
-  color:#f2d97a;
-  font-weight:700;
-  line-height:1.45;
-  margin-bottom:14px;
-}
-.tonieActions{
-  display:flex;
-  gap:8px;
-  justify-content:center;
-  flex-wrap:wrap;
-}
-.tonieActions button{ min-width:96px; }
+
+/* MOBILE FIX */
 @media (max-width: 980px){
-  .hud{ grid-template-columns:1fr 1fr; }
-  .main{ grid-template-columns:1fr; }
-  .quote{ display:none; }
-  .titlebar{
-    align-items:flex-start;
-    flex-direction:column;
+
+  .hud{
+    grid-template-columns:1fr 1fr;
   }
-}
-@media (max-width: 640px){
-  .gameTitle{font-size:26px}
-  .big{font-size:24px}
-  .marketRow{ grid-template-columns:1fr; }
-  .price{text-align:left}
-  .btns{justify-content:flex-start}
-  .alertBar{
-    flex-direction:column;
-    align-items:flex-start;
+
+  .main{
+    grid-template-columns:1fr;
   }
-  .cityMood{text-align:left}
+
+  .panel{
+    min-height:auto;
+  }
+
+  .rightGrid{
+    grid-template-rows:auto auto auto;
+  }
 }
 </style>
 </head>
+
 <body>
-<div class="startOverlay" id="startOverlay">
-  <div class="startCard">
-    <div class="startTitle">THE PUSHER</div>
-    <div class="startSub">THE 90s EDITION</div>
-    <div class="startText">
-      Sound, music, and vibration unlock after you enter.
-      Work the markets, dodge pressure, and build your stack.
-    </div>
-    <button class="startBtn" id="startBtn">ENTER THE STREETS</button>
-  </div>
+<div class="container">
+
+<!-- HUD -->
+<div class="hud">
+  <div class="box">City: <span id="city"></span></div>
+  <div class="box">Cash: $<span id="cash"></span></div>
+  <div class="box">Bank: $0</div>
+  <div class="box">Debt: $0</div>
+  <div class="box">Day 1 • Low</div>
 </div>
 
-<div class="wrap">
-  <div class="titlebar">
-    <div>
-      <div class="gameTitle">THE PUSHER</div>
-      <div class="gameSub">THE 90s EDITION</div>
-    </div>
-    <div class="quote">“This city’s got money, but everybody wants a cut.”</div>
-  </div>
+<!-- MAIN -->
+<div class="main">
 
-  <div class="alertBar">
-    <div class="alertText" id="alertText">Quiet move. Nothing loud yet.</div>
-    <div class="cityMood" id="cityMood">New York: balanced, watched, profitable.</div>
-  </div>
-
-  <div class="hud" id="hud"></div>
-
-  <div class="main">
-    <div class="panel">
-      <div class="panelHead">
-        <span>Black Market</span>
-        <span id="marketCityLabel">New York</span>
-      </div>
-      <div class="panelBody" id="market"></div>
-    </div>
-
-    <div class="panel">
-      <div class="panelHead">
-        <span>Operations</span>
-        <span id="opsCityLabel">New York</span>
-      </div>
-      <div class="panelBody" style="padding:0;">
-        <div class="rightGrid">
-          <div class="sub">
-            <div class="subHead">Inventory</div>
-            <div class="subBody" id="inventory"></div>
-          </div>
-
-          <div class="sub">
-            <div class="subHead">Money & Pressure</div>
-            <div class="subBody" id="moneyPanel"></div>
-          </div>
-
-          <div class="sub">
-            <div class="subHead">Travel</div>
-            <div class="subBody" id="travelPanel"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="feed">
-    <div class="feedHead">Street Feed</div>
-    <div class="feedBody" id="feed"></div>
-  </div>
+<!-- LEFT MARKET -->
+<div class="panel">
+  <h3>Market</h3>
+  <div id="market"></div>
 </div>
+
+<!-- RIGHT SIDE -->
+<div class="rightGrid">
+
+  <div class="panel">
+    <h3>Inventory</h3>
+    <div id="inventory">You're carrying nothing. Make a move.</div>
+  </div>
+
+  <div class="panel">
+    <h3>Money & Pressure</h3>
+    <button onclick="deposit()">Deposit 500</button><br><br>
+    <button onclick="withdraw()">Withdraw 500</button><br><br>
+    <button onclick="borrow()">Borrow 1000</button><br><br>
+    <button onclick="repay()">Repay 500</button>
+  </div>
+
+  <div class="panel">
+    <h3>Travel</h3>
+    <div id="travel"></div>
+  </div>
+
+</div>
+</div>
+
+<!-- FEED -->
+<div class="panel" style="margin-top:10px;">
+  <h3>Street Feed</h3>
+  <div id="feed"></div>
+</div>
+
+</div>
+
+<!-- AUDIO -->
+<audio id="bgMusic" loop>
+  <source src="" type="audio/mpeg">
+</audio>
 
 <script>
 let cash = 3000;
-let bank = 0;
-let debt = 0;
 let city = "New York";
-let day = 1;
-let health = 100;
-let heat = "Low";
 let inventory = {};
-let currentAlert = "Quiet move. Nothing loud yet.";
+let day = 1;
 
-const cityProfiles = {
-  "New York":"balanced, watched, profitable.",
-  "Chicago":"sneaker heavy, pressure can spike fast.",
-  "Miami":"luxury money, flashy but risky.",
-  "Los Angeles":"electronics move strong here.",
-  "Atlanta":"steady market, decent breathing room.",
-  "Detroit":"cheap moves, higher street pressure."
-};
-
-const cities = Object.keys(cityProfiles);
+const cities = ["New York","Chicago","Miami","Los Angeles","Atlanta","Detroit"];
 
 const items = [
-  { name:"Pagers", base:120, risk:1 },
-  { name:"Sneakers", base:200, risk:1 },
-  { name:"Jewelry", base:500, risk:2 },
-  { name:"Electronics", base:350, risk:2 },
-  { name:"Bootleg Tapes", base:95, risk:2 },
-  { name:"Luxury Watches", base:900, risk:3 },
-  { name:"Hot Merchandise", base:1300, risk:4 },
-  { name:"Locked Cases", base:1600, risk:5 }
+  {name:"Pagers",price:120},
+  {name:"Sneakers",price:200},
+  {name:"Jewelry",price:500},
+  {name:"Electronics",price:350},
+  {name:"Bootleg Tapes",price:80},
+  {name:"Luxury Watches",price:1000},
+  {name:"Hot Merchandise",price:900},
+  {name:"Locked Cases",price:2000}
 ];
 
-let audioUnlocked = false;
-let musicEnabled = false;
+function render(){
+  document.getElementById("city").innerText = city;
+  document.getElementById("cash").innerText = cash;
 
-const sounds = {
-  click: new Audio("https://assets.mixkit.co/sfx/preview/mixkit-game-click-1114.mp3"),
-  travel: new Audio("https://assets.mixkit.co/sfx/preview/mixkit-fast-rocket-whoosh-1714.mp3"),
-  danger: new Audio("https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3"),
-  money: new Audio("https://assets.mixkit.co/sfx/preview/mixkit-coins-handling-1939.mp3")
-};
-
-const music = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3");
-music.loop = true;
-music.volume = 0.12;
-
-function playSound(name){
-  if(!audioUnlocked || !sounds[name]) return;
-  sounds[name].currentTime = 0;
-  sounds[name].play().catch(()=>{});
-}
-
-function startMusic(){
-  if(!audioUnlocked || musicEnabled) return;
-  musicEnabled = true;
-  music.play().catch(()=>{});
-}
-
-function vibrate(pattern=40){
-  if(navigator.vibrate) navigator.vibrate(pattern);
-}
-
-function rand(min,max){
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function heatClass(){
-  if(heat === "Low") return "heat-low";
-  if(heat === "Medium") return "heat-med";
-  return "heat-high";
-}
-
-function setAlert(text){
-  currentAlert = text;
-  document.getElementById("alertText").textContent = text;
-}
-
-function log(msg,type="info"){
-  const feed = document.getElementById("feed");
-  const div = document.createElement("div");
-  div.className = `entry ${type}`;
-  div.innerHTML = `[Day ${day}] ${msg}`;
-  feed.prepend(div);
-}
-
-function refreshPrices(){
-  items.forEach(item=>{
-    let cityBoost = 1;
-    if(city === "Miami" && item.name === "Luxury Watches") cityBoost = 1.25;
-    if(city === "Chicago" && item.name === "Sneakers") cityBoost = 1.2;
-    if(city === "Los Angeles" && item.name === "Electronics") cityBoost = 1.2;
-    if(city === "New York" && item.name === "Pagers") cityBoost = 1.18;
-    if(city === "Detroit" && item.name === "Hot Merchandise") cityBoost = 0.85;
-    item.price = Math.max(40, Math.floor(rand(item.base * 0.65, item.base * 1.55) * cityBoost));
-  });
-}
-
-function renderHud(){
-  const debtClass = debt >= 3000 ? "dangerPulse" : "";
-  const healthCardClass = health <= 35 ? "dangerPulse" : "";
-  const heatCardClass = heat === "High" ? "dangerPulse" : "";
-
-  document.getElementById("hud").innerHTML = `
-    <div class="card">
-      <div class="label">Current City</div>
-      <div class="value big">${city}</div>
-    </div>
-
-    <div class="card">
-      <div class="label">Cash</div>
-      <div class="value big">$${cash}</div>
-    </div>
-
-    <div class="card">
-      <div class="label">Bank</div>
-      <div class="value big">$${bank}</div>
-    </div>
-
-    <div class="card ${debtClass}">
-      <div class="label">Debt</div>
-      <div class="value big" style="color:#ff9b9b">$${debt}</div>
-    </div>
-
-    <div class="card ${healthCardClass} ${heatCardClass}">
-      <div class="label">Day / Heat / Health</div>
-      <div class="value" style="font-size:16px;">Day ${day} • <span class="${heatClass()}">${heat}</span></div>
-      <div class="healthWrap">
-        <div class="healthBar"><div class="healthFill" style="width:${health}%"></div></div>
-      </div>
-    </div>
-  `;
-}
-
-function renderMarket(){
-  document.getElementById("marketCityLabel").textContent = city;
-  let html = "";
+  // MARKET
+  let m = "";
   items.forEach((item,i)=>{
-    html += `
-      <div class="marketRow">
-        <div>
-          <div class="name">${item.name}</div>
-          <div class="meta">Risk ${item.risk}/5 • Street demand shifts by city</div>
-        </div>
-        <div class="price">$${item.price}</div>
-        <div class="btns">
-          <button class="btnGold" onclick="buyItem(${i})">Buy</button>
-          <button onclick="sellItem(${i})">Sell</button>
-        </div>
-      </div>
-    `;
+    m += `${item.name} ($${item.price})
+      <button onclick="buy(${i})">Buy</button>
+      <button onclick="sell(${i})">Sell</button><br><br>`;
   });
-  document.getElementById("market").innerHTML = html;
-}
+  document.getElementById("market").innerHTML = m;
 
-function renderInventory(){
-  let html = "";
-  const keys = Object.keys(inventory).filter(k => inventory[k] > 0);
-  if(keys.length === 0){
-    html = `<div class="empty">You’re carrying nothing. Make a move.</div>`;
-  } else {
-    keys.forEach(name=>{
-      html += `
-        <div class="stackRow">
-          <div>${name}</div>
-          <div>x${inventory[name]}</div>
-        </div>
-      `;
-    });
-  }
-  document.getElementById("inventory").innerHTML = html;
-}
-
-function renderMoneyPanel(){
-  document.getElementById("moneyPanel").innerHTML = `
-    <div class="stackRow">
-      <div>Deposit $500</div>
-      <div><button onclick="deposit()">Do It</button></div>
-    </div>
-    <div class="stackRow">
-      <div>Withdraw $500</div>
-      <div><button onclick="withdraw()">Do It</button></div>
-    </div>
-    <div class="stackRow">
-      <div>Borrow $1000</div>
-      <div><button onclick="borrow()">Take It</button></div>
-    </div>
-    <div class="stackRow">
-      <div>Repay $500</div>
-      <div><button onclick="repay()">Pay It</button></div>
-    </div>
-  `;
-}
-
-function renderTravel(){
-  document.getElementById("opsCityLabel").textContent = city;
-  document.getElementById("cityMood").textContent = `${city}: ${cityProfiles[city]}`;
-  let html = "";
+  // TRAVEL
+  let t = "";
   cities.forEach(c=>{
-    html += `
-      <div class="travelRow">
-        <div>${c}</div>
-        <div><button onclick="travel('${c}')">Fly</button></div>
-      </div>
-    `;
+    t += `${c} <button onclick="travel('${c}')">Fly</button><br><br>`;
   });
-  document.getElementById("travelPanel").innerHTML = html;
-}
+  document.getElementById("travel").innerHTML = t;
 
-function renderAll(){
-  renderHud();
-  renderMarket();
-  renderInventory();
-  renderMoneyPanel();
-  renderTravel();
-  setAlert(currentAlert);
-}
-
-function raiseHeat(){
-  if(heat === "Low") heat = "Medium";
-  else if(heat === "Medium") heat = "High";
-}
-
-function lowerHeat(){
-  if(heat === "High") heat = "Medium";
-  else if(heat === "Medium") heat = "Low";
-}
-
-function tonieEncounter(){
-  const existing = document.querySelector(".overlay");
-  if(existing) existing.remove();
-
-  const html = `
-    <div class="overlay">
-      <div class="tonieBox">
-        <img src="tonie.png" class="tonieImg" alt="Tonie Two-Toe">
-        <div class="tonieText">
-          🕴️ Tonie Two-Toe rolled up with his boys.
-          <br><br>
-          "You got my money… or we got a problem?"
-        </div>
-        <div class="tonieActions">
-          <button onclick="payTonie()">💰 Pay</button>
-          <button onclick="fightTonie()">👊 Fight</button>
-          <button onclick="runTonie()">🏃 Run</button>
-        </div>
-      </div>
-    </div>
-  `;
-  document.body.insertAdjacentHTML("beforeend", html);
-  playSound("danger");
-  vibrate([120,40,120]);
-}
-
-function closeTonie(){
-  const overlay = document.querySelector(".overlay");
-  if(overlay) overlay.remove();
-}
-
-function payTonie(){
-  if(cash >= 1000){
-    cash -= 1000;
-    debt = Math.max(0, debt - 1000);
-    lowerHeat();
-    playSound("money");
-    vibrate(30);
-    setAlert("TONIE GOT PAID");
-    log("You paid Tonie Two-Toe. He backs off... for now.", "good");
-  } else {
-    playSound("danger");
-    vibrate([90,30,90]);
-    setAlert("NOT ENOUGH CASH FOR TONIE");
-    log("You came up short with Tonie Two-Toe. Bad move.", "bad");
+  // INVENTORY
+  let inv = "";
+  for(let i in inventory){
+    inv += `${i} x${inventory[i]}<br>`;
   }
-  closeTonie();
-  renderAll();
+  document.getElementById("inventory").innerHTML =
+    inv || "You're carrying nothing. Make a move.";
 }
 
-function fightTonie(){
-  if(Math.random() < 0.38){
-    raiseHeat();
-    playSound("danger");
-    vibrate([80,30,80]);
-    setAlert("YOU FOUGHT TONIE'S CREW");
-    log("You threw down and survived it. The whole city heard about it.", "warn");
-  } else {
-    health = Math.max(15, health - 30);
-    cash = Math.max(0, cash - 700);
-    raiseHeat();
-    playSound("danger");
-    vibrate([140,50,140]);
-    setAlert("TONIE'S CREW WORKED YOU");
-    log("Tonie's crew beat you down. You lost health and cash.", "bad");
-  }
-  closeTonie();
-  renderAll();
-}
-
-function runTonie(){
-  if(Math.random() < 0.5){
-    playSound("travel");
-    vibrate([60,20,60]);
-    setAlert("YOU GOT AWAY");
-    log("You slipped away before Tonie's boys boxed you in.", "good");
-  } else {
-    cash = Math.max(0, cash - 500);
-    raiseHeat();
-    playSound("danger");
-    vibrate([100,40,100]);
-    setAlert("THEY CAUGHT YOU SLIPPIN'");
-    log("You tried to run. Tonie's crew took $500 off you.", "bad");
-  }
-  closeTonie();
-  renderAll();
-}
-
-function buyItem(i){
-  const item = items[i];
-  playSound("click");
+function buy(i){
+  let item = items[i];
   if(cash >= item.price){
     cash -= item.price;
-    inventory[item.name] = (inventory[item.name] || 0) + 1;
-    playSound("money");
-    vibrate(30);
-    setAlert(`Locked in a buy on ${item.name}.`);
-    log(`Bought ${item.name} for $${item.price}.`, "good");
-    if(Math.random() < item.risk * 0.08){
-      raiseHeat();
-      playSound("danger");
-      vibrate([80,30,80]);
-      setAlert("HEAT RISING — people noticed your move.");
-      log("That move brought attention. Heat is rising.", "warn");
-    }
-  } else {
-    playSound("danger");
-    vibrate(60);
-    setAlert("NOT ENOUGH CASH");
-    log(`Not enough cash for ${item.name}.`, "bad");
+    inventory[item.name] = (inventory[item.name]||0)+1;
+    log("Bought "+item.name);
+    vibe();
   }
-  renderAll();
+  render();
 }
 
-function sellItem(i){
-  const item = items[i];
-  playSound("click");
-  if(inventory[item.name] > 0){
-    inventory[item.name]--;
-    if(inventory[item.name] === 0) delete inventory[item.name];
+function sell(i){
+  let item = items[i];
+  if(inventory[item.name]){
     cash += item.price;
-    playSound("money");
-    vibrate(25);
-    setAlert(`Moved ${item.name} for profit.`);
-    log(`Sold ${item.name} for $${item.price}.`, "good");
-    if(item.risk >= 4 && Math.random() < 0.16){
-      raiseHeat();
-      playSound("danger");
-      vibrate([100,40,100]);
-      setAlert("HOT SALE — eyes are on you.");
-      log("That sale felt hot. Eyes are on you.", "warn");
-    }
-  } else {
-    playSound("danger");
-    vibrate(50);
-    setAlert("NO INVENTORY TO MOVE");
-    log(`You don’t have any ${item.name}.`, "bad");
+    inventory[item.name]--;
+    log("Sold "+item.name);
+    vibe();
   }
-  renderAll();
+  render();
 }
 
-function deposit(){
-  playSound("click");
-  if(cash >= 500){
-    cash -= 500;
-    bank += 500;
-    playSound("money");
-    vibrate(20);
-    setAlert("BANKED CASH");
-    log("Moved $500 into the bank.", "good");
-  } else {
-    playSound("danger");
-    setAlert("NOT ENOUGH CASH TO DEPOSIT");
-    log("Not enough cash to deposit.", "bad");
-  }
-  renderAll();
+function travel(c){
+  city = c;
+  day++;
+  log("Flew to "+c);
+  vibe();
+  maybeTonie();
+  render();
 }
 
-function withdraw(){
-  playSound("click");
-  if(bank >= 500){
-    bank -= 500;
-    cash += 500;
-    playSound("money");
-    vibrate(20);
-    setAlert("CASH PULLED FROM THE BANK");
-    log("Pulled $500 out of the bank.", "info");
-  } else {
-    playSound("danger");
-    setAlert("BANK TOO LOW");
-    log("Not enough in the bank.", "bad");
-  }
-  renderAll();
+function deposit(){ cash-=500; log("Deposited"); render(); }
+function withdraw(){ cash+=500; log("Withdrew"); render(); }
+function borrow(){ cash+=1000; log("Borrowed"); render(); }
+function repay(){ cash-=500; log("Paid"); render(); }
+
+function log(msg){
+  document.getElementById("feed").innerHTML =
+    "[Day "+day+"] "+msg+"<br>" + document.getElementById("feed").innerHTML;
 }
 
-function borrow(){
-  playSound("click");
-  debt += 1000;
-  cash += 1000;
-  raiseHeat();
-  playSound("danger");
-  vibrate([70,25,70]);
-  setAlert("YOU TOOK STREET MONEY");
-  log("Borrowed $1000. The streets will want it back.", "warn");
-  renderAll();
+/* VIBRATION */
+function vibe(){
+  if(navigator.vibrate) navigator.vibrate(50);
 }
 
-function repay(){
-  playSound("click");
-  if(cash >= 500 && debt > 0){
-    cash -= 500;
-    debt -= 500;
-    if(debt < 0) debt = 0;
-    lowerHeat();
-    playSound("money");
-    vibrate(25);
-    setAlert("DEBT PAID DOWN");
-    log("Paid back $500.", "good");
-  } else {
-    playSound("danger");
-    setAlert("CAN'T REPAY RIGHT NOW");
-    log("You can’t repay right now.", "bad");
-  }
-  renderAll();
-}
-
-function randomEvent(){
-  const r = Math.random();
-  if(r < 0.16){
-    let found = rand(400,1800);
-    cash += found;
-    playSound("money");
-    vibrate([20,20,20]);
-    setAlert("JACKPOT SCORE");
-    log(`Jackpot. You stumbled onto a score worth $${found}.`, "good");
-  } else if(r < 0.30){
-    inventory = {};
-    raiseHeat();
-    playSound("danger");
-    vibrate([120,40,120]);
-    setAlert("UNDERCOVER SWEEP");
-    log("Undercover sweep. Anything on you got burned.", "bad");
-  } else if(r < 0.42){
-    let loss = Math.min(cash, rand(150,500));
-    cash -= loss;
-    playSound("danger");
-    vibrate([90,30,90]);
-    setAlert("STREET PRESSURE COST YOU");
-    log(`Street pressure cost you $${loss}.`, "bad");
-  } else if(r < 0.54){
-    health = Math.max(20, health - rand(5,12));
-    raiseHeat();
-    playSound("danger");
-    vibrate([100,40,100]);
-    setAlert("THINGS GOT ROUGH");
-    log("Things got rough after landing. You took a hit.", "bad");
-  } else if(r < 0.68){
-    health = Math.min(100, health + 5);
-    lowerHeat();
-    vibrate(20);
-    setAlert("YOU LAID LOW");
-    log("You laid low and recovered a bit.", "good");
-  } else {
-    setAlert("QUIET MOVE");
-    log(`No major action. Quiet move through ${city}.`, "info");
+/* TONIE EVENT */
+function maybeTonie(){
+  if(Math.random() < 0.3){
+    showTonie();
   }
 }
 
-function travel(nextCity){
-  playSound("click");
-  if(nextCity === city){
-    setAlert("YOU'RE ALREADY HERE");
-    log(`You’re already in ${city}.`, "info");
-    return;
-  }
-
-  city = nextCity;
-  day += 1;
-  playSound("travel");
-  vibrate([50,30,70]);
-
-  if(debt > 0){
-    const interest = Math.floor(debt * 0.15);
-    debt += interest;
-    log(`Debt grew by $${interest}.`, "bad");
-  }
-
-  refreshPrices();
-  randomEvent();
-
-  if(debt > 1500 && Math.random() < 0.30){
-    tonieEncounter();
-  }
-
-  renderAll();
-  log(`Flew into ${city}.`, "info");
+function showTonie(){
+  let div = document.createElement("div");
+  div.style.position="fixed";
+  div.style.top="0";
+  div.style.left="0";
+  div.style.width="100%";
+  div.style.height="100%";
+  div.style.background="rgba(0,0,0,0.9)";
+  div.style.display="flex";
+  div.style.flexDirection="column";
+  div.style.alignItems="center";
+  div.style.justifyContent="center";
+  div.innerHTML = `
+    <img src="tonie.png" style="max-width:300px"><br><br>
+    <button onclick="payTonie()">Pay</button>
+    <button onclick="fightTonie()">Fight</button>
+    <button onclick="runTonie()">Run</button>
+  `;
+  document.body.appendChild(div);
 }
 
-document.getElementById("startBtn").addEventListener("click", () => {
-  audioUnlocked = true;
-  startMusic();
-  playSound("click");
-  vibrate(30);
-  document.getElementById("startOverlay").style.display = "none";
-  setAlert("SOUND LIVE. STREETS OPEN.");
-  log("Sound live. Streets open.", "info");
-});
+function payTonie(){ cash-=500; log("Paid Tonie"); location.reload(); }
+function fightTonie(){ log("Fight survived"); location.reload(); }
+function runTonie(){ log("You ran"); location.reload(); }
 
-refreshPrices();
-renderAll();
-log("Welcome to The Pusher: The 90s Edition.", "info");
+/* START */
+render();
+log("Sound live. Streets open.");
+log("Welcome to The Pusher: The 90s Edition.");
 </script>
+
 </body>
 </html>
