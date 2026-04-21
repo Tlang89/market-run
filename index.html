@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>The Pusher</title>
 <style>
   :root{
@@ -18,14 +18,17 @@
     --bad:#ff9b9b;
   }
 
-  *{box-sizing:border-box}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 
   html,body{
     margin:0;
+    padding:0;
+    width:100%;
     min-height:100%;
-    font-family:Arial, Helvetica, sans-serif;
-    color:var(--text);
     background:#000;
+    color:var(--text);
+    font-family:Arial, Helvetica, sans-serif;
+    touch-action:manipulation;
   }
 
   body{
@@ -207,11 +210,17 @@
     font-weight:900;
     padding:11px 14px;
     cursor:pointer;
-    font-size:15px;
+    font-size:16px;
+    transition:transform .08s ease, background .12s ease, color .12s ease, box-shadow .12s ease;
+    touch-action:manipulation;
+  }
+
+  button:hover{
+    box-shadow:0 0 12px rgba(212,175,55,0.18);
   }
 
   button:active{
-    transform:translateY(1px);
+    transform:scale(0.98);
   }
 
   .goldBtn{
@@ -456,16 +465,24 @@
   <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_6c9b9b4e3c.mp3" type="audio/mpeg">
 </audio>
 
+<audio id="sndTravel" preload="auto">
+  <source src="https://cdn.pixabay.com/audio/2021/08/04/audio_c06377a8a5.mp3" type="audio/mpeg">
+</audio>
+
 <audio id="sndAlert" preload="auto">
   <source src="https://cdn.pixabay.com/audio/2022/01/18/audio_d16737c2a8.mp3" type="audio/mpeg">
 </audio>
 
-<audio id="sndWin" preload="auto">
+<audio id="sndBuy" preload="auto">
   <source src="https://cdn.pixabay.com/audio/2022/03/10/audio_c8c8a73467.mp3" type="audio/mpeg">
 </audio>
 
-<audio id="sndTravel" preload="auto">
-  <source src="https://cdn.pixabay.com/audio/2021/08/04/audio_c06377a8a5.mp3" type="audio/mpeg">
+<audio id="sndSell" preload="auto">
+  <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_6c9b9b4e3c.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="sndWin" preload="auto">
+  <source src="https://cdn.pixabay.com/audio/2022/03/10/audio_c8c8a73467.mp3" type="audio/mpeg">
 </audio>
 
 <script>
@@ -475,15 +492,12 @@
     rico: 'Rico.png',
     comedian: 'The Comedian.png',
     ny_street: 'New York Street.png',
-    ny_alley: 'New York Alley.png'
+    chicago_street: 'chicago_street.png'
   };
 
   const cityProfiles = {
     "New York":"Watched, profitable, tense.",
-    "Chicago":"Cold, dark, windy pressure.",
-    "Miami":"Humid money and quiet danger.",
-    "Los Angeles":"Haze, movement, long plays.",
-    "Atlanta":"Steady, warm, risky."
+    "Chicago":"Cold, dark, windy pressure."
   };
 
   const items = [
@@ -513,7 +527,10 @@
       a.pause();
       a.currentTime = 0;
       a.volume = volume;
-      a.play().catch(()=>{});
+      const playPromise = a.play();
+      if(playPromise && typeof playPromise.catch === "function"){
+        playPromise.catch(()=>{});
+      }
     }catch(e){}
   }
 
@@ -524,21 +541,15 @@
   function setSceneForCity(){
     if(city === "New York"){
       document.body.style.backgroundImage = "url('New York Street.png')";
-    } else {
-      document.body.style.backgroundImage = "url('New York Street.png')";
+    } else if(city === "Chicago"){
+      document.body.style.backgroundImage = "url('chicago_street.png')";
     }
-  }
-
-  function setDangerScene(){
-    document.body.style.backgroundImage = "url('New York Alley.png')";
   }
 
   function refreshPrices(){
     items.forEach(item=>{
       let boost = 1;
-      if(city === "Miami" && item.name === "Luxury Watches") boost = 1.2;
       if(city === "Chicago" && item.name === "Sneakers") boost = 1.15;
-      if(city === "Los Angeles" && item.name === "Electronics") boost = 1.18;
       if(city === "New York" && item.name === "Pagers") boost = 1.12;
       item.price = Math.max(40, Math.floor((item.base * (0.75 + Math.random()*0.7)) * boost));
     });
@@ -599,7 +610,7 @@
 
   function buyCurrent(){
     const item = items[currentItemIndex];
-    playSound('sndClick', 0.25);
+    playSound('sndBuy', 0.35);
     buzz(25);
 
     if(cash >= item.price){
@@ -609,14 +620,14 @@
       maybeEncounter('buy');
     } else {
       addFeed(`Not enough cash for ${item.name}.`, 'bad');
-      playSound('sndAlert', 0.3);
+      playSound('sndAlert', 0.35);
     }
     renderAll();
   }
 
   function sellCurrent(){
     const item = items[currentItemIndex];
-    playSound('sndClick', 0.25);
+    playSound('sndSell', 0.35);
     buzz(20);
 
     if((inventory[item.name] || 0) > 0){
@@ -625,7 +636,7 @@
       addFeed(`Sold ${item.name} for $${item.price}.`, 'good');
       if(inventory[item.name] <= 0) delete inventory[item.name];
       if(item.price >= 800){
-        playSound('sndWin', 0.45);
+        playSound('sndWin', 0.4);
         buzz(90);
       }
     } else {
@@ -636,12 +647,12 @@
 
   function nextItem(){
     currentItemIndex = (currentItemIndex + 1) % items.length;
-    playSound('sndClick', 0.2);
+    playSound('sndClick', 0.25);
     renderItem();
   }
 
   function depositMoney(){
-    playSound('sndClick', 0.2);
+    playSound('sndClick', 0.25);
     if(cash >= 500){
       cash -= 500;
       bank += 500;
@@ -653,7 +664,7 @@
   }
 
   function withdrawMoney(){
-    playSound('sndClick', 0.2);
+    playSound('sndClick', 0.25);
     if(bank >= 500){
       bank -= 500;
       cash += 500;
@@ -665,7 +676,7 @@
   }
 
   function borrowMoney(){
-    playSound('sndAlert', 0.25);
+    playSound('sndAlert', 0.3);
     debt += 1000;
     cash += 1000;
     heat = 'Medium';
@@ -674,7 +685,7 @@
   }
 
   function repayMoney(){
-    playSound('sndClick', 0.2);
+    playSound('sndClick', 0.25);
     if(cash >= 500 && debt > 0){
       cash -= 500;
       debt -= 500;
@@ -688,8 +699,7 @@
   }
 
   function showPopup(name, img, text, buttonsHtml){
-    setDangerScene();
-    playSound('sndAlert', 0.3);
+    playSound('sndAlert', 0.35);
     buzz(70);
     document.getElementById('popupName').textContent = name;
     document.getElementById('popupImg').src = img;
@@ -800,7 +810,7 @@
     showPopup(
       'The Comedian',
       ASSETS.comedian,
-      '“Funny thing about luck… it don’t knock twice.”',
+      'Funny thing about luck… it don’t knock twice.',
       `
         <button class="goldBtn" onclick="comedianPlay()">Play a Hand</button>
         <button onclick="comedianIgnore()">Ignore</button>
@@ -839,7 +849,7 @@
 
   function travelTo(nextCity){
     playSound('sndTravel', 0.35);
-    buzz(45);
+    buzz(50);
 
     if(nextCity === city){
       addFeed(`You’re already in ${city}.`, 'warn');
