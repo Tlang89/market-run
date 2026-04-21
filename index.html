@@ -819,6 +819,7 @@
   }
 
   function comedianPlay(){
+   document.getElementById("voiceComedian").play(); 
     if(Math.random() < 0.5){
       const win = Math.floor(500 + Math.random() * 1000);
       cash += win;
@@ -889,5 +890,6 @@
   renderAll();
   addFeed('Night reset loaded.', 'good');
 </script>
+  <audio id="voiceComedian" src="playa_hand.m4a"></audio>
 </body>
 </html>
