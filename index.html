@@ -5,138 +5,56 @@
 <title>THE PU$HER</title>
 
 <style>
-:root{
-  --gold:#d4af37;
-  --bg:#000;
-}
-
 body{
   margin:0;
-  background:#000;
-  font-family:Arial;
-  color:white;
   overflow:hidden;
+  font-family:Arial;
+  background:black;
 }
 
 /* BACKGROUND */
 .bg{
   position:fixed;
   inset:0;
-  background:url('https://images.unsplash.com/photo-1508057198894-247b23fe5ade?q=80&w=1200') center/cover no-repeat;
-  filter:brightness(.6);
+  background:url("New York Street.png") center/cover no-repeat;
+  filter:brightness(.7);
 }
 
-/* START SCREEN */
-#start{
-  position:absolute;
+/* OVERLAY */
+.overlay{
+  position:fixed;
   inset:0;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  gap:16px;
-  z-index:5;
+  background:linear-gradient(rgba(0,0,0,.2), rgba(0,0,0,.8));
 }
 
+/* TITLE */
 .title{
-  font-size:42px;
-  color:var(--gold);
-  font-weight:bold;
-  letter-spacing:3px;
-}
-
-.btn{
-  border:2px solid var(--gold);
-  padding:12px 24px;
-  color:var(--gold);
-  background:transparent;
-  border-radius:12px;
-  width:200px;
-  text-align:center;
-}
-
-/* GAME HUD */
-#game{
-  display:none;
-}
-
-.hud{
   position:absolute;
-  top:20px;
-  left:20px;
-  right:20px;
-  display:flex;
-  justify-content:space-between;
-}
-
-.hudBox{
-  border:2px solid var(--gold);
-  padding:12px;
-  border-radius:12px;
-  background:rgba(0,0,0,.6);
-}
-
-/* PANEL */
-.panel{
-  position:absolute;
-  bottom:20px;
-  left:20px;
-  right:20px;
-  border:2px solid var(--gold);
-  border-radius:20px;
-  padding:20px;
-  background:rgba(0,0,0,.7);
-}
-
-.item{
-  display:flex;
-  justify-content:space-between;
-  margin:10px 0;
-}
-
-/* ACTIONS */
-.actions{
-  display:flex;
-  gap:10px;
-  margin-top:15px;
-}
-
-.actionBtn{
-  flex:1;
-  border:2px solid var(--gold);
-  padding:10px;
-  text-align:center;
-  border-radius:10px;
-}
-
-/* COMIC EVENT */
-#event{
-  position:absolute;
-  inset:0;
-  display:none;
-  justify-content:center;
-  align-items:center;
-  background:rgba(0,0,0,.8);
-  z-index:10;
-}
-
-.eventBox{
-  border:2px solid var(--gold);
-  padding:20px;
-  text-align:center;
-  width:80%;
-  background:#000;
-}
-
-.eventBox img{
+  top:30%;
   width:100%;
-  border:2px solid var(--gold);
+  text-align:center;
+  color:#d4af37;
+  font-size:48px;
+  letter-spacing:4px;
 }
 
-.choice{
-  border:2px solid var(--gold);
-  padding:10px;
-  margin-top:10px;
+/* BUTTON */
+.startBtn{
+  position:absolute;
+  bottom:80px;
+  left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  text-align:center;
+  padding:14px;
+  border:2px solid #d4af37;
+  color:#d4af37;
+  font-size:18px;
+}
+
+/* TAP EFFECT */
+.startBtn:active{
+  transform:translateX(-50%) scale(.96);
 }
 </style>
 </head>
@@ -144,82 +62,24 @@ body{
 <body>
 
 <div class="bg"></div>
+<div class="overlay"></div>
 
-<!-- START -->
-<div id="start">
-  <div class="title">THE PU$HER</div>
-  <div class="btn" onclick="startGame()">START RUN</div>
+<div class="title">THE PU$HER</div>
+
+<div class="startBtn" onclick="startRun()">
+  START RUN
 </div>
 
-<!-- GAME -->
-<div id="game">
-
-  <div class="hud">
-    <div class="hudBox">DETROIT<br>DAY 1</div>
-    <div class="hudBox">$1000<br>HEAT: LOW</div>
-  </div>
-
-  <div class="panel">
-    <div class="item">Bootleg Tapes <span>$50</span></div>
-    <div class="item">Jewelry <span>$300</span></div>
-    <div class="item">Electronics <span>$200</span></div>
-
-    <div class="actions">
-      <div class="actionBtn" onclick="eventTrigger()">SELL</div>
-      <div class="actionBtn">STORE</div>
-      <div class="actionBtn">TRAVEL</div>
-      <div class="actionBtn">STAY</div>
-    </div>
-
-    <div style="margin-top:10px; opacity:.6;">
-      Detroit feels cold tonight...
-    </div>
-  </div>
-
-</div>
-
-<!-- EVENT -->
-<div id="event">
-  <div class="eventBox">
-    <img src="https://images.unsplash.com/photo-1590080875852-ba44f83ff79b?q=80&w=600">
-    <h2 style="color:var(--gold)">Eddy "Silent"</h2>
-    <p>He was already there before you noticed.</p>
-
-    <div class="choice" onclick="closeEvent()">RUN</div>
-    <div class="choice" onclick="closeEvent()">FREEZE</div>
-  </div>
-</div>
-
-<!-- AUDIO -->
-<audio id="rain" loop>
-  <source src="https://assets.mixkit.co/sfx/preview/mixkit-light-rain-loop-2393.mp3">
-</audio>
-
-<audio id="hit">
-  <source src="https://assets.mixkit.co/sfx/preview/mixkit-dramatic-hit-2148.mp3">
-</audio>
+<!-- YOUR VOICE -->
+<audio id="voice" src="playa_hand.m4a"></audio>
 
 <script>
 
-function startGame(){
-  document.getElementById("start").style.display="none";
-  document.getElementById("game").style.display="block";
-
-  document.getElementById("rain").play();
-
-  // YOUR VOICE HERE
-  // replace 'voice.mp3' with your file later
-  let voice = new Audio("voice.mp3");
-  voice.play();
-}
-
-function eventTrigger(){
-  document.getElementById("event").style.display="flex";
-  document.getElementById("hit").play();
-}
-
-function closeEvent(){
-  document.getElementById("event").style.display="none";
+function startRun(){
+  // play your voice
+  let v = document.getElementById("voice");
+  v.currentTime = 0;
+  v.play().catch(()=>{});
 }
 
 </script>
