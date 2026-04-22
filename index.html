@@ -16,45 +16,76 @@ body{
 .bg{
   position:fixed;
   inset:0;
-  background:url("New York Street.png") center/cover no-repeat;
-  filter:brightness(.7);
+  background:url("https://images.unsplash.com/photo-1508057198894-247b23fe5ade?q=80&w=1200") center/cover no-repeat;
+  filter:brightness(.65);
 }
 
-/* OVERLAY */
+/* DARK OVERLAY */
 .overlay{
   position:fixed;
   inset:0;
-  background:linear-gradient(rgba(0,0,0,.2), rgba(0,0,0,.8));
+  background:linear-gradient(rgba(0,0,0,.2), rgba(0,0,0,.85));
 }
 
 /* TITLE */
 .title{
   position:absolute;
-  top:30%;
+  top:18%;
   width:100%;
   text-align:center;
   color:#d4af37;
   font-size:48px;
-  letter-spacing:4px;
+  letter-spacing:6px;
+  font-weight:bold;
+  text-shadow:0 0 20px rgba(212,175,55,.5);
 }
 
-/* BUTTON */
-.startBtn{
+/* BUTTON STACK */
+.menu{
   position:absolute;
-  bottom:80px;
-  left:50%;
-  transform:translateX(-50%);
-  width:220px;
-  text-align:center;
+  bottom:140px;
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:14px;
+}
+
+.btn{
+  width:260px;
   padding:14px;
+  text-align:center;
   border:2px solid #d4af37;
   color:#d4af37;
+  border-radius:12px;
   font-size:18px;
+  background:rgba(0,0,0,.3);
+  backdrop-filter:blur(4px);
+  box-shadow:0 0 18px rgba(212,175,55,.25);
 }
 
 /* TAP EFFECT */
-.startBtn:active{
-  transform:translateX(-50%) scale(.96);
+.btn:active{
+  transform:scale(.96);
+}
+
+/* BOTTOM LABELS */
+.cloud{
+  position:absolute;
+  bottom:18px;
+  left:18px;
+  color:#d4af37;
+  font-size:12px;
+  opacity:.8;
+}
+
+.version{
+  position:absolute;
+  bottom:18px;
+  right:18px;
+  color:#d4af37;
+  font-size:12px;
+  opacity:.6;
 }
 </style>
 </head>
@@ -66,22 +97,25 @@ body{
 
 <div class="title">THE PU$HER</div>
 
-<div class="startBtn" onclick="startRun()">
-  START RUN
+<div class="menu">
+  <div class="btn" onclick="startRun()">START RUN</div>
+  <div class="btn">CONTINUE</div>
+  <div class="btn">SETTINGS</div>
+  <div class="btn">CREDITS</div>
+  <div class="btn">EXIT GAME</div>
 </div>
 
-<!-- YOUR VOICE -->
+<div class="cloud">☁ CLOUD SAVED</div>
+<div class="version">v1.0.0</div>
+
 <audio id="voice" src="playa_hand.m4a"></audio>
 
 <script>
-
 function startRun(){
-  // play your voice
   let v = document.getElementById("voice");
   v.currentTime = 0;
   v.play().catch(()=>{});
 }
-
 </script>
 
 </body>
