@@ -1,247 +1,225 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>THE PU$HER</title>
 
 <style>
+:root{
+  --gold:#d4af37;
+  --bg:#000;
+}
+
 body{
   margin:0;
-  background:black;
-  color:gold;
+  background:#000;
   font-family:Arial;
+  color:white;
   overflow:hidden;
 }
 
-/* BACKGROUND /
+/* BACKGROUND */
 .bg{
   position:fixed;
   inset:0;
-  background:url('detroit.png') center/cover no-repeat;
-  filter:brightness(.65);
-  transition:.4s;
+  background:url('https://images.unsplash.com/photo-1508057198894-247b23fe5ade?q=80&w=1200') center/cover no-repeat;
+  filter:brightness(.6);
 }
 
-.overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.6);
-}
-
-/ START SCREEN /
-.startScreen{
-  position:fixed;
+/* START SCREEN */
+#start{
+  position:absolute;
   inset:0;
   display:flex;
   flex-direction:column;
   justify-content:center;
   align-items:center;
-  text-align:center;
+  gap:16px;
+  z-index:5;
 }
 
 .title{
   font-size:42px;
-  margin-bottom:30px;
+  color:var(--gold);
+  font-weight:bold;
   letter-spacing:3px;
 }
 
-.menu button{
-  display:block;
-  margin:10px;
-  padding:14px 30px;
-  border:1px solid gold;
+.btn{
+  border:2px solid var(--gold);
+  padding:12px 24px;
+  color:var(--gold);
   background:transparent;
-  color:gold;
-  font-size:18px;
+  border-radius:12px;
+  width:200px;
+  text-align:center;
 }
 
-/ HUD /
-.top{
+/* GAME HUD */
+#game{
+  display:none;
+}
+
+.hud{
   position:absolute;
-  top:15px;
-  width:100%;
+  top:20px;
+  left:20px;
+  right:20px;
   display:flex;
   justify-content:space-between;
-  padding:0 15px;
 }
 
-.box{
-  border:1px solid gold;
-  padding:8px 12px;
+.hudBox{
+  border:2px solid var(--gold);
+  padding:12px;
   border-radius:12px;
   background:rgba(0,0,0,.6);
 }
 
-/ PANEL /
+/* PANEL */
 .panel{
   position:absolute;
   bottom:20px;
-  left:50%;
-  transform:translateX(-50%);
-  width:90%;
-  max-width:420px;
-  background:rgba(0,0,0,.85);
-  border:2px solid gold;
-  border-radius:12px;
-  padding:15px;
+  left:20px;
+  right:20px;
+  border:2px solid var(--gold);
+  border-radius:20px;
+  padding:20px;
+  background:rgba(0,0,0,.7);
 }
 
-.panel h2{
+.item{
+  display:flex;
+  justify-content:space-between;
   margin:10px 0;
 }
 
-/ BUTTONS /
-.buttons{
-  display:grid;
-  grid-template-columns:1fr 1fr;
+/* ACTIONS */
+.actions{
+  display:flex;
   gap:10px;
-  margin-top:10px;
-}
-
-button{
-  padding:12px;
-  border:1px solid gold;
-  background:transparent;
-  color:gold;
-}
-
-/ FEED */
-.feed{
   margin-top:15px;
-  font-size:14px;
-  color:#ccc;
+}
+
+.actionBtn{
+  flex:1;
+  border:2px solid var(--gold);
+  padding:10px;
+  text-align:center;
+  border-radius:10px;
+}
+
+/* COMIC EVENT */
+#event{
+  position:absolute;
+  inset:0;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  background:rgba(0,0,0,.8);
+  z-index:10;
+}
+
+.eventBox{
+  border:2px solid var(--gold);
+  padding:20px;
+  text-align:center;
+  width:80%;
+  background:#000;
+}
+
+.eventBox img{
+  width:100%;
+  border:2px solid var(--gold);
+}
+
+.choice{
+  border:2px solid var(--gold);
+  padding:10px;
+  margin-top:10px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="bg" id="bg"></div>
-<div class="overlay"></div>
+<div class="bg"></div>
 
-<!-- START SCREEN -->
-<div class="startScreen" id="startScreen">
+<!-- START -->
+<div id="start">
   <div class="title">THE PU$HER</div>
-  <div class="menu">
-    <button onclick="startGame()">START RUN</button>
-    <button>CONTINUE</button>
-    <button>SETTINGS</button>
-    <button>CREDITS</button>
+  <div class="btn" onclick="startGame()">START RUN</div>
+</div>
+
+<!-- GAME -->
+<div id="game">
+
+  <div class="hud">
+    <div class="hudBox">DETROIT<br>DAY 1</div>
+    <div class="hudBox">$1000<br>HEAT: LOW</div>
+  </div>
+
+  <div class="panel">
+    <div class="item">Bootleg Tapes <span>$50</span></div>
+    <div class="item">Jewelry <span>$300</span></div>
+    <div class="item">Electronics <span>$200</span></div>
+
+    <div class="actions">
+      <div class="actionBtn" onclick="eventTrigger()">SELL</div>
+      <div class="actionBtn">STORE</div>
+      <div class="actionBtn">TRAVEL</div>
+      <div class="actionBtn">STAY</div>
+    </div>
+
+    <div style="margin-top:10px; opacity:.6;">
+      Detroit feels cold tonight...
+    </div>
+  </div>
+
+</div>
+
+<!-- EVENT -->
+<div id="event">
+  <div class="eventBox">
+    <img src="https://images.unsplash.com/photo-1590080875852-ba44f83ff79b?q=80&w=600">
+    <h2 style="color:var(--gold)">Eddy "Silent"</h2>
+    <p>He was already there before you noticed.</p>
+
+    <div class="choice" onclick="closeEvent()">RUN</div>
+    <div class="choice" onclick="closeEvent()">FREEZE</div>
   </div>
 </div>
 
-<!-- GAME UI -->
-<div id="gameUI" style="display:none;">
-
-<div class="top">
-  <div class="box" id="cityBox">DETROIT<br>DAY 1</div>
-  <div class="box">$<span id="cash">1000</span><br>HEAT: LOW</div>
-</div>
-
-<div class="panel">
-
-<h2>MARKET</h2>
-<p onclick="buy()">Bootleg Tapes — $50</p>
-<p onclick="buy()">Jewelry — $300</p>
-<p onclick="buy()">Electronics — $200</p>
-
-<h2>INVENTORY</h2>
-<p id="inv">No product on hand</p>
-
-<div class="buttons">
-<button onclick="sell()">SELL</button>
-<button onclick="store()">STORE</button>
-<button onclick="travel()">TRAVEL</button>
-<button onclick="stay()">STAY</button>
-</div>
-
-<div class="feed" id="feed">
-[Day 1] The city opened up. Your run began.
-</div>
-
-</div>
-
-</div>
-
 <!-- AUDIO -->
-<audio id="rain" src="rain.mp3" loop></audio>
-<audio id="click" src="click.mp3"></audio>
-<audio id="travelSound" src="travel.mp3"></audio>
-<audio id="tense" src="tense.mp3"></audio>
-<audio id="voice" src="intro.mp3"></audio>
+<audio id="rain" loop>
+  <source src="https://assets.mixkit.co/sfx/preview/mixkit-light-rain-loop-2393.mp3">
+</audio>
+
+<audio id="hit">
+  <source src="https://assets.mixkit.co/sfx/preview/mixkit-dramatic-hit-2148.mp3">
+</audio>
 
 <script>
 
-let cash=1000;
-let cityIndex=0;
-
-const cities=[
- {name:"DETROIT",img:"detroit.png"},
- {name:"CHICAGO",img:"chicago.png"},
- {name:"NEW YORK",img:"ny.png"}
-];
-
-function play(a){
- a.currentTime=0;
- a.play().catch(()=>{});
-}
-
-// START GAME
 function startGame(){
- document.getElementById("startScreen").style.display="none";
- document.getElementById("gameUI").style.display="block";
+  document.getElementById("start").style.display="none";
+  document.getElementById("game").style.display="block";
 
- play(rain);
- play(voice); // YOUR VOICE INTRO
+  document.getElementById("rain").play();
+
+  // YOUR VOICE HERE
+  // replace 'voice.mp3' with your file later
+  let voice = new Audio("voice.mp3");
+  voice.play();
 }
 
-// UPDATE
-function update(){
- document.getElementById("cash").innerText=cash;
+function eventTrigger(){
+  document.getElementById("event").style.display="flex";
+  document.getElementById("hit").play();
 }
 
-// FEED
-function addFeed(text){
- let f=document.getElementById("feed");
- f.innerHTML += "<br>"+text;
-}
-
-// ACTIONS
-function buy(){
- play(click);
- cash-=50;
- update();
- addFeed("You made a move.");
-}
-
-function sell(){
- play(click);
- cash+=120;
- update();
- addFeed("You flipped product.");
-}
-
-function store(){
- play(click);
- addFeed("You laid low.");
-}
-
-function stay(){
- play(tense);
- addFeed("Something feels off tonight...");
-}
-
-// TRAVEL
-function travel(){
- play(travelSound);
-
- cityIndex=(cityIndex+1)%cities.length;
- let c=cities[cityIndex];
-
- document.getElementById("bg").style.backgroundImage=url('${c.img}');
- document.getElementById("cityBox").innerHTML=c.name+"<br>DAY "+(cityIndex+1);
-
- addFeed("You moved to "+c.name);
+function closeEvent(){
+  document.getElementById("event").style.display="none";
 }
 
 </script>
