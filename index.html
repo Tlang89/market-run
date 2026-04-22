@@ -4,18 +4,18 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>THE PU$HER</title>
+
 <style>
 :root{
   --gold:#d4af37;
   --goldSoft:#f3d77b;
-  --bg:#050505;
-  --panel:rgba(0,0,0,.58);
-  --panelStrong:rgba(0,0,0,.78);
-  --line:rgba(212,175,55,.55);
   --text:#f6f0df;
   --muted:#bba971;
   --danger:#d35454;
   --good:#61c27a;
+  --panel:rgba(0,0,0,.60);
+  --panelStrong:rgba(0,0,0,.84);
+  --line:rgba(212,175,55,.55);
 }
 *{
   box-sizing:border-box;
@@ -43,20 +43,20 @@ body{ position:relative; }
   background-size:cover;
   background-position:center;
   background-repeat:no-repeat;
-  filter:brightness(.58) saturate(.95);
+  filter:brightness(.56) saturate(.95);
   transform:scale(1.02);
-  transition:background-image .35s ease, filter .25s ease, transform .25s ease;
+  transition:background-image .35s ease, transform .25s ease, filter .25s ease;
 }
 .overlay{
   position:fixed;
   inset:0;
   background:
-    linear-gradient(to bottom, rgba(0,0,0,.18), rgba(0,0,0,.55)),
-    radial-gradient(circle at center, rgba(0,0,0,.06), rgba(0,0,0,.42));
+    linear-gradient(to bottom, rgba(0,0,0,.16), rgba(0,0,0,.62)),
+    radial-gradient(circle at center, rgba(0,0,0,.04), rgba(0,0,0,.42));
   pointer-events:none;
 }
 
-/* START SCREEN */
+/* START */
 .start-screen{
   position:absolute;
   inset:0;
@@ -70,15 +70,13 @@ body{ position:relative; }
   text-align:center;
 }
 .logo{
-  font-size:clamp(50px, 14vw, 100px);
+  font-size:clamp(54px, 14vw, 100px);
   line-height:.92;
   font-weight:900;
   letter-spacing:.04em;
   color:var(--gold);
-  text-shadow:
-    0 2px 0 rgba(0,0,0,.65),
-    0 0 20px rgba(212,175,55,.22);
-  margin:0 0 18px 0;
+  text-shadow:0 2px 0 rgba(0,0,0,.65), 0 0 20px rgba(212,175,55,.22);
+  margin:0 0 20px 0;
 }
 .logo .small{
   display:block;
@@ -94,11 +92,11 @@ body{ position:relative; }
 .menu-btn{
   width:100%;
   min-height:56px;
-  border:1.6px solid rgba(212,175,55,.85);
+  border:1.5px solid rgba(212,175,55,.88);
   background:rgba(0,0,0,.28);
   color:var(--goldSoft);
   border-radius:12px;
-  font-size:1.1rem;
+  font-size:1.08rem;
   letter-spacing:.08em;
   box-shadow:0 0 16px rgba(212,175,55,.12);
 }
@@ -109,10 +107,9 @@ body{ position:relative; }
   color:var(--muted);
   font-size:.85rem;
   margin-top:18px;
-  opacity:.95;
 }
 
-/* GAME UI */
+/* GAME */
 .game-screen{
   position:absolute;
   inset:0;
@@ -135,7 +132,6 @@ body{ position:relative; }
   border:1px solid var(--line);
   border-radius:14px;
   padding:10px 12px;
-  box-shadow:0 0 20px rgba(212,175,55,.08);
   backdrop-filter:blur(5px);
 }
 .hud-title{
@@ -155,7 +151,7 @@ body{ position:relative; }
   left:50%;
   bottom:24px;
   transform:translateX(-50%);
-  width:min(92vw, 760px);
+  width:min(92vw,760px);
   background:var(--panel);
   border:1px solid var(--line);
   border-radius:18px;
@@ -166,7 +162,6 @@ body{ position:relative; }
 .block-top{
   display:grid;
   grid-template-columns:1.05fr .95fr;
-  gap:0;
 }
 .panel{
   padding:16px;
@@ -177,12 +172,11 @@ body{ position:relative; }
 }
 .panel-title{
   color:var(--goldSoft);
-  font-size:1.25rem;
+  font-size:1.2rem;
   font-weight:700;
-  letter-spacing:.04em;
   margin-bottom:10px;
 }
-.market-row, .inv-row, .feed-row{
+.market-row,.inv-row,.feed-row{
   display:grid;
   align-items:center;
   gap:10px;
@@ -196,10 +190,7 @@ body{ position:relative; }
 .market-row:active{ transform:scale(.99); }
 .inv-row{
   grid-template-columns:1fr auto auto auto;
-}
-.feed-row{
-  grid-template-columns:1fr;
-  color:var(--muted);
+  cursor:pointer;
 }
 .item-name{ color:var(--text); }
 .price{ color:var(--goldSoft); font-weight:700; }
@@ -209,7 +200,7 @@ body{ position:relative; }
 
 .block-actions{
   display:grid;
-  grid-template-columns:repeat(4, 1fr);
+  grid-template-columns:repeat(4,1fr);
   gap:10px;
   padding:14px 16px;
   border-bottom:1px solid rgba(212,175,55,.18);
@@ -227,30 +218,33 @@ body{ position:relative; }
 .feed-wrap{ padding:12px 16px 14px; }
 .feed-title{
   color:var(--goldSoft);
-  font-size:1.05rem;
+  font-size:1.02rem;
   font-weight:700;
   margin-bottom:6px;
 }
+.feed-row{
+  grid-template-columns:1fr;
+  color:var(--muted);
+}
 
-/* EVENT OVERLAYS */
+/* EVENTS */
 .event{
   position:absolute;
   inset:0;
   display:none;
   align-items:center;
   justify-content:center;
-  background:rgba(0,0,0,.86);
+  background:rgba(0,0,0,.88);
   z-index:10;
   padding:18px;
 }
 .event.active{ display:flex; }
 .event-card{
-  width:min(92vw, 470px);
+  width:min(92vw,470px);
   background:var(--panelStrong);
-  border:2px solid rgba(212,175,55,.85);
+  border:2px solid rgba(212,175,55,.88);
   border-radius:14px;
   padding:16px;
-  box-shadow:0 0 30px rgba(212,175,55,.16);
 }
 .event-card img{
   width:100%;
@@ -261,7 +255,7 @@ body{ position:relative; }
 }
 .event-name{
   color:var(--goldSoft);
-  font-size:2.2rem;
+  font-size:2rem;
   font-weight:900;
   text-align:center;
   margin:12px 0 8px;
@@ -269,7 +263,7 @@ body{ position:relative; }
 .event-line{
   color:var(--muted);
   text-align:center;
-  font-size:1.05rem;
+  font-size:1.02rem;
   margin:0 0 14px;
   line-height:1.35;
 }
@@ -290,14 +284,12 @@ body{ position:relative; }
 }
 .event-btn.primary{
   background:var(--gold);
-  color:#101010;
+  color:#111;
   font-weight:700;
 }
-
-/* CARD PICK */
 .cards{
   display:grid;
-  grid-template-columns:repeat(3, 1fr);
+  grid-template-columns:repeat(3,1fr);
   gap:12px;
   margin-top:14px;
 }
@@ -311,16 +303,19 @@ body{ position:relative; }
 }
 .play-card:active{ transform:scale(.98); }
 
-/* MOBILE */
-@media (max-width: 700px){
+@media (max-width:700px){
   .block-top{ grid-template-columns:1fr; }
-  .panel + .panel{ border-left:none; border-top:1px solid rgba(212,175,55,.18); }
-  .block-actions{ grid-template-columns:repeat(2, 1fr); }
-  .event-name{ font-size:1.8rem; }
+  .panel + .panel{
+    border-left:none;
+    border-top:1px solid rgba(212,175,55,.18);
+  }
+  .block-actions{ grid-template-columns:repeat(2,1fr); }
+  .event-name{ font-size:1.7rem; }
 }
 </style>
 </head>
 <body>
+
 <div class="bg" id="bg"></div>
 <div class="overlay"></div>
 
@@ -328,15 +323,13 @@ body{ position:relative; }
 <section class="start-screen" id="startScreen">
   <div class="start-inner">
     <h1 class="logo"><span class="small">THE</span>PU$HER</h1>
-
     <div class="menu-stack">
       <button class="menu-btn" onclick="startRun()">START RUN</button>
       <button class="menu-btn" onclick="continueRun()">CONTINUE</button>
-      <button class="menu-btn" onclick="showSimpleFeed('Settings not wired yet.')">SETTINGS</button>
-      <button class="menu-btn" onclick="showSimpleFeed('Credits not wired yet.')">CREDITS</button>
-      <button class="menu-btn" onclick="showSimpleFeed('Exit disabled in browser.')">EXIT GAME</button>
+      <button class="menu-btn" onclick="showMessage('Settings not wired yet.')">SETTINGS</button>
+      <button class="menu-btn" onclick="showMessage('Credits not wired yet.')">CREDITS</button>
+      <button class="menu-btn" onclick="showMessage('Exit disabled in browser.')">EXIT GAME</button>
     </div>
-
     <div class="start-meta">
       <span>CLOUD SAVED</span>
       <span>v1.0.0</span>
@@ -387,7 +380,7 @@ body{ position:relative; }
 <!-- COMEDIAN -->
 <div class="event" id="comedianEvent">
   <div class="event-card">
-    <img src="The Comedian.png" alt="The Comedian" onerror="this.style.display='none'">
+    <img src="comedian.png" alt="The Comedian" onerror="this.style.display='none'">
     <div class="event-name">The Comedian</div>
     <p class="event-line">“Funny thing about luck… it don’t knock twice.”</p>
     <div class="event-actions">
@@ -397,15 +390,15 @@ body{ position:relative; }
   </div>
 </div>
 
-<!-- CARD CHOICE -->
+<!-- CARDS -->
 <div class="event" id="cardEvent">
   <div class="event-card">
     <div class="event-name">Pick a Card</div>
     <p class="event-line">The cards can hold your power… or your pain.</p>
     <div class="cards">
-      <button class="play-card" onclick="pickCard(1)">CARD</button>
-      <button class="play-card" onclick="pickCard(2)">CARD</button>
-      <button class="play-card" onclick="pickCard(3)">CARD</button>
+      <button class="play-card" onclick="pickCard()">CARD</button>
+      <button class="play-card" onclick="pickCard()">CARD</button>
+      <button class="play-card" onclick="pickCard()">CARD</button>
     </div>
   </div>
 </div>
@@ -413,7 +406,7 @@ body{ position:relative; }
 <!-- RICO -->
 <div class="event" id="ricoEvent">
   <div class="event-card">
-    <img src="Rico.png" alt="Rico" onerror="this.style.display='none'">
+    <img src="rico.png" alt="Rico" onerror="this.style.display='none'">
     <div class="event-name">Rico “The Bat”</div>
     <p class="event-line">“Wrong block, wrong time.”</p>
     <div class="event-actions">
@@ -426,7 +419,7 @@ body{ position:relative; }
 <!-- EDDY -->
 <div class="event" id="eddyEvent">
   <div class="event-card">
-    <img src="eddy_silent.png" alt="Eddy Silent" onerror="this.style.display='none'">
+    <img src="eddy.png" alt="Eddy Silent" onerror="this.style.display='none'">
     <div class="event-name">Eddy “Silent”</div>
     <p class="event-line">He was already there before you noticed.</p>
     <div class="event-actions">
@@ -439,7 +432,7 @@ body{ position:relative; }
 <!-- TONIE -->
 <div class="event" id="tonieEvent">
   <div class="event-card">
-    <img src="tonie_two_toe.png" alt="Tonie Two-Toe" onerror="this.style.display='none'">
+    <img src="tonie.png" alt="Tonie Two-Toe" onerror="this.style.display='none'">
     <div class="event-name">Tonie Two-Toe</div>
     <p class="event-line">“You been moving in my city… you pay up, or we settle it.”</p>
     <div class="event-actions">
@@ -455,6 +448,9 @@ body{ position:relative; }
 <audio id="introAudio" src="intro.mp3" preload="auto"></audio>
 <audio id="hollaAudio" src="holla.mp3" preload="auto"></audio>
 <audio id="laughAudio" src="laugh.mp3" preload="auto"></audio>
+<audio id="ricoAudio" src="hit.mp3" preload="auto"></audio>
+<audio id="eddyAudio" src="tense.mp3" preload="auto"></audio>
+<audio id="tonieAudio" src="tonie.mp3" preload="auto"></audio>
 
 <script>
 const state = {
@@ -464,9 +460,9 @@ const state = {
   heat: 'LOW',
   selected: null,
   cities: [
-    { name:'DETROIT', bg:'New York Street.png', feel:'Detroit feels cold tonight...' },
-    { name:'CHICAGO', bg:'chicago_street.png', feel:'Chicago is all steel and pressure.' },
-    { name:'NEW YORK', bg:'New York Alley.png', feel:'New York stays watched, profitable, tense.' }
+    { name:'DETROIT', bg:'detroit.png', feel:'Detroit feels cold tonight...' },
+    { name:'CHICAGO', bg:'chicago.png', feel:'Chicago is all steel and pressure.' },
+    { name:'NEW YORK', bg:'ny.png', feel:'New York stays watched, profitable, tense.' }
   ],
   cityIndex: 0,
   market: [
@@ -474,20 +470,23 @@ const state = {
     { name:'Jewelry', price:300, avg:0, qty:0 },
     { name:'Electronics', price:200, avg:0, qty:0 }
   ],
-  feed: [
-    'Night reset loaded.'
-  ]
+  feed: ['Night reset loaded.']
 };
 
 const rainAudio = document.getElementById('rainAudio');
 const introAudio = document.getElementById('introAudio');
 const hollaAudio = document.getElementById('hollaAudio');
 const laughAudio = document.getElementById('laughAudio');
+const ricoAudio = document.getElementById('ricoAudio');
+const eddyAudio = document.getElementById('eddyAudio');
+const tonieAudio = document.getElementById('tonieAudio');
 
 function safePlay(audio){
   if(!audio) return;
-  audio.currentTime = 0;
-  audio.play().catch(()=>{});
+  try{
+    audio.currentTime = 0;
+    audio.play().catch(()=>{});
+  }catch(e){}
 }
 
 function unlockAudio(){
@@ -499,7 +498,7 @@ function unlockAudio(){
 document.body.addEventListener('click', unlockAudio);
 
 function startRun(){
-  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('startScreen').style.display='none';
   document.getElementById('gameScreen').classList.add('active');
   safePlay(introAudio);
   safePlay(rainAudio);
@@ -508,7 +507,7 @@ function startRun(){
 }
 
 function continueRun(){
-  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('startScreen').style.display='none';
   document.getElementById('gameScreen').classList.add('active');
   safePlay(rainAudio);
   renderAll();
@@ -548,6 +547,7 @@ function renderInventory(){
   const el = document.getElementById('inventoryList');
   el.innerHTML = '';
   const owned = state.market.filter(i => i.qty > 0);
+
   if(!owned.length){
     const row = document.createElement('div');
     row.className = 'inv-row';
@@ -559,9 +559,10 @@ function renderInventory(){
   owned.forEach(item => {
     const trend = item.price > item.avg ? '↑' : item.price < item.avg ? '↓' : '•';
     const trendClass = item.price > item.avg ? 'arrow-up' : item.price < item.avg ? 'arrow-down' : 'arrow-flat';
+
     const row = document.createElement('div');
     row.className = 'inv-row';
-    row.onclick = () => state.selected = item.name;
+    row.onclick = () => { state.selected = item.name; };
     row.innerHTML = `
       <div class="item-name">${item.name}</div>
       <div>x${item.qty}</div>
@@ -642,6 +643,10 @@ function travel(){
   state.city = state.cities[state.cityIndex].name;
   state.day += 1;
   rerollMarket();
+  document.getElementById('bg').style.transform = 'scale(1.08)';
+  setTimeout(() => {
+    document.getElementById('bg').style.transform = 'scale(1.02)';
+  }, 300);
   addFeed(`Flew into ${state.city}.`);
   maybeTriggerEvent(true);
   renderAll();
@@ -657,26 +662,30 @@ function stay(){
 
 function rerollMarket(){
   state.market = state.market.map(item => {
-    const swing = Math.floor((Math.random() * 91) - 30); // -30 to +60
+    const swing = Math.floor((Math.random() * 91) - 30);
     const next = Math.max(20, item.price + swing);
     return { ...item, price: next };
   });
 }
 
-/* EVENTS */
-function maybeTriggerEvent(forceTravel = false){
+function maybeTriggerEvent(forceTravel=false){
   const r = Math.random();
-  if(forceTravel && r < 0.25){
+
+  if(forceTravel && r < 0.6){
     openEvent('tonieEvent');
+    safePlay(tonieAudio);
     return;
   }
-  if(r < 0.18){
+
+  if(r < 0.45){
     openEvent('comedianEvent');
     safePlay(hollaAudio);
-  } else if(r < 0.28){
+  } else if(r < 0.65){
     openEvent('ricoEvent');
-  } else if(r < 0.36){
+    safePlay(ricoAudio);
+  } else if(r < 0.85){
     openEvent('eddyEvent');
+    safePlay(eddyAudio);
   }
 }
 
@@ -693,7 +702,7 @@ function openCardChoice(){
   openEvent('cardEvent');
 }
 
-function pickCard(n){
+function pickCard(){
   closeEvent('cardEvent');
   const win = Math.random() > 0.5;
   if(win){
@@ -709,6 +718,7 @@ function pickCard(n){
 
 function fightRico(){
   state.cash = Math.max(0, state.cash - 300);
+  safePlay(ricoAudio);
   addFeed('Bad fight. Rico took $300.');
   closeEvent('ricoEvent');
   renderAll();
@@ -722,6 +732,7 @@ function runRico(){
 
 function freezeEddy(){
   state.cash = Math.max(0, state.cash - 250);
+  safePlay(eddyAudio);
   addFeed('You froze. Eddy took $250.');
   closeEvent('eddyEvent');
   renderAll();
@@ -734,24 +745,27 @@ function runEddy(){
 
 function payTonie(){
   state.cash = Math.max(0, state.cash - 200);
+  safePlay(tonieAudio);
   addFeed('You paid Tonie.');
   closeEvent('tonieEvent');
   renderAll();
 }
 function fightTonie(){
   state.cash = Math.max(0, state.cash - 400);
+  safePlay(tonieAudio);
   addFeed('Tonie made an example out of you. You lost $400.');
   closeEvent('tonieEvent');
   renderAll();
 }
 function runTonie(){
   state.heat = 'MED';
+  safePlay(tonieAudio);
   addFeed('You ran from Tonie. Heat climbed.');
   closeEvent('tonieEvent');
   renderAll();
 }
 
-function showSimpleFeed(msg){
+function showMessage(msg){
   alert(msg);
 }
 
