@@ -2,124 +2,122 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <title>THE PU$HER</title>
 
 <style>
 :root{
-  --bg:#0A0A0A;
-  --gold:#C9A94A;
-  --gold-soft:#E6C56A;
-  --text:#D9D4C7;
-  --muted:#9C957F;
+  --gold:#d4af37;
+  --goldSoft:#e7c86a;
 }
 
 /* RESET */
-html, body {
+*{
   margin:0;
   padding:0;
-  overflow:hidden;
-  background:black;
-  color:var(--text);
-  font-family:system-ui;
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
   -webkit-user-select:none;
-  -webkit-touch-callout:none;
   user-select:none;
 }
 
-* {
-  -webkit-tap-highlight-color: transparent;
+html, body{
+  height:100%;
+  overflow:hidden;
+  font-family:Arial, sans-serif;
+  background:black;
 }
 
-/* 🌆 BACKGROUND */
-.bg {
+/* 🌆 BACKGROUND (USE YOUR REAL IMAGE) */
+.bg{
   position:fixed;
   inset:0;
-  background:url('https://images.unsplash.com/photo-1507099985932-87a4520ed1d7?q=80&w=1470') center/cover no-repeat;
-  filter:brightness(0.6);
+  background:url('New York Street.png') center/cover no-repeat;
+  filter:brightness(0.55);
 }
 
 /* DARK OVERLAY */
-.overlay {
+.overlay{
   position:fixed;
   inset:0;
-  background:linear-gradient(to bottom, rgba(0,0,0,0.35), rgba(0,0,0,0.75));
+  background:linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.7));
 }
 
 /* 🧱 GAME BLOCK */
-.game {
+.game{
   position:absolute;
   top:50%;
   left:50%;
   transform:translate(-50%,-50%);
-  width:92%;
+  width:90%;
   max-width:420px;
 
   background:rgba(0,0,0,0.55);
-  border:1px solid rgba(201,169,74,0.6);
+  border:1px solid rgba(212,175,55,0.6);
   border-radius:16px;
   backdrop-filter:blur(6px);
 
-  box-shadow:0 0 20px rgba(201,169,74,0.2);
+  box-shadow:
+    0 0 40px rgba(212,175,55,0.2),
+    0 0 80px rgba(212,175,55,0.08);
 }
 
 /* HEADER */
-.header {
-  padding:12px;
-  border-bottom:1px solid rgba(201,169,74,0.3);
+.header{
+  padding:14px;
   text-align:center;
+  color:var(--goldSoft);
   font-weight:bold;
-  color:var(--gold-soft);
+  border-bottom:1px solid rgba(212,175,55,0.3);
 }
 
-/* MARKET + INVENTORY */
-.grid {
-  display:flex;
-  gap:10px;
+/* MARKET */
+.market{
+  padding:14px;
+}
+
+.row{
   padding:12px;
-}
-
-.col {
-  flex:1;
-}
-
-/* ROW */
-.row {
-  padding:8px;
   border-bottom:1px solid rgba(255,255,255,0.05);
+  color:#ddd;
   cursor:pointer;
+  transition:0.15s;
+}
+
+.row:active{
+  transform:scale(0.97);
+  color:var(--goldSoft);
 }
 
 /* ACTIONS */
-.actions {
+.actions{
   display:flex;
-  flex-wrap:wrap;
   gap:8px;
-  padding:10px;
+  padding:12px;
+  flex-wrap:wrap;
 }
 
-button {
+button{
   flex:1;
-  min-height:44px;
+  min-height:42px;
   background:transparent;
   border:1px solid var(--gold);
-  color:var(--gold-soft);
+  color:var(--goldSoft);
   border-radius:10px;
   font-size:14px;
 }
 
-/* TAP FEEL */
-button:active, .row:active {
+button:active{
   transform:scale(0.97);
 }
 
 /* FEED */
-.feed {
+.feed{
   padding:10px;
   font-size:12px;
-  color:var(--muted);
-  border-top:1px solid rgba(201,169,74,0.3);
+  color:#aaa;
+  border-top:1px solid rgba(212,175,55,0.3);
 }
 </style>
 </head>
@@ -133,94 +131,27 @@ button:active, .row:active {
 
   <div class="header">
     DETROIT — DAY 1<br>
-    $<span id="cash">1000</span> | HEAT: LOW
+    $1000 | HEAT: LOW
   </div>
 
-  <div class="grid">
-
-    <!-- MARKET -->
-    <div class="col">
-      <div class="row" onclick="buy('Tapes',50)">Tapes — $50</div>
-      <div class="row" onclick="buy('Jewelry',300)">Jewelry — $300</div>
-      <div class="row" onclick="buy('Electronics',200)">Electronics — $200</div>
-    </div>
-
-    <!-- INVENTORY -->
-    <div class="col" id="inventory"></div>
-
+  <div class="market">
+    <div class="row">Bootleg Tapes — $50</div>
+    <div class="row">Jewelry — $300</div>
+    <div class="row">Electronics — $200</div>
   </div>
 
   <div class="actions">
-    <button onclick="sell()">SELL</button>
-    <button onclick="store()">STORE</button>
-    <button onclick="travel()">TRAVEL</button>
-    <button onclick="stay()">STAY</button>
+    <button>SELL</button>
+    <button>STORE</button>
+    <button>TRAVEL</button>
+    <button>STAY</button>
   </div>
 
-  <div class="feed" id="feed">
-    Detroit feels cold tonight…
+  <div class="feed">
+    Detroit feels cold tonight...
   </div>
 
 </div>
-
-<script>
-
-let cash = 1000;
-let inventory = {};
-
-function updateUI(){
-  document.getElementById('cash').innerText = cash;
-
-  let invHTML = '';
-  for(let item in inventory){
-    invHTML += `<div class="row">${item} x${inventory[item]}</div>`;
-  }
-  document.getElementById('inventory').innerHTML = invHTML;
-}
-
-function log(msg){
-  document.getElementById('feed').innerText = msg;
-}
-
-function buy(item, price){
-  if(cash < price) return log("Not enough cash");
-
-  cash -= price;
-  inventory[item] = (inventory[item] || 0) + 1;
-
-  log(`Bought ${item}`);
-  updateUI();
-}
-
-function sell(){
-  let keys = Object.keys(inventory);
-  if(keys.length === 0) return log("Nothing to sell");
-
-  let item = keys[0];
-  inventory[item]--;
-  cash += 100;
-
-  if(inventory[item] <= 0) delete inventory[item];
-
-  log(`Sold ${item}`);
-  updateUI();
-}
-
-function store(){
-  log("Stored items");
-}
-
-function travel(){
-  log("Traveling...");
-}
-
-function stay(){
-  log("Stayed in city");
-}
-
-updateUI();
-
-</script>
 
 </body>
 </html>
