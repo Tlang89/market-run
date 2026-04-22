@@ -5,10 +5,14 @@
 <title>THE PU$HER</title>
 
 <style>
+:root{
+  --gold:#d4af37;
+}
+
 body{
   margin:0;
-  overflow:hidden;
   font-family:Arial;
+  color:white;
   background:black;
 }
 
@@ -16,106 +20,229 @@ body{
 .bg{
   position:fixed;
   inset:0;
-  background:url("https://images.unsplash.com/photo-1508057198894-247b23fe5ade?q=80&w=1200") center/cover no-repeat;
-  filter:brightness(.65);
+  background:url('https://images.unsplash.com/photo-1518306727298-4c6f9d57d93d?q=80&w=1600') center/cover no-repeat;
+  filter:brightness(.45);
+  z-index:-1;
 }
 
-/* DARK OVERLAY */
-.overlay{
-  position:fixed;
+/* TITLE SCREEN */
+#start{
+  position:absolute;
   inset:0;
-  background:linear-gradient(rgba(0,0,0,.2), rgba(0,0,0,.85));
-}
-
-/* TITLE */
-.title{
-  position:absolute;
-  top:18%;
-  width:100%;
-  text-align:center;
-  color:#d4af37;
-  font-size:48px;
-  letter-spacing:6px;
-  font-weight:bold;
-  text-shadow:0 0 20px rgba(212,175,55,.5);
-}
-
-/* BUTTON STACK */
-.menu{
-  position:absolute;
-  bottom:140px;
-  width:100%;
   display:flex;
   flex-direction:column;
+  justify-content:center;
   align-items:center;
-  gap:14px;
+  gap:16px;
+}
+
+.title{
+  font-size:40px;
+  color:var(--gold);
+  letter-spacing:3px;
 }
 
 .btn{
-  width:260px;
-  padding:14px;
-  text-align:center;
-  border:2px solid #d4af37;
-  color:#d4af37;
+  border:2px solid var(--gold);
+  padding:12px 24px;
   border-radius:12px;
-  font-size:18px;
-  background:rgba(0,0,0,.3);
-  backdrop-filter:blur(4px);
-  box-shadow:0 0 18px rgba(212,175,55,.25);
+  color:var(--gold);
+  width:220px;
+  text-align:center;
 }
 
-/* TAP EFFECT */
-.btn:active{
-  transform:scale(.96);
+/* HUD */
+.hud{
+  display:flex;
+  justify-content:space-between;
+  padding:20px;
 }
 
-/* BOTTOM LABELS */
-.cloud{
-  position:absolute;
-  bottom:18px;
-  left:18px;
-  color:#d4af37;
-  font-size:12px;
-  opacity:.8;
+.hudBox{
+  border:2px solid var(--gold);
+  padding:12px;
+  border-radius:12px;
+  background:rgba(0,0,0,.6);
 }
 
-.version{
-  position:absolute;
-  bottom:18px;
-  right:18px;
-  color:#d4af37;
-  font-size:12px;
-  opacity:.6;
+/* MAIN PANEL */
+.panel{
+  margin:20px;
+  border:2px solid var(--gold);
+  border-radius:20px;
+  padding:20px;
+  background:rgba(0,0,0,.7);
 }
+
+/* MARKET */
+.item{
+  display:flex;
+  justify-content:space-between;
+  margin:8px 0;
+}
+
+/* ACTION BUTTONS */
+.actions{
+  display:flex;
+  gap:10px;
+  margin-top:15px;
+}
+
+.actionBtn{
+  flex:1;
+  border:2px solid var(--gold);
+  padding:10px;
+  border-radius:10px;
+  text-align:center;
+}
+
+/* STORAGE */
+.storage{
+  margin-top:20px;
+  border-top:1px solid #333;
+  padding-top:10px;
+}
+
+/* TRAVEL */
+.travel{
+  margin-top:20px;
+}
+
+.cityRow{
+  display:flex;
+  justify-content:space-between;
+  margin:10px 0;
+}
+
+.flyBtn{
+  border:2px solid var(--gold);
+  padding:6px 12px;
+  border-radius:8px;
+}
+
+/* CITY IMAGE BOX */
+.cityView{
+  margin:20px;
+  border:2px solid var(--gold);
+  border-radius:16px;
+  overflow:hidden;
+}
+
+.cityView img{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+}
+
+.cityLabel{
+  padding:10px;
+  text-align:center;
+  color:var(--gold);
+}
+
+/* GAME HIDE */
+#game{ display:none; }
 </style>
 </head>
 
 <body>
 
 <div class="bg"></div>
-<div class="overlay"></div>
 
-<div class="title">THE PU$HER</div>
-
-<div class="menu">
-  <div class="btn" onclick="startRun()">START RUN</div>
-  <div class="btn">CONTINUE</div>
-  <div class="btn">SETTINGS</div>
-  <div class="btn">CREDITS</div>
-  <div class="btn">EXIT GAME</div>
+<!-- START -->
+<div id="start">
+  <div class="title">THE PU$HER</div>
+  <div class="btn" onclick="startGame()">START RUN</div>
 </div>
 
-<div class="cloud">☁ CLOUD SAVED</div>
-<div class="version">v1.0.0</div>
+<!-- GAME -->
+<div id="game">
 
-<audio id="voice" src="playa_hand.m4a"></audio>
+  <!-- HUD -->
+  <div class="hud">
+    <div class="hudBox" id="cityBox">DETROIT<br>DAY 1</div>
+    <div class="hudBox" id="moneyBox">$1000<br>HEAT: LOW</div>
+  </div>
+
+  <!-- CITY VISUAL -->
+  <div class="cityView">
+    <img id="cityImage" src="">
+    <div class="cityLabel" id="cityName">Detroit</div>
+  </div>
+
+  <!-- MARKET -->
+  <div class="panel">
+    <div class="item">Bootleg Tapes <span>$50</span></div>
+    <div class="item">Jewelry <span>$300</span></div>
+    <div class="item">Electronics <span>$200</span></div>
+
+    <div class="actions">
+      <div class="actionBtn">SELL</div>
+      <div class="actionBtn">STORE</div>
+      <div class="actionBtn">BUY</div>
+      <div class="actionBtn">WAIT</div>
+    </div>
+
+    <!-- STORAGE -->
+    <div class="storage">
+      <b style="color:var(--gold)">Storage</b><br>
+      Bootleg Tapes: 10<br>
+      Jewelry: 2<br>
+    </div>
+
+    <!-- TRAVEL -->
+    <div class="travel">
+      <b style="color:var(--gold)">Fly To</b>
+
+      <div class="cityRow">Detroit <div class="flyBtn" onclick="fly('Detroit')">Fly</div></div>
+      <div class="cityRow">Chicago <div class="flyBtn" onclick="fly('Chicago')">Fly</div></div>
+      <div class="cityRow">New York <div class="flyBtn" onclick="fly('New York')">Fly</div></div>
+      <div class="cityRow">Atlanta <div class="flyBtn" onclick="fly('Atlanta')">Fly</div></div>
+      <div class="cityRow">Miami <div class="flyBtn" onclick="fly('Miami')">Fly</div></div>
+    </div>
+
+  </div>
+
+</div>
 
 <script>
-function startRun(){
-  let v = document.getElementById("voice");
-  v.currentTime = 0;
-  v.play().catch(()=>{});
+
+/* CITY DATA */
+const cities = {
+  "Detroit":{
+    img:"https://images.unsplash.com/photo-1518306727298-4c6f9d57d93d?q=80&w=1200"
+  },
+  "Chicago":{
+    img:"https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=1200"
+  },
+  "New York":{
+    img:"https://images.unsplash.com/photo-1534430480872-3498386e7856?q=80&w=1200"
+  },
+  "Atlanta":{
+    img:"https://images.unsplash.com/photo-1505196298139-8cfce5c5f0d2?q=80&w=1200"
+  },
+  "Miami":{
+    img:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200"
+  }
+};
+
+/* START */
+function startGame(){
+  document.getElementById("start").style.display="none";
+  document.getElementById("game").style.display="block";
+
+  fly("Detroit");
 }
+
+/* TRAVEL */
+function fly(city){
+  document.getElementById("cityName").innerText = city;
+  document.getElementById("cityImage").src = cities[city].img;
+
+  document.getElementById("cityBox").innerHTML =
+    city.toUpperCase() + "<br>DAY 1";
+}
+
 </script>
 
 </body>
