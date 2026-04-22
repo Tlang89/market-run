@@ -1,157 +1,761 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>THE PU$HER</title>
-
 <style>
 :root{
   --gold:#d4af37;
-  --goldSoft:#e7c86a;
+  --goldSoft:#f3d77b;
+  --bg:#050505;
+  --panel:rgba(0,0,0,.58);
+  --panelStrong:rgba(0,0,0,.78);
+  --line:rgba(212,175,55,.55);
+  --text:#f6f0df;
+  --muted:#bba971;
+  --danger:#d35454;
+  --good:#61c27a;
 }
-
-/* RESET */
 *{
-  margin:0;
-  padding:0;
   box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
   -webkit-user-select:none;
   user-select:none;
+  -webkit-touch-callout:none;
+  -webkit-tap-highlight-color:transparent;
 }
-
-html, body{
+html,body{
+  margin:0;
+  width:100%;
   height:100%;
   overflow:hidden;
-  font-family:Arial, sans-serif;
-  background:black;
+  background:#000;
+  color:var(--text);
+  font-family:Arial, Helvetica, sans-serif;
+  touch-action:manipulation;
 }
+body{ position:relative; }
 
-/* 🌆 BACKGROUND (USE YOUR REAL IMAGE) */
+/* WORLD */
 .bg{
   position:fixed;
   inset:0;
-  background:url('New York Street.png') center/cover no-repeat;
-  filter:brightness(0.55);
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  filter:brightness(.58) saturate(.95);
+  transform:scale(1.02);
+  transition:background-image .35s ease, filter .25s ease, transform .25s ease;
 }
-
-/* DARK OVERLAY */
 .overlay{
   position:fixed;
   inset:0;
-  background:linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.7));
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,.18), rgba(0,0,0,.55)),
+    radial-gradient(circle at center, rgba(0,0,0,.06), rgba(0,0,0,.42));
+  pointer-events:none;
 }
 
-/* 🧱 GAME BLOCK */
-.game{
+/* START SCREEN */
+.start-screen{
   position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  width:90%;
-  max-width:420px;
-
-  background:rgba(0,0,0,0.55);
-  border:1px solid rgba(212,175,55,0.6);
-  border-radius:16px;
-  backdrop-filter:blur(6px);
-
-  box-shadow:
-    0 0 40px rgba(212,175,55,0.2),
-    0 0 80px rgba(212,175,55,0.08);
-}
-
-/* HEADER */
-.header{
-  padding:14px;
-  text-align:center;
-  color:var(--goldSoft);
-  font-weight:bold;
-  border-bottom:1px solid rgba(212,175,55,0.3);
-}
-
-/* MARKET */
-.market{
-  padding:14px;
-}
-
-.row{
-  padding:12px;
-  border-bottom:1px solid rgba(255,255,255,0.05);
-  color:#ddd;
-  cursor:pointer;
-  transition:0.15s;
-}
-
-.row:active{
-  transform:scale(0.97);
-  color:var(--goldSoft);
-}
-
-/* ACTIONS */
-.actions{
+  inset:0;
   display:flex;
-  gap:8px;
-  padding:12px;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+.start-inner{
+  width:min(92vw,420px);
+  text-align:center;
+}
+.logo{
+  font-size:clamp(50px, 14vw, 100px);
+  line-height:.92;
+  font-weight:900;
+  letter-spacing:.04em;
+  color:var(--gold);
+  text-shadow:
+    0 2px 0 rgba(0,0,0,.65),
+    0 0 20px rgba(212,175,55,.22);
+  margin:0 0 18px 0;
+}
+.logo .small{
+  display:block;
+  font-size:.34em;
+  letter-spacing:.2em;
+  margin-bottom:6px;
+}
+.menu-stack{
+  display:grid;
+  gap:14px;
+  margin-top:20px;
+}
+.menu-btn{
+  width:100%;
+  min-height:56px;
+  border:1.6px solid rgba(212,175,55,.85);
+  background:rgba(0,0,0,.28);
+  color:var(--goldSoft);
+  border-radius:12px;
+  font-size:1.1rem;
+  letter-spacing:.08em;
+  box-shadow:0 0 16px rgba(212,175,55,.12);
+}
+.menu-btn:active{ transform:scale(.985); }
+.start-meta{
+  display:flex;
+  justify-content:space-between;
+  color:var(--muted);
+  font-size:.85rem;
+  margin-top:18px;
+  opacity:.95;
+}
+
+/* GAME UI */
+.game-screen{
+  position:absolute;
+  inset:0;
+  display:none;
+}
+.game-screen.active{ display:block; }
+
+.hud{
+  position:absolute;
+  top:14px;
+  left:14px;
+  right:14px;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  z-index:4;
+}
+.hud-card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:10px 12px;
+  box-shadow:0 0 20px rgba(212,175,55,.08);
+  backdrop-filter:blur(5px);
+}
+.hud-title{
+  color:var(--goldSoft);
+  font-weight:700;
+  letter-spacing:.05em;
+  font-size:.95rem;
+}
+.hud-sub{
+  color:var(--muted);
+  font-size:.82rem;
+  margin-top:2px;
+}
+
+.game-block{
+  position:absolute;
+  left:50%;
+  bottom:24px;
+  transform:translateX(-50%);
+  width:min(92vw, 760px);
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:0 0 28px rgba(212,175,55,.12), 0 0 60px rgba(212,175,55,.05);
+  backdrop-filter:blur(7px);
+  overflow:hidden;
+}
+.block-top{
+  display:grid;
+  grid-template-columns:1.05fr .95fr;
+  gap:0;
+}
+.panel{
+  padding:16px;
+  border-bottom:1px solid rgba(212,175,55,.18);
+}
+.panel + .panel{
+  border-left:1px solid rgba(212,175,55,.18);
+}
+.panel-title{
+  color:var(--goldSoft);
+  font-size:1.25rem;
+  font-weight:700;
+  letter-spacing:.04em;
+  margin-bottom:10px;
+}
+.market-row, .inv-row, .feed-row{
+  display:grid;
+  align-items:center;
+  gap:10px;
+  padding:10px 0;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+.market-row{
+  grid-template-columns:1fr auto auto;
+  cursor:pointer;
+}
+.market-row:active{ transform:scale(.99); }
+.inv-row{
+  grid-template-columns:1fr auto auto auto;
+}
+.feed-row{
+  grid-template-columns:1fr;
+  color:var(--muted);
+}
+.item-name{ color:var(--text); }
+.price{ color:var(--goldSoft); font-weight:700; }
+.arrow-up{ color:var(--good); font-weight:700; }
+.arrow-down{ color:var(--danger); font-weight:700; }
+.arrow-flat{ color:var(--muted); font-weight:700; }
+
+.block-actions{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:10px;
+  padding:14px 16px;
+  border-bottom:1px solid rgba(212,175,55,.18);
+}
+.action-btn{
+  min-height:48px;
+  border:1px solid rgba(212,175,55,.8);
+  background:transparent;
+  color:var(--goldSoft);
+  border-radius:12px;
+  font-size:1rem;
+}
+.action-btn:active{ transform:scale(.98); }
+
+.feed-wrap{ padding:12px 16px 14px; }
+.feed-title{
+  color:var(--goldSoft);
+  font-size:1.05rem;
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+/* EVENT OVERLAYS */
+.event{
+  position:absolute;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.86);
+  z-index:10;
+  padding:18px;
+}
+.event.active{ display:flex; }
+.event-card{
+  width:min(92vw, 470px);
+  background:var(--panelStrong);
+  border:2px solid rgba(212,175,55,.85);
+  border-radius:14px;
+  padding:16px;
+  box-shadow:0 0 30px rgba(212,175,55,.16);
+}
+.event-card img{
+  width:100%;
+  max-height:340px;
+  object-fit:cover;
+  border:1px solid rgba(212,175,55,.4);
+  display:block;
+}
+.event-name{
+  color:var(--goldSoft);
+  font-size:2.2rem;
+  font-weight:900;
+  text-align:center;
+  margin:12px 0 8px;
+}
+.event-line{
+  color:var(--muted);
+  text-align:center;
+  font-size:1.05rem;
+  margin:0 0 14px;
+  line-height:1.35;
+}
+.event-actions{
+  display:flex;
+  gap:10px;
+  justify-content:center;
   flex-wrap:wrap;
 }
-
-button{
-  flex:1;
-  min-height:42px;
+.event-btn{
+  min-width:118px;
+  min-height:48px;
+  border:1px solid rgba(212,175,55,.88);
+  border-radius:12px;
   background:transparent;
-  border:1px solid var(--gold);
   color:var(--goldSoft);
-  border-radius:10px;
-  font-size:14px;
+  font-size:1rem;
+}
+.event-btn.primary{
+  background:var(--gold);
+  color:#101010;
+  font-weight:700;
 }
 
-button:active{
-  transform:scale(0.97);
+/* CARD PICK */
+.cards{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:12px;
+  margin-top:14px;
 }
+.play-card{
+  min-height:140px;
+  border:1px solid rgba(212,175,55,.8);
+  background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(212,175,55,.06));
+  border-radius:12px;
+  color:var(--goldSoft);
+  font-size:1rem;
+}
+.play-card:active{ transform:scale(.98); }
 
-/* FEED */
-.feed{
-  padding:10px;
-  font-size:12px;
-  color:#aaa;
-  border-top:1px solid rgba(212,175,55,0.3);
+/* MOBILE */
+@media (max-width: 700px){
+  .block-top{ grid-template-columns:1fr; }
+  .panel + .panel{ border-left:none; border-top:1px solid rgba(212,175,55,.18); }
+  .block-actions{ grid-template-columns:repeat(2, 1fr); }
+  .event-name{ font-size:1.8rem; }
 }
 </style>
 </head>
-
 <body>
-
-<div class="bg"></div>
+<div class="bg" id="bg"></div>
 <div class="overlay"></div>
 
-<div class="game">
+<!-- START -->
+<section class="start-screen" id="startScreen">
+  <div class="start-inner">
+    <h1 class="logo"><span class="small">THE</span>PU$HER</h1>
 
-  <div class="header">
-    DETROIT — DAY 1<br>
-    $1000 | HEAT: LOW
+    <div class="menu-stack">
+      <button class="menu-btn" onclick="startRun()">START RUN</button>
+      <button class="menu-btn" onclick="continueRun()">CONTINUE</button>
+      <button class="menu-btn" onclick="showSimpleFeed('Settings not wired yet.')">SETTINGS</button>
+      <button class="menu-btn" onclick="showSimpleFeed('Credits not wired yet.')">CREDITS</button>
+      <button class="menu-btn" onclick="showSimpleFeed('Exit disabled in browser.')">EXIT GAME</button>
+    </div>
+
+    <div class="start-meta">
+      <span>CLOUD SAVED</span>
+      <span>v1.0.0</span>
+    </div>
+  </div>
+</section>
+
+<!-- GAME -->
+<section class="game-screen" id="gameScreen">
+  <div class="hud">
+    <div class="hud-card">
+      <div class="hud-title" id="cityName">DETROIT</div>
+      <div class="hud-sub">DAY <span id="dayNum">1</span></div>
+    </div>
+    <div class="hud-card">
+      <div class="hud-title">$<span id="cashNum">1000</span></div>
+      <div class="hud-sub">HEAT: <span id="heatNum">LOW</span></div>
+    </div>
   </div>
 
-  <div class="market">
-    <div class="row">Bootleg Tapes — $50</div>
-    <div class="row">Jewelry — $300</div>
-    <div class="row">Electronics — $200</div>
-  </div>
+  <div class="game-block">
+    <div class="block-top">
+      <div class="panel">
+        <div class="panel-title">MARKET</div>
+        <div id="marketList"></div>
+      </div>
 
-  <div class="actions">
-    <button>SELL</button>
-    <button>STORE</button>
-    <button>TRAVEL</button>
-    <button>STAY</button>
-  </div>
+      <div class="panel">
+        <div class="panel-title">INVENTORY</div>
+        <div id="inventoryList"></div>
+      </div>
+    </div>
 
-  <div class="feed">
-    Detroit feels cold tonight...
-  </div>
+    <div class="block-actions">
+      <button class="action-btn" onclick="sellSelected()">SELL</button>
+      <button class="action-btn" onclick="storeSelected()">STORE</button>
+      <button class="action-btn" onclick="travel()">TRAVEL</button>
+      <button class="action-btn" onclick="stay()">STAY</button>
+    </div>
 
+    <div class="feed-wrap">
+      <div class="feed-title">STREET FEED</div>
+      <div id="feedList"></div>
+    </div>
+  </div>
+</section>
+
+<!-- COMEDIAN -->
+<div class="event" id="comedianEvent">
+  <div class="event-card">
+    <img src="The Comedian.png" alt="The Comedian" onerror="this.style.display='none'">
+    <div class="event-name">The Comedian</div>
+    <p class="event-line">“Funny thing about luck… it don’t knock twice.”</p>
+    <div class="event-actions">
+      <button class="event-btn primary" onclick="openCardChoice()">Play a Hand</button>
+      <button class="event-btn" onclick="closeEvent('comedianEvent')">Ignore</button>
+    </div>
+  </div>
 </div>
 
+<!-- CARD CHOICE -->
+<div class="event" id="cardEvent">
+  <div class="event-card">
+    <div class="event-name">Pick a Card</div>
+    <p class="event-line">The cards can hold your power… or your pain.</p>
+    <div class="cards">
+      <button class="play-card" onclick="pickCard(1)">CARD</button>
+      <button class="play-card" onclick="pickCard(2)">CARD</button>
+      <button class="play-card" onclick="pickCard(3)">CARD</button>
+    </div>
+  </div>
+</div>
+
+<!-- RICO -->
+<div class="event" id="ricoEvent">
+  <div class="event-card">
+    <img src="Rico.png" alt="Rico" onerror="this.style.display='none'">
+    <div class="event-name">Rico “The Bat”</div>
+    <p class="event-line">“Wrong block, wrong time.”</p>
+    <div class="event-actions">
+      <button class="event-btn primary" onclick="fightRico()">Fight</button>
+      <button class="event-btn" onclick="runRico()">Run</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDDY -->
+<div class="event" id="eddyEvent">
+  <div class="event-card">
+    <img src="eddy_silent.png" alt="Eddy Silent" onerror="this.style.display='none'">
+    <div class="event-name">Eddy “Silent”</div>
+    <p class="event-line">He was already there before you noticed.</p>
+    <div class="event-actions">
+      <button class="event-btn primary" onclick="freezeEddy()">Freeze</button>
+      <button class="event-btn" onclick="runEddy()">Run</button>
+    </div>
+  </div>
+</div>
+
+<!-- TONIE -->
+<div class="event" id="tonieEvent">
+  <div class="event-card">
+    <img src="tonie_two_toe.png" alt="Tonie Two-Toe" onerror="this.style.display='none'">
+    <div class="event-name">Tonie Two-Toe</div>
+    <p class="event-line">“You been moving in my city… you pay up, or we settle it.”</p>
+    <div class="event-actions">
+      <button class="event-btn primary" onclick="payTonie()">Pay</button>
+      <button class="event-btn" onclick="fightTonie()">Fight</button>
+      <button class="event-btn" onclick="runTonie()">Run</button>
+    </div>
+  </div>
+</div>
+
+<!-- AUDIO -->
+<audio id="rainAudio" src="rain.mp3" loop preload="auto"></audio>
+<audio id="introAudio" src="intro.mp3" preload="auto"></audio>
+<audio id="hollaAudio" src="holla.mp3" preload="auto"></audio>
+<audio id="laughAudio" src="laugh.mp3" preload="auto"></audio>
+
+<script>
+const state = {
+  city: 'DETROIT',
+  day: 1,
+  cash: 1000,
+  heat: 'LOW',
+  selected: null,
+  cities: [
+    { name:'DETROIT', bg:'New York Street.png', feel:'Detroit feels cold tonight...' },
+    { name:'CHICAGO', bg:'chicago_street.png', feel:'Chicago is all steel and pressure.' },
+    { name:'NEW YORK', bg:'New York Alley.png', feel:'New York stays watched, profitable, tense.' }
+  ],
+  cityIndex: 0,
+  market: [
+    { name:'Bootleg Tapes', price:50, avg:0, qty:0 },
+    { name:'Jewelry', price:300, avg:0, qty:0 },
+    { name:'Electronics', price:200, avg:0, qty:0 }
+  ],
+  feed: [
+    'Night reset loaded.'
+  ]
+};
+
+const rainAudio = document.getElementById('rainAudio');
+const introAudio = document.getElementById('introAudio');
+const hollaAudio = document.getElementById('hollaAudio');
+const laughAudio = document.getElementById('laughAudio');
+
+function safePlay(audio){
+  if(!audio) return;
+  audio.currentTime = 0;
+  audio.play().catch(()=>{});
+}
+
+function unlockAudio(){
+  safePlay(rainAudio);
+  rainAudio.pause();
+  rainAudio.currentTime = 0;
+  document.body.removeEventListener('click', unlockAudio);
+}
+document.body.addEventListener('click', unlockAudio);
+
+function startRun(){
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('gameScreen').classList.add('active');
+  safePlay(introAudio);
+  safePlay(rainAudio);
+  renderAll();
+  addFeed('The city opened up. Your run began.');
+}
+
+function continueRun(){
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('gameScreen').classList.add('active');
+  safePlay(rainAudio);
+  renderAll();
+  addFeed('Back in the run.');
+}
+
+function renderAll(){
+  document.getElementById('cityName').textContent = state.city;
+  document.getElementById('dayNum').textContent = state.day;
+  document.getElementById('cashNum').textContent = state.cash;
+  document.getElementById('heatNum').textContent = state.heat;
+  document.getElementById('bg').style.backgroundImage = `url("${state.cities[state.cityIndex].bg}")`;
+  renderMarket();
+  renderInventory();
+  renderFeed();
+}
+
+function renderMarket(){
+  const el = document.getElementById('marketList');
+  el.innerHTML = '';
+  state.market.forEach((item, idx) => {
+    const trend = item.avg === 0 ? '—' : item.price > item.avg ? '↑' : item.price < item.avg ? '↓' : '•';
+    const trendClass = item.avg === 0 ? 'arrow-flat' : item.price > item.avg ? 'arrow-up' : item.price < item.avg ? 'arrow-down' : 'arrow-flat';
+    const row = document.createElement('div');
+    row.className = 'market-row';
+    row.onclick = () => buyItem(idx);
+    row.innerHTML = `
+      <div class="item-name">${item.name}</div>
+      <div class="price">$${item.price}</div>
+      <div class="${trendClass}">${trend}</div>
+    `;
+    el.appendChild(row);
+  });
+}
+
+function renderInventory(){
+  const el = document.getElementById('inventoryList');
+  el.innerHTML = '';
+  const owned = state.market.filter(i => i.qty > 0);
+  if(!owned.length){
+    const row = document.createElement('div');
+    row.className = 'inv-row';
+    row.innerHTML = `<div class="item-name">No product on hand</div><div></div><div></div><div></div>`;
+    el.appendChild(row);
+    return;
+  }
+
+  owned.forEach(item => {
+    const trend = item.price > item.avg ? '↑' : item.price < item.avg ? '↓' : '•';
+    const trendClass = item.price > item.avg ? 'arrow-up' : item.price < item.avg ? 'arrow-down' : 'arrow-flat';
+    const row = document.createElement('div');
+    row.className = 'inv-row';
+    row.onclick = () => state.selected = item.name;
+    row.innerHTML = `
+      <div class="item-name">${item.name}</div>
+      <div>x${item.qty}</div>
+      <div>$${item.avg}</div>
+      <div class="${trendClass}">${trend} $${item.price}</div>
+    `;
+    el.appendChild(row);
+  });
+}
+
+function renderFeed(){
+  const el = document.getElementById('feedList');
+  el.innerHTML = '';
+  state.feed.slice(0,4).forEach(msg => {
+    const row = document.createElement('div');
+    row.className = 'feed-row';
+    row.innerHTML = `<div>${msg}</div>`;
+    el.appendChild(row);
+  });
+}
+
+function addFeed(msg){
+  state.feed.unshift(`[Day ${state.day}] ${msg}`);
+  renderFeed();
+}
+
+function buyItem(idx){
+  const item = state.market[idx];
+  if(state.cash < item.price){
+    addFeed(`Not enough cash for ${item.name}.`);
+    return;
+  }
+  state.cash -= item.price;
+  const totalCost = (item.avg * item.qty) + item.price;
+  item.qty += 1;
+  item.avg = Math.round(totalCost / item.qty);
+  state.selected = item.name;
+  addFeed(`Bought ${item.name} for $${item.price}.`);
+  maybeTriggerEvent();
+  renderAll();
+}
+
+function sellSelected(){
+  const item = state.market.find(i => i.name === state.selected && i.qty > 0) || state.market.find(i => i.qty > 0);
+  if(!item){
+    addFeed('Nothing to sell.');
+    return;
+  }
+  item.qty -= 1;
+  state.cash += item.price;
+  addFeed(`Sold ${item.name} for $${item.price}.`);
+  if(item.qty === 0){
+    item.avg = 0;
+    if(state.selected === item.name) state.selected = null;
+  }
+  maybeTriggerEvent();
+  renderAll();
+}
+
+function storeSelected(){
+  const item = state.market.find(i => i.name === state.selected && i.qty > 0) || state.market.find(i => i.qty > 0);
+  if(!item){
+    addFeed('Nothing to store.');
+    return;
+  }
+  item.qty -= 1;
+  addFeed(`Stored ${item.name}.`);
+  if(item.qty === 0){
+    item.avg = 0;
+    if(state.selected === item.name) state.selected = null;
+  }
+  maybeTriggerEvent();
+  renderAll();
+}
+
+function travel(){
+  state.cityIndex = (state.cityIndex + 1) % state.cities.length;
+  state.city = state.cities[state.cityIndex].name;
+  state.day += 1;
+  rerollMarket();
+  addFeed(`Flew into ${state.city}.`);
+  maybeTriggerEvent(true);
+  renderAll();
+}
+
+function stay(){
+  state.day += 1;
+  rerollMarket();
+  addFeed(state.cities[state.cityIndex].feel);
+  maybeTriggerEvent();
+  renderAll();
+}
+
+function rerollMarket(){
+  state.market = state.market.map(item => {
+    const swing = Math.floor((Math.random() * 91) - 30); // -30 to +60
+    const next = Math.max(20, item.price + swing);
+    return { ...item, price: next };
+  });
+}
+
+/* EVENTS */
+function maybeTriggerEvent(forceTravel = false){
+  const r = Math.random();
+  if(forceTravel && r < 0.25){
+    openEvent('tonieEvent');
+    return;
+  }
+  if(r < 0.18){
+    openEvent('comedianEvent');
+    safePlay(hollaAudio);
+  } else if(r < 0.28){
+    openEvent('ricoEvent');
+  } else if(r < 0.36){
+    openEvent('eddyEvent');
+  }
+}
+
+function openEvent(id){
+  document.getElementById(id).classList.add('active');
+}
+
+function closeEvent(id){
+  document.getElementById(id).classList.remove('active');
+}
+
+function openCardChoice(){
+  closeEvent('comedianEvent');
+  openEvent('cardEvent');
+}
+
+function pickCard(n){
+  closeEvent('cardEvent');
+  const win = Math.random() > 0.5;
+  if(win){
+    state.cash += 250;
+    addFeed('The Comedian flipped you power. You gained $250.');
+  } else {
+    state.cash = Math.max(0, state.cash - 250);
+    safePlay(laughAudio);
+    addFeed('The Comedian laughed... you lost $250.');
+  }
+  renderAll();
+}
+
+function fightRico(){
+  state.cash = Math.max(0, state.cash - 300);
+  addFeed('Bad fight. Rico took $300.');
+  closeEvent('ricoEvent');
+  renderAll();
+}
+function runRico(){
+  state.cash = Math.max(0, state.cash - 100);
+  addFeed('You slipped away from Rico.');
+  closeEvent('ricoEvent');
+  renderAll();
+}
+
+function freezeEddy(){
+  state.cash = Math.max(0, state.cash - 250);
+  addFeed('You froze. Eddy took $250.');
+  closeEvent('eddyEvent');
+  renderAll();
+}
+function runEddy(){
+  addFeed('You backed off before Eddy made it worse.');
+  closeEvent('eddyEvent');
+  renderAll();
+}
+
+function payTonie(){
+  state.cash = Math.max(0, state.cash - 200);
+  addFeed('You paid Tonie.');
+  closeEvent('tonieEvent');
+  renderAll();
+}
+function fightTonie(){
+  state.cash = Math.max(0, state.cash - 400);
+  addFeed('Tonie made an example out of you. You lost $400.');
+  closeEvent('tonieEvent');
+  renderAll();
+}
+function runTonie(){
+  state.heat = 'MED';
+  addFeed('You ran from Tonie. Heat climbed.');
+  closeEvent('tonieEvent');
+  renderAll();
+}
+
+function showSimpleFeed(msg){
+  alert(msg);
+}
+
+renderAll();
+</script>
 </body>
 </html>
