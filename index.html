@@ -42,15 +42,27 @@ body{
   letter-spacing:3px;
 }
 
-.btn{
-  border:2px solid var(--gold);
-  padding:12px 24px;
-  border-radius:12px;
-  color:var(--gold);
-  width:220px;
-  text-align:center;
+.btn {
+  border: 2px solid #d4af37;
+  color: #d4af37;
+  padding: 14px;
+  text-align: center;
+  border-radius: 10px;
+  margin: 10px 0;
+  font-size: 18px;
+  letter-spacing: 2px;
+  background: rgba(0,0,0,0.6);
+  width: 220px;
+
+  transition: all 0.15s ease;
 }
 
+.btn:active {
+  background: #d4af37;
+  color: #000;
+  transform: scale(0.96);
+  box-shadow: 0 0 20px #d4af37;
+}
 /* HUD */
 .hud{
   display:flex;
