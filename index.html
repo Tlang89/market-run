@@ -91,6 +91,16 @@ button:active{transform:scale(.97);background:var(--gold);color:#000}
 .trendDown{color:var(--bad);font-weight:900}
 .trendFlat{color:var(--soft);font-weight:900}
 
+
+.showcaseTag{
+  color:var(--gold);
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:2px;
+  margin-bottom:8px;
+  opacity:.85;
+}
+
 @media(max-width:980px){.hud{grid-template-columns:1fr 1fr}.main{grid-template-columns:1fr}.panel{min-height:auto}.quote{display:none}.titlebar{align-items:flex-start;flex-direction:column}}
 @media(max-width:640px){.gameTitle{font-size:26px}.big{font-size:24px}.marketRow{grid-template-columns:1fr}.price{text-align:left}.btns{justify-content:flex-start}.alertBar{flex-direction:column}.cityMood{text-align:left}.characterTitle{font-size:24px}.pickCard{font-size:24px;padding:20px 6px}}
 </style>
@@ -298,12 +308,67 @@ function perrkeyWalk(){log("You kept moving past Perrkey.","info");closeCharacte
 
 function travel(nextCity){playSound("soundDeal",.25);if(nextCity===city){log(`Youâre already in ${city}.`,"info");return}city=nextCity;day+=1;refreshPrices();log(`Flew into ${city}.`,"info");const r=Math.random();if(r<.13)showRico();else if(r<.25)showEddy();else if(r<.39)showTonie();else if(r<.53)showComedian();else if(r<.70)showCakeJaw();else if(r<.82)showPerrkeySolo();renderAll()}
 
+
+function characterShowcase(){
+  const cast = [
+    {title:'Tonie Two-Toe', img:ASSETS.tonie, text:'Pressure boss. Pay, fight, or run.'},
+    {title:'Rico "The Bat"', img:ASSETS.rico, text:'Street threat. Fight or run.'},
+    {title:'Eddy "Silent"', img:ASSETS.eddy, text:'Silent danger. Fight or run.'},
+    {title:'The Comedian', img:ASSETS.comedian, text:'Luck dealer. Play a hand when he shows.'},
+    {title:'Cake Jaw Jesse', img:ASSETS.cakeJaw, text:'Untrustworthy dealer. Three buys. One could hit.'},
+    {title:'Perrkey âTwo Bricksâ', img:ASSETS.perrkey, text:'Intel, warnings, and temptation. Helpful sometimes. Never fully safe.'}
+  ];
+
+  let i = 0;
+
+  function showNext(){
+    if(i >= cast.length){
+      closeCharacter();
+      log("You met the faces moving through the streets.", "info");
+      renderAll();
+      return;
+    }
+
+    const c = cast[i];
+    i++;
+
+    closeCharacter();
+    playSound("soundComic",0.45);
+
+    const panel = `
+      <div class="overlay">
+        <div class="characterBox">
+          <div class="showcaseTag">Street Faces</div>
+          <img src="${c.img}" class="characterImg" alt="${c.title}" onerror="this.classList.add('broken')">
+          <div class="characterTitle">${c.title}</div>
+          <div class="characterText">${c.text}</div>
+          <div class="characterActions">
+            <button onclick="window.showcaseNext()">Next</button>
+            <button onclick="window.showcaseSkip()">Skip</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML("beforeend", panel);
+  }
+
+  window.showcaseNext = showNext;
+  window.showcaseSkip = function(){
+    closeCharacter();
+    log("Character intro skipped.", "info");
+    renderAll();
+  };
+
+  showNext();
+}
+
+
 function startRun(){
   const bg=document.getElementById("startBg"),menu=document.getElementById("menu"),overlay=document.getElementById("startOverlay"),music=document.getElementById("bgMusic"),cloud=document.querySelector(".cloud"),version=document.querySelector(".version");
   /* Start: rusty car door only. No Play-a-Hand sound. */
   playSound("carDoorSound",.85);
   bg.classList.add("zooming");menu.classList.add("fadeOut");cloud.classList.add("fadeOut");version.classList.add("fadeOut");
-  setTimeout(()=>{overlay.style.transition="opacity .6s ease";overlay.style.opacity="0";setTimeout(()=>{overlay.style.display="none";setAlert("Sound live. Streets open.");log("Night test build loaded.","info");setTimeout(()=>{if(music){music.volume=.25;music.play().catch(()=>{})}},900)},600)},1200)
+  setTimeout(()=>{overlay.style.transition="opacity .6s ease";overlay.style.opacity="0";setTimeout(()=>{overlay.style.display="none";setAlert("Sound live. Streets open.");log("Night test build loaded.","info");characterShowcase();setTimeout(()=>{if(music){music.volume=.25;music.play().catch(()=>{})}},900)},600)},1200)
 }
 
 refreshPrices();renderAll();
