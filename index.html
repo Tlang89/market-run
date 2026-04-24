@@ -2,153 +2,220 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Pusher</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>The Pu$her</title>
 <style>
-body{
-  margin:0;
-  background:black;
-  font-family:Arial, sans-serif;
-  overflow:hidden;
+:root{
+  --gold:#d4af37;
+  --text:#f2d97a;
+  --line:#333;
+  --panel:#111;
+  --soft:#9b8340;
+  --good:#8ddc92;
+  --bad:#ff9b9b;
+  --warn:#ffc76d;
 }
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:#000;color:var(--gold);font-family:Arial,Helvetica,sans-serif;overflow-x:hidden}
 
-#startOverlay{
-  position:fixed;
-  inset:0;
-  z-index:9999;
-}
+/* START SCREEN */
+#startOverlay{position:fixed;inset:0;z-index:9999;overflow:hidden;background:#000}
+#startBg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform 1.2s ease,opacity .6s ease;transform-origin:70% 62%}
+#startOverlay:after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.04),rgba(0,0,0,.22));pointer-events:none}
+#menu{position:absolute;left:50%;bottom:8%;transform:translateX(-50%);width:min(78vw,430px);display:flex;flex-direction:column;gap:14px;z-index:3;transition:opacity .6s ease}
+.menuBtn{width:100%;padding:14px;border:2px solid var(--gold);border-radius:10px;color:var(--gold);background:rgba(0,0,0,.30);text-align:center;font-size:18px;letter-spacing:2px;font-weight:800;cursor:pointer}
+.menuBtn:active{background:var(--gold);color:#000;transform:scale(.96);box-shadow:0 0 20px var(--gold)}
+.cloud,.version{position:absolute;bottom:18px;z-index:3;color:var(--gold);font-size:12px;opacity:.85}
+.cloud{left:18px}.version{right:18px}
+.zooming{transform:scale(1.35) translate(-12%,-6%);filter:brightness(1.05)}
+.fadeOut{opacity:0}
 
-#startBg{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  transition:transform 1.2s ease;
-}
+/* GAME */
+.wrap{max-width:1400px;margin:0 auto;min-height:100vh;padding:10px}
+.titlebar,.alertBar,.card,.panel,.feed,.sub{border:1px solid var(--line);background:linear-gradient(180deg,#171717,#101010)}
+.titlebar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;margin-bottom:10px}
+.gameTitle{font-size:34px;font-weight:900;letter-spacing:1px;color:var(--text)}
+.gameSub{font-size:14px;color:#b65c5c;font-weight:800;margin-top:4px;letter-spacing:1px}
+.quote{text-align:right;color:var(--soft);font-size:13px;max-width:360px}
+.alertBar{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;margin-bottom:10px;min-height:48px}
+.alertText{font-weight:900;color:var(--warn)}
+.cityMood{color:var(--soft);font-size:13px;text-align:right}
+.hud{display:grid;grid-template-columns:1.7fr 1fr 1fr 1fr 1.2fr;gap:10px;margin-bottom:10px}
+.card{padding:10px 12px;min-height:82px}
+.label{font-size:11px;text-transform:uppercase;color:var(--soft);letter-spacing:1px;margin-bottom:5px}
+.value{font-size:18px;font-weight:900;color:var(--text)}
+.big{font-size:30px;line-height:1}
+.main{display:grid;grid-template-columns:1.45fr .95fr;gap:10px;margin-bottom:10px;align-items:start}
+.panel{min-height:520px;display:flex;flex-direction:column}
+.panelHead,.subHead,.feedHead{padding:10px 12px;border-bottom:1px solid var(--line);background:#181818;font-weight:900;color:var(--text);display:flex;justify-content:space-between}
+.panelBody{padding:10px;overflow:auto}
+.marketRow{display:grid;grid-template-columns:1.5fr .6fr .9fr;gap:10px;align-items:center;padding:10px 8px;border-bottom:1px solid #252525}
+.name{font-size:18px;font-weight:900;color:var(--text)}
+.meta{font-size:12px;color:var(--soft);margin-top:4px}
+.price{font-size:24px;font-weight:900;text-align:right;color:var(--gold);white-space:nowrap}
+.btns{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+button{border:1px solid #646464;background:#191919;color:var(--gold);font-weight:900;padding:8px 10px;cursor:pointer;min-width:68px;border-radius:3px}
+button:active{transform:scale(.97);background:var(--gold);color:#000}
+.btnGold{background:#b48a28;color:#111;border-color:#d4af37}
+.rightGrid{display:grid;grid-template-rows:auto auto auto;gap:10px;height:100%}
+.subBody{padding:10px}
+.stackRow,.travelRow{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #232323}
+.stackRow:last-child,.travelRow:last-child{border-bottom:none}
+.feed{min-height:170px}
+.feedBody{padding:8px 10px;height:180px;overflow:auto;font-size:13px;line-height:1.45;background:#080808}
+.entry{padding:6px 0;border-bottom:1px solid #1d1d1d}
+.good{color:var(--good)}.bad{color:var(--bad)}.warn{color:var(--warn)}.info{color:var(--gold)}
+.empty{color:var(--soft);font-style:italic}
 
-.zooming{
-  transform:scale(1.25);
-}
-
-#menu{
-  position:absolute;
-  bottom:120px;
-  width:100%;
-  display:flex;
-  flex-direction:column;
-  gap:18px;
-  align-items:center;
-  transition:opacity .6s ease;
-}
-
-.fadeOut{
-  opacity:0;
-}
-
-.btn{
-  width:70%;
-  max-width:400px;
-  padding:14px;
-  border:2px solid gold;
-  color:gold;
-  text-align:center;
-  font-size:20px;
-  letter-spacing:2px;
-}
-
-#game{
-  display:none;
-  padding:20px;
-  color:gold;
-}
+/* CHARACTER / COMIC POPUP */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;z-index:10000;padding:20px;animation:dangerFlash .35s ease}
+.characterBox{width:min(560px,92vw);background:#111;border:2px solid var(--gold);box-shadow:0 0 30px rgba(0,0,0,.45);padding:18px;text-align:center;animation:comicSlam .28s ease-out}
+.characterImg{width:100%;max-height:430px;object-fit:contain;display:block;border:1px solid #3a3a3a;margin-bottom:14px;background:#050505}
+.characterImg.broken{display:none}
+.characterTitle{color:var(--text);font-size:28px;font-weight:900;margin-bottom:8px}
+.characterText{color:var(--soft);line-height:1.45;margin-bottom:14px}
+.characterActions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.cardPickGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.pickCard{border:2px solid var(--gold);background:#090909;color:var(--gold);padding:24px 8px;font-size:30px;font-weight:900;cursor:pointer;box-shadow:0 0 12px rgba(212,175,55,.25)}
+.pickCard:active{background:var(--gold);color:#000;transform:scale(.95)}
+.resultPower{color:var(--good);font-weight:900;font-size:24px}.resultPain{color:var(--bad);font-weight:900;font-size:24px}.resultWarn{color:var(--warn);font-weight:900;font-size:24px}
+@keyframes comicSlam{0%{transform:scale(.72) rotate(-2deg);opacity:0;filter:contrast(1.6)}70%{transform:scale(1.04) rotate(1deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+@keyframes dangerFlash{0%{background:rgba(212,175,55,.18)}100%{background:rgba(0,0,0,.92)}}
+@media(max-width:980px){.hud{grid-template-columns:1fr 1fr}.main{grid-template-columns:1fr}.panel{min-height:auto}.quote{display:none}.titlebar{align-items:flex-start;flex-direction:column}}
+@media(max-width:640px){.gameTitle{font-size:26px}.big{font-size:24px}.marketRow{grid-template-columns:1fr}.price{text-align:left}.btns{justify-content:flex-start}.alertBar{flex-direction:column}.cityMood{text-align:left}.characterTitle{font-size:24px}.pickCard{font-size:24px;padding:20px 6px}}
 </style>
 </head>
-
 <body>
 
-<!-- START SCREEN -->
+<!-- START SCREEN: no Play-a-Hand sound here -->
 <div id="startOverlay">
-
-  <img id="startBg" src="startscreen.PNG">
-
+  <img id="startBg" src="startscreen.PNG" alt="The Pu$her start screen">
   <div id="menu">
-    <div class="btn" onclick="startRun()">START RUN</div>
-    <div class="btn">CONTINUE</div>
-    <div class="btn">SETTINGS</div>
-    <div class="btn">CREDITS</div>
+    <div class="menuBtn" onclick="startRun()">START RUN</div>
+    <div class="menuBtn">CONTINUE</div>
+    <div class="menuBtn">SETTINGS</div>
+    <div class="menuBtn">CREDITS</div>
+    <div class="menuBtn">EXIT GAME</div>
   </div>
-
+  <div class="cloud">â CLOUD SAVED</div>
+  <div class="version">v1.0.0</div>
 </div>
 
-<!-- GAME -->
 <div id="game">
-  <h1>THE PUSHER</h1>
-  <p>Game Loaded. Streets Open.</p>
+  <div class="wrap">
+    <div class="titlebar">
+      <div><div class="gameTitle">THE PU$HER</div><div class="gameSub">NIGHT TEST BUILD</div></div>
+      <div class="quote">âThis cityâs got money, but everybody wants a cut.â</div>
+    </div>
+    <div class="alertBar">
+      <div class="alertText" id="alertText">Quiet move. Nothing loud yet.</div>
+      <div class="cityMood" id="cityMood">New York: watched, profitable, tense.</div>
+    </div>
+    <div class="hud" id="hud"></div>
+    <div class="main">
+      <div class="panel">
+        <div class="panelHead"><span>Black Market</span><span id="marketCityLabel">New York</span></div>
+        <div class="panelBody" id="market"></div>
+      </div>
+      <div class="panel">
+        <div class="panelHead"><span>Operations</span><span id="opsCityLabel">New York</span></div>
+        <div class="panelBody" style="padding:0;">
+          <div class="rightGrid">
+            <div class="sub"><div class="subHead">Inventory</div><div class="subBody" id="inventory"></div></div>
+            <div class="sub"><div class="subHead">Money & Pressure</div><div class="subBody" id="moneyPanel"></div></div>
+            <div class="sub"><div class="subHead">Travel</div><div class="subBody" id="travelPanel"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="feed"><div class="feedHead">Street Feed</div><div class="feedBody" id="feed"></div></div>
+  </div>
 </div>
 
-<!-- AUDIO -->
+<!-- AUDIO PLAN:
+     Start screen: rusty car door only.
+     Gameplay: slow N64/GoldenEye-style tension loop.
+     Comedian: Play-a-Hand voice only when Comedian appears. -->
+<audio id="voicePlaya" src="playa_hand.m4a"></audio>
+<audio id="soundComic" src="playa_hand.m4a"></audio>
+<audio id="soundWarning" src="playa_hand.m4a"></audio>
+<audio id="soundDeal" src="playa_hand.m4a"></audio>
+<audio id="carDoorSound" src="https://actions.google.com/sounds/v1/doors/wood_door_open.ogg"></audio>
 <audio id="bgMusic" loop>
-  <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_6c9b9b4e3c.mp3">
-</audio>
-
-<audio id="startSound">
-  <source src="playa_hand.m4a">
-</audio>
-
-<audio id="carDoorSound">
-  <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_2b6c9f0d1c.mp3">
+  <source src="https://cdn.pixabay.com/download/audio/2023/03/07/audio_7c6a8c0b8f.mp3" type="audio/mpeg">
 </audio>
 
 <script>
+const ASSETS={tonie:'tonie.png',eddy:'eddy_silent.png',rico:'Rico.png',comedian:'The Comedian.png',cakeJaw:'cake_jaw_jesse.png',perrkey:'perrkey_two_bricks.png'};
+let cash=3000,bank=0,debt=0,city="New York",day=1,health=100,heat="Low",inventory={},currentAlert="Quiet move. Nothing loud yet.",cakeWinner=null,perrkeyHint=null,perrkeyTruthful=null;
+const cityProfiles={"New York":"watched, profitable, tense.","Chicago":"cold, dark, windy pressure.","Miami":"humid money and quiet danger.","Los Angeles":"haze, movement, long plays.","Atlanta":"steady, warm, risky."};
+const cities=Object.keys(cityProfiles);
+const items=[{name:"Pagers",base:120,risk:1},{name:"Sneakers",base:200,risk:1},{name:"Jewelry",base:500,risk:2},{name:"Electronics",base:350,risk:2},{name:"Bootleg Tapes",base:95,risk:2},{name:"Luxury Watches",base:900,risk:3},{name:"Hot Merchandise",base:1300,risk:4}];
+
+function rand(min,max){return Math.floor(Math.random()*(max-min+1))+min}
+function playSound(id,volume=.75){const s=document.getElementById(id);if(!s)return;s.volume=volume;s.currentTime=0;s.play().catch(()=>{})}
+function setAlert(text){currentAlert=text;document.getElementById("alertText").textContent=text}
+function log(msg,type="info"){const feed=document.getElementById("feed");const div=document.createElement("div");div.className=`entry ${type}`;div.innerHTML=`[Day ${day}] ${msg}`;feed.prepend(div)}
+function refreshPrices(){items.forEach(item=>{let boost=1;if(city==="Miami"&&item.name==="Luxury Watches")boost=1.22;if(city==="Chicago"&&item.name==="Sneakers")boost=1.18;if(city==="Los Angeles"&&item.name==="Electronics")boost=1.2;if(city==="New York"&&item.name==="Pagers")boost=1.15;item.price=Math.max(40,Math.floor(rand(item.base*.7,item.base*1.5)*boost))})}
+function renderHud(){document.getElementById("hud").innerHTML=`<div class="card"><div class="label">Current City</div><div class="value big">${city}</div></div><div class="card"><div class="label">Cash</div><div class="value big">$${cash}</div></div><div class="card"><div class="label">Bank</div><div class="value big">$${bank}</div></div><div class="card"><div class="label">Debt</div><div class="value big">$${debt}</div></div><div class="card"><div class="label">Day / Heat / Health</div><div class="value">Day ${day} â¢ ${heat}</div><div class="value">Health ${health}</div></div>`}
+function renderMarket(){document.getElementById("marketCityLabel").textContent=city;let html="";items.forEach((item,i)=>{html+=`<div class="marketRow"><div><div class="name">${item.name}</div><div class="meta">Risk ${item.risk}/5</div></div><div class="price">$${item.price}</div><div class="btns"><button class="btnGold" onclick="buyItem(${i})">Buy</button><button onclick="sellItem(${i})">Sell</button></div></div>`});document.getElementById("market").innerHTML=html}
+function renderInventory(){let html="";const keys=Object.keys(inventory).filter(k=>inventory[k]>0);if(keys.length===0)html=`<div class="empty">Youâre carrying nothing. Make a move.</div>`;else keys.forEach(name=>{html+=`<div class="stackRow"><div>${name}</div><div>x${inventory[name]}</div></div>`});document.getElementById("inventory").innerHTML=html}
+function renderMoneyPanel(){document.getElementById("moneyPanel").innerHTML=`<div class="stackRow"><div>Deposit $500</div><div><button onclick="deposit()">Do It</button></div></div><div class="stackRow"><div>Withdraw $500</div><div><button onclick="withdraw()">Do It</button></div></div><div class="stackRow"><div>Borrow $1000</div><div><button onclick="borrow()">Take It</button></div></div><div class="stackRow"><div>Repay $500</div><div><button onclick="repay()">Pay It</button></div></div>`}
+function renderTravel(){document.getElementById("opsCityLabel").textContent=city;document.getElementById("cityMood").textContent=`${city}: ${cityProfiles[city]}`;let html="";cities.forEach(c=>{html+=`<div class="travelRow"><div>${c}</div><div><button onclick="travel('${c}')">Fly</button></div></div>`});document.getElementById("travelPanel").innerHTML=html}
+function renderAll(){renderHud();renderMarket();renderInventory();renderMoneyPanel();renderTravel();setAlert(currentAlert)}
+
+function buyItem(i){playSound("soundDeal",.25);const item=items[i];if(cash>=item.price){cash-=item.price;inventory[item.name]=(inventory[item.name]||0)+1;log(`Bought ${item.name} for $${item.price}.`,"good")}else log(`Not enough cash for ${item.name}.`,"bad");renderAll()}
+function sellItem(i){playSound("soundDeal",.25);const item=items[i];if(inventory[item.name]>0){inventory[item.name]--;if(inventory[item.name]===0)delete inventory[item.name];cash+=item.price;log(`Sold ${item.name} for $${item.price}.`,"good")}else log(`You donât have any ${item.name}.`,"bad");renderAll()}
+function deposit(){if(cash>=500){cash-=500;bank+=500;log("Deposited $500.","info")}else log("Not enough cash to deposit.","bad");renderAll()}
+function withdraw(){if(bank>=500){bank-=500;cash+=500;log("Withdrew $500.","info")}else log("Bank too low.","bad");renderAll()}
+function borrow(){debt+=1000;cash+=1000;heat="Medium";log("Borrowed $1000.","warn");renderAll()}
+function repay(){if(cash>=500&&debt>0){cash-=500;debt-=500;if(debt<0)debt=0;if(debt===0)heat="Low";log("Repaid $500.","good")}else log("Can't repay right now.","bad");renderAll()}
+
+function closeCharacter(){const existing=document.querySelector(".overlay");if(existing)existing.remove()}
+function showCharacter(title,image,text,actions){closeCharacter();playSound("soundComic",.28);const html=`<div class="overlay"><div class="characterBox"><img src="${image}" class="characterImg" alt="${title}" onerror="this.classList.add('broken')"><div class="characterTitle">${title}</div><div class="characterText">${text}</div><div class="characterActions">${actions}</div></div></div>`;document.body.insertAdjacentHTML("beforeend",html)}
+
+function showTonie(){playSound("soundWarning",.4);showCharacter('Tonie Two-Toe',ASSETS.tonie,'âYou been moving in my cityâ¦ you pay up, or we settle it.â',`<button onclick="toniePay()">Pay</button><button onclick="tonieFight()">Fight</button><button onclick="tonieRun()">Run</button>`)}
+function toniePay(){if(cash>=1000){cash-=1000;debt=Math.max(0,debt-1000);heat=debt>0?"Medium":"Low";log("You paid Tonie.","warn")}else log("Not enough cash for Tonie.","bad");closeCharacter();renderAll()}
+function tonieFight(){health=Math.max(10,health-30);cash=Math.max(0,cash-400);heat="High";log("Tonie's crew crushed you.","bad");closeCharacter();renderAll()}
+function tonieRun(){cash=Math.max(0,cash-200);heat="High";log("You ran from Tonie and dropped money on the way.","warn");closeCharacter();renderAll()}
+
+function showRico(){playSound("soundWarning",.4);showCharacter('Rico "The Bat"',ASSETS.rico,'âWrong block, wrong time.â',`<button onclick="ricoFight()">Fight</button><button onclick="ricoRun()">Run</button>`)}
+function ricoFight(){health=Math.max(10,health-18);cash=Math.max(0,cash-150);log("You fought Rico and paid for it.","bad");closeCharacter();renderAll()}
+function ricoRun(){log("You slipped away from Rico.","info");closeCharacter();renderAll()}
+
+function showEddy(){playSound("soundWarning",.4);showCharacter('Eddy "Silent"',ASSETS.eddy,'He was already there before you noticed.',`<button onclick="eddyFight()">Fight</button><button onclick="eddyRun()">Run</button>`)}
+function eddyFight(){health=Math.max(10,health-22);cash=Math.max(0,cash-200);log("You swung at Eddy. He barely moved.","bad");closeCharacter();renderAll()}
+function eddyRun(){log("You backed off before Eddy made it worse.","warn");closeCharacter();renderAll()}
+
+/* Play-a-Hand voice only happens here */
+function showComedian(){playSound("voicePlaya",.8);showCharacter("The Comedian",ASSETS.comedian,"âCan I get a holla? Luck donât knock twice.â",`<button onclick="comedianPlay()">Play a Hand</button><button onclick="comedianIgnore()">Ignore</button>`)}
+function comedianPlay(){showCharacter("The Comedian",ASSETS.comedian,"He slides three cards forward. âOne blesses you. One breaks you. One just laughs.â",`<div class="cardPickGrid"><div class="pickCard" onclick="comedianPick(1)">?</div><div class="pickCard" onclick="comedianPick(2)">?</div><div class="pickCard" onclick="comedianPick(3)">?</div></div><br><button onclick="comedianIgnore()">Back Out</button>`)}
+function comedianPick(choice){const roll=Math.random();if(roll<.34){const win=rand(1200,3500);cash+=win;log(`The Comedian flipped POWER. You gained $${win}.`,"good");showCharacter("POWER",ASSETS.comedian,`<div class="resultPower">Momentum hits hard.</div><br>+$${win}`,`<button onclick="closeCharacter();renderAll()">Continue</button>`)}else if(roll<.72){const loss=rand(600,1800);cash=Math.max(0,cash-loss);heat="Medium";log(`The Comedian flipped PAIN. You lost $${loss}.`,"bad");showCharacter("PAIN",ASSETS.comedian,`<div class="resultPain">Luck laughed at you.</div><br>-$${loss}`,`<button onclick="closeCharacter();renderAll()">Continue</button>`)}else{log("The Comedian vanished. Nothing happened... this time.","warn");showCharacter("VANISHED",ASSETS.comedian,`<div class="resultWarn">He laughed and disappeared.</div>`,`<button onclick="closeCharacter();renderAll()">Continue</button>`)}renderAll()}
+function comedianIgnore(){log("You walked past luck.","info");closeCharacter()}
+
+function showCakeJaw(){playSound("soundDeal",.4);if(Math.random()<.45){showPerrkeyWarning();return}startCakeDeal(false)}
+function startCakeDeal(withHint){if(cakeWinner===null)cakeWinner=rand(1,3);let hintLine="";if(withHint&&perrkeyHint)hintLine=`<br><br><span class="warn">Perrkey hinted at Buy ${perrkeyHint}.</span>`;showCharacter("Cake Jaw Jesse",ASSETS.cakeJaw,`He grins too wide. âThree big buys. One can change your night. One can bury it.â${hintLine}`,`<div class="cardPickGrid"><div class="pickCard" onclick="cakeOption(1)">A</div><div class="pickCard" onclick="cakeOption(2)">B</div><div class="pickCard" onclick="cakeOption(3)">C</div></div><br><button onclick="cakeIgnore()">Ignore</button>`)}
+function cakeOption(choice){const cost=700;if(cash<cost){log("You did not have enough cash for Cake Jawâs big buy.","bad");closeCharacter();renderAll();return}cash-=cost;if(choice===cakeWinner){const item=items[rand(0,items.length-1)],qty=rand(3,7);inventory[item.name]=(inventory[item.name]||0)+qty;log(`Cake Jaw actually came through. You got ${qty}x ${item.name}.`,"good");showCharacter("GOOD BUY",ASSETS.cakeJaw,`<div class="resultPower">Rare deal hit.</div><br>${qty}x ${item.name}`,`<button onclick="closeCharacter();renderAll()">Continue</button>`)}else{const damage=rand(250,900);cash=Math.max(0,cash-damage);heat=Math.random()<.5?"High":heat;log(`Cake Jaw burned you. Extra loss: $${damage}.`,"bad");showCharacter("BAD BUY",ASSETS.cakeJaw,`<div class="resultPain">Junk in the bag.</div><br>-$${damage}`,`<button onclick="closeCharacter();renderAll()">Continue</button>`)}cakeWinner=null;perrkeyHint=null;perrkeyTruthful=null;renderAll()}
+function cakeIgnore(){log("You did not trust Cake Jaw Jesse.","info");cakeWinner=null;perrkeyHint=null;perrkeyTruthful=null;closeCharacter();renderAll()}
+
+function showPerrkeyWarning(){playSound("soundWarning",.4);const trueWinner=rand(1,3);cakeWinner=trueWinner;perrkeyTruthful=Math.random()<.62;if(perrkeyTruthful){perrkeyHint=trueWinner}else{let fake=rand(1,3);while(fake===trueWinner)fake=rand(1,3);perrkeyHint=fake}showCharacter('Perrkey âTwo Bricksâ',ASSETS.perrkey,'She catches you before Jesse talks. âI know him. He might have something realâ¦ or he might be playing you.â',`<button onclick="trustPerrkey()">Listen</button><button onclick="ignorePerrkey()">Ignore Her</button>`)}
+function trustPerrkey(){log(perrkeyTruthful?"Perrkey gave you a hint. It might be real.":"Perrkey gave you a hint. Something still feels off.",perrkeyTruthful?"good":"warn");closeCharacter();startCakeDeal(true)}
+function ignorePerrkey(){log("You ignored Perrkey and dealt with Cake Jaw straight up.","warn");perrkeyHint=null;closeCharacter();startCakeDeal(false)}
+function showPerrkeySolo(){playSound("soundWarning",.4);showCharacter('Perrkey âTwo Bricksâ',ASSETS.perrkey,'She watches the block and says, âNot everything moving fast is money.â',`<button onclick="perrkeyTip()">Hear Her Out</button><button onclick="perrkeyWalk()">Walk Away</button>`)}
+function perrkeyTip(){if(Math.random()<.55){cash+=350;log("Perrkey pointed you toward a clean small score. +$350.","good")}else{heat="Medium";log("Perrkeyâs tip put eyes on you. Heat rose.","warn")}closeCharacter();renderAll()}
+function perrkeyWalk(){log("You kept moving past Perrkey.","info");closeCharacter();renderAll()}
+
+function travel(nextCity){playSound("soundDeal",.25);if(nextCity===city){log(`Youâre already in ${city}.`,"info");return}city=nextCity;day+=1;refreshPrices();log(`Flew into ${city}.`,"info");const r=Math.random();if(r<.13)showRico();else if(r<.25)showEddy();else if(r<.39)showTonie();else if(r<.53)showComedian();else if(r<.70)showCakeJaw();else if(r<.82)showPerrkeySolo();renderAll()}
+
 function startRun(){
-
-  const bg = document.getElementById("startBg");
-  const menu = document.getElementById("menu");
-  const overlay = document.getElementById("startOverlay");
-  const game = document.getElementById("game");
-
-  const music = document.getElementById("bgMusic");
-  const startSound = document.getElementById("startSound");
-  const door = document.getElementById("carDoorSound");
-
-  // PLAY SOUNDS
-  if(startSound){
-    startSound.currentTime = 0;
-    startSound.play().catch(()=>{});
-  }
-
-  if(door){
-    door.currentTime = 0;
-    door.volume = 0.8;
-    door.play().catch(()=>{});
-  }
-
-  // ANIMATION
-  bg.classList.add("zooming");
-  menu.classList.add("fadeOut");
-
-  // TRANSITION
-  setTimeout(() => {
-    overlay.style.opacity = "0";
-    overlay.style.transition = "opacity 0.6s";
-
-    setTimeout(() => {
-      overlay.style.display = "none";
-      game.style.display = "block";
-
-      // MUSIC STARTS AFTER TRANSITION
-      if(music){
-        music.volume = 0.35;
-        music.play().catch(()=>{});
-      }
-
-    }, 600);
-
-  }, 1200);
+  const bg=document.getElementById("startBg"),menu=document.getElementById("menu"),overlay=document.getElementById("startOverlay"),music=document.getElementById("bgMusic"),cloud=document.querySelector(".cloud"),version=document.querySelector(".version");
+  /* Start: rusty car door only. No Play-a-Hand sound. */
+  playSound("carDoorSound",.85);
+  bg.classList.add("zooming");menu.classList.add("fadeOut");cloud.classList.add("fadeOut");version.classList.add("fadeOut");
+  setTimeout(()=>{overlay.style.transition="opacity .6s ease";overlay.style.opacity="0";setTimeout(()=>{overlay.style.display="none";setAlert("Sound live. Streets open.");log("Night test build loaded.","info");setTimeout(()=>{if(music){music.volume=.25;music.play().catch(()=>{})}},900)},600)},1200)
 }
-</script>
 
+refreshPrices();renderAll();
+</script>
 </body>
 </html>
