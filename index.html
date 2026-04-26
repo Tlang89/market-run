@@ -348,10 +348,11 @@ button:active,
     <div class="market" id="market"></div>
   </div>
 
-  <div class="bottom">
-    <div class="action" onclick="stay()">STAY</div>
-    <div class="action" onclick="showTravel()">TRAVEL</div>
-  </div>
+<div class="bottom">
+  <div class="action" onclick="stay()">STAY</div>
+  <div class="action" onclick="openMarket()">MARKET</div>
+  <div class="action" onclick="showTravel()">TRAVEL</div>
+</div>    
 
   <div class="drawer">
     <div class="miniPanel">
@@ -669,19 +670,44 @@ function advanceYear(){
   year++;
 }
 
-function advanceYear(){
-  year++;
+
 }
 
-/* PASTE HERE 👇 */
 
 (function(){
-  // market overlay code
+  if (window.__fullMarket) return;
+  window.__fullMarket = true;
+
+  window.openMarket = function(){
+    const overlay = document.createElement("div");
+    overlay.className = "overlay";
+
+    let html = `<div class="comic"><h2>Black Market</h2>`;
+
+    market.forEach(item => {
+      html += `
+        <div style="margin-bottom:14px;">
+          <b>${item.name}</b> — $${item.price}
+          <div style="font-size:12px;color:#f2d97a;">
+            ${item.trend || ""}
+          </div>
+          <button onclick="buy('${item.name}')">BUY</button>
+          <button onclick="sell('${item.name}')">SELL</button>
+        </div>
+      `;
+    });
+
+    html += `
+      <br>
+      <button onclick="closeOverlay()">EXIT</button>
+    </div>`;
+
+    overlay.innerHTML = html;
+    document.body.appendChild(overlay);
+  };
+
 })();
 
-</script>
-</body>
-</html>
 </script>
 </body>
 </html>
