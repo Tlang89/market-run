@@ -32,14 +32,7 @@ html,body{
 
 .header{text-align:center;}
 .market{flex:1;display:flex;flex-direction:column;gap:10px;}
-.itemCard{
-  flex:1;
-  border:2px solid #d4af37;
-  padding:12px;
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-}
+.itemCard{flex:1;border:2px solid #d4af37;padding:12px;display:flex;flex-direction:column;justify-content:space-between;}
 .buttons{display:flex;gap:10px;}
 
 button{
@@ -48,12 +41,6 @@ button{
   background:black;
   color:#d4af37;
   border:1px solid #d4af37;
-  cursor:pointer;
-}
-
-button:active{
-  background:#d4af37;
-  color:black;
 }
 
 .overlay{
@@ -63,7 +50,6 @@ button:active{
   display:flex;
   justify-content:center;
   align-items:center;
-  z-index:9999;
 }
 
 .comic{
@@ -72,7 +58,6 @@ button:active{
   background:black;
   text-align:center;
   width:90%;
-  max-width:400px;
 }
 </style>
 </head>
@@ -108,26 +93,13 @@ function shuffle(a){return [...a].sort(()=>Math.random()-.5);}
 function money(n){return "$"+Math.floor(n);}
 
 function render(){
-  document.getElementById("stats").innerText=`Cash: ${money(cash)} | Day ${day}`;
-
-  document.getElementById("market").innerHTML=currentCards.map((item,i)=>`
-    <div class="itemCard">
-      <div>
-        <b>${item.name}</b><br>
-        ${money(item.price)}
-      </div>
-
-      <div class="buttons">
-        <button onclick="buy(${i})">BUY</button>
-        <button onclick="sell(${i})">SELL</button>
-      </div>
-    </div>
-  `).join("");
+  document.getElementById("stats").innerText=Cash: ${money(cash)} | Day ${day};
+  document.getElementById("market").innerHTML=currentCards.map((item,i)=>    <div class="itemCard">       <div><b>${item.name}</b><br>${money(item.price)}</div>       <div class="buttons">         <button onclick="buy(${i})">BUY</button>         <button onclick="sell(${i})">SELL</button>       </div>     </div>  ).join("");
 }
 
 function newCards(){
   currentCards=shuffle(items).slice(0,3).map(i=>{
-    return {...i,price:Math.floor(i.base*(.7+Math.random()*.6))};
+    return {...i,price:Math.floor(i.base*(.7+Math.random().6))};
   });
 }
 
@@ -139,12 +111,10 @@ function next(){
 
 function buy(i){
   let item=currentCards[i];
-
   if(cash>=item.price){
     cash-=item.price;
     maybeCharacter();
   }
-
   next();
 }
 
@@ -155,45 +125,35 @@ function sell(i){
   next();
 }
 
-/* 🔥 CHARACTER BREAK-IN SYSTEM */
+/ 🔥 CHARACTER BREAK-IN FIX */
 function maybeCharacter(){
   moveCount++;
 
-  // force more appearances
   if(moveCount % 2 !== 0 && Math.random() < .45){
     return;
   }
 
   let r=Math.random();
 
-  if(r<.16) show("Tonie Two-Toe","Pay up.");
+  if(r<.16) show("Tonie","Pay up.");
   else if(r<.30) show("Rico","Wrong place.");
-  else if(r<.44) show("Eddy Silent","He was already there.");
-  else if(r<.64) show("Cake Jaw Jesse","Bad deal incoming...");
-  else if(r<.82) show("Perrkey Two Bricks","Careful...");
-  else show("The Comedian","Play a hand?");
+  else if(r<.44) show("Eddy","Silent move.");
+  else if(r<.64) show("Cake Jaw","Bad deal?");
+  else if(r<.82) show("Perrkey","Careful...");
+  else show("Comedian","Play a hand?");
 }
 
 function show(title,text){
   let d=document.createElement("div");
   d.className="overlay";
-
-  d.innerHTML=`
-    <div class="comic">
-      <h2>${title}</h2>
-      <p>${text}</p>
-      <button onclick="closeOverlay()">CONTINUE</button>
-    </div>
-  `;
-
+  d.innerHTML=    <div class="comic">       <h2>${title}</h2>       <p>${text}</p>       <button onclick="close()">CONTINUE</button>     </div>  ;
   document.body.appendChild(d);
 }
 
-function closeOverlay(){
+function close(){
   document.querySelector(".overlay")?.remove();
 }
 
-/* INIT */
 newCards();
 render();
 </script>
