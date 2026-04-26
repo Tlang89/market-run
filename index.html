@@ -666,67 +666,7 @@ function advanceYear(){
   year++;
 }
 
-/* CHECK GOAL */
 
-}
-
-/* BUY BLOCK */
-function showBlockOption(){
-
-  const overlay = document.createElement("div");
-  overlay.className = "overlay";
-
-  overlay.innerHTML = `
-    <div class="comic">
-      <h2>Buy The Block</h2>
-      <p>You got the cash. Take control?</p>
-      <button onclick="buyBlock()">BUY BLOCK</button>
-      <button onclick="closeOverlay()">WAIT</button>
-    </div>
-  `;
-
-  document.body.appendChild(overlay);
-}
-
-function buyBlock(){
-
-  cash -= 10000;
-  blocksOwned++;
-  advanceYear();
-
-  closeOverlay();
-  render();
-
-  if(blocksOwned >= totalBlocks){
-    showWin();
-  }
-}
-
-/* WIN GAME */
-function showWin(){
-
-  const overlay = document.createElement("div");
-  overlay.className = "overlay";
-
-  overlay.innerHTML = `
-    <div class="comic">
-      <h2>You Run The City</h2>
-      <p>${blocksOwned}/${totalBlocks} blocks owned</p>
-      <p>Years: ${year}</p>
-      <button onclick="closeOverlay()">CONTINUE</button>
-    </div>
-  `;
-
-  document.body.appendChild(overlay);
-}
-
-/* ================================
-   🔄 HOOK INTO GAME LOOP
-================================ */
-
-
-
-  
 </script>
 </body>
 </html>
