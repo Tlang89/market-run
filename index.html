@@ -768,7 +768,7 @@ function updateGoalPanel(){
   panel.innerHTML = `
     <b>Goal:</b> Own the market before age 99 — or die trying.<br>
     Age: ${goalAge()} • Blocks Owned: ${owned}/5
-    ${cash >= marketGoalCost && !blocksOwned[city]
+    ${cash >= marketGoalCost && typeof city !== "undefined" && !blocksOwned[city]}
       ? `<br><button onclick="buyCityBlock()">BUY ${city} BLOCK — $10,000</button>`
       : ""
     }
