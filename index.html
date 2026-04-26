@@ -840,8 +840,21 @@ function showWin(){
     }
   };
 
-  setInterval(updateGoalPanel, 1200);
-  setTimeout(updateGoalPanel, 1000);
+try {
+  setInterval(() => {
+    if (typeof updateGoalPanel === "function") {
+      updateGoalPanel();
+    }
+  }, 1200);
+
+  setTimeout(() => {
+    if (typeof updateGoalPanel === "function") {
+      updateGoalPanel();
+    }
+  }, 1000);
+} catch(e) {
+  console.log("Goal panel safe fail:", e);
+}
 })();
   
 </script>
