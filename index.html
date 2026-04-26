@@ -760,10 +760,10 @@ function updateGoalPanel(){
     panel.style.color = "#f2d97a";
     panel.style.background = "rgba(0,0,0,.65)";
 
-    document.querySelector(".drawer")?.before(panel);
+   document.body.appendChild(panel); 
   }
 
-  let owned = ownedBlockCount();
+  let owned = (typeof ownedBlockCount === "function") ? ownedBlockCount() : 0;
 
   panel.innerHTML = `
     <b>Goal:</b> Own the market before age 99 — or die trying.<br>
