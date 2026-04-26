@@ -739,7 +739,7 @@ function showWin(){
 let blocksOwned = {};
 let goalStartedAge = 18;
 let marketGoalCost = 10000;
-
+let totalBlocks = 5;
 function goalAge(){
   return goalStartedAge + Math.floor(day / 365);
 }
@@ -774,7 +774,7 @@ function updateGoalPanel(){
     }
   `;
 
-  checkFinalGoal();
+  
 }
 
 function buyCityBlock(){
