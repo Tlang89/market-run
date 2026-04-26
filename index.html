@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -87,6 +87,259 @@ body{
 .comicBox img.broken:after,.comic img.broken:after{
   content:"Image missing — check filename";
   color:#d4af37;
+}
+
+
+/* ===== TIGHT ONE-SCREEN GAME BOARD ===== */
+html, body{
+  height:100%;
+  overflow:hidden !important;
+}
+
+body{
+  position:relative;
+}
+
+.wrap{
+  height:100vh !important;
+  max-height:100vh !important;
+  overflow:hidden !important;
+  display:grid !important;
+  grid-template-rows:auto auto auto 1fr auto !important;
+  gap:8px !important;
+  padding:8px !important;
+}
+
+.top,.topbar,.titlebar{
+  margin-bottom:0 !important;
+  padding:8px 10px !important;
+}
+
+.title,.gameTitle{
+  font-size:clamp(22px,6vw,34px) !important;
+}
+
+.subt,.subtitle,.gameSub,.mode{
+  font-size:12px !important;
+}
+
+.alerts,.alertBar{
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  gap:8px !important;
+  margin-bottom:0 !important;
+}
+
+.alerts .card,.alertBar .card{
+  min-height:auto !important;
+  margin-bottom:0 !important;
+  padding:8px 10px !important;
+}
+
+.hud{
+  display:grid !important;
+  grid-template-columns:repeat(5,1fr) !important;
+  gap:8px !important;
+  margin-bottom:0 !important;
+}
+
+.hud .card{
+  min-height:auto !important;
+  margin-bottom:0 !important;
+  padding:8px 10px !important;
+}
+
+.label{
+  font-size:10px !important;
+  margin-bottom:3px !important;
+}
+
+.value{
+  font-size:clamp(14px,4vw,21px) !important;
+}
+
+.main{
+  min-height:0 !important;
+  overflow:hidden !important;
+  display:grid !important;
+  grid-template-columns:1.25fr .75fr !important;
+  gap:8px !important;
+  margin-bottom:0 !important;
+}
+
+.panel{
+  min-height:0 !important;
+  height:100% !important;
+  margin-bottom:0 !important;
+  overflow:hidden !important;
+  display:flex !important;
+  flex-direction:column !important;
+}
+
+.panelHead,.head{
+  flex-shrink:0 !important;
+  padding:8px 10px !important;
+}
+
+.panelBody,.body{
+  overflow-y:auto !important;
+  min-height:0 !important;
+  padding:8px !important;
+  -webkit-overflow-scrolling:touch;
+}
+
+.marketRow,.row{
+  margin-bottom:8px !important;
+  padding:8px 10px !important;
+}
+
+.name{
+  font-size:clamp(15px,4.2vw,18px) !important;
+}
+
+.price{
+  font-size:clamp(18px,5vw,23px) !important;
+}
+
+.marketSpark{
+  height:22px !important;
+  margin-top:6px !important;
+}
+
+.actions{
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  gap:8px !important;
+  margin-bottom:8px !important;
+}
+
+.actions .actionBtn:nth-child(3){
+  grid-column:1 / -1 !important;
+}
+
+.actionBtn{
+  padding:11px 8px !important;
+  font-size:clamp(14px,4vw,18px) !important;
+}
+
+.sub,.subPanel{
+  margin-bottom:8px !important;
+}
+
+.subHead{
+  padding:8px 10px !important;
+}
+
+.subBody{
+  padding:8px !important;
+  max-height:25vh !important;
+  overflow:auto !important;
+}
+
+.feed{
+  min-height:0 !important;
+  margin-bottom:0 !important;
+  overflow:hidden !important;
+}
+
+.feedHead{
+  padding:8px 10px !important;
+}
+
+.feedBody{
+  height:92px !important;
+  max-height:12vh !important;
+  overflow:auto !important;
+  -webkit-overflow-scrolling:touch;
+}
+
+@media(max-width:900px){
+  .wrap{
+    grid-template-rows:auto auto auto 1fr auto !important;
+  }
+
+  .main{
+    grid-template-columns:1fr !important;
+    grid-template-rows:1fr auto !important;
+  }
+
+  .panel:first-child{
+    min-height:0 !important;
+  }
+
+  .hud{
+    grid-template-columns:repeat(2,1fr) !important;
+  }
+
+  .hud .card:nth-child(5){
+    grid-column:1 / -1 !important;
+  }
+
+  .alerts,.alertBar{
+    grid-template-columns:1fr !important;
+  }
+
+  .marketRow,.row{
+    grid-template-columns:1fr 90px 150px !important;
+  }
+
+  .price{
+    text-align:right !important;
+  }
+
+  .btns{
+    justify-content:flex-end !important;
+  }
+
+  .subBody{
+    max-height:14vh !important;
+  }
+}
+
+@media(max-width:520px){
+  .wrap{
+    padding:7px !important;
+    gap:7px !important;
+  }
+
+  .top,.topbar,.titlebar{
+    padding:7px 9px !important;
+  }
+
+  .mode{
+    display:none !important;
+  }
+
+  .hud{
+    grid-template-columns:repeat(2,1fr) !important;
+    gap:7px !important;
+  }
+
+  .hud .card{
+    padding:7px 9px !important;
+  }
+
+  .main{
+    gap:7px !important;
+  }
+
+  .marketRow,.row{
+    grid-template-columns:1fr 78px 122px !important;
+    gap:6px !important;
+  }
+
+  .btns button{
+    min-width:54px !important;
+    padding:7px 8px !important;
+  }
+
+  .actions{
+    gap:7px !important;
+  }
+
+  .feedBody{
+    height:72px !important;
+  }
 }
 
 </style>
@@ -261,7 +514,7 @@ function showPerrkeyCake(){warnSound();let truth=Math.random()<.62,real=rand(1,3
 function showPerrkey(){warnSound();let good=Math.random()<.55;showPanel('Perrkey "Two Bricks"',ASSETS.perrkey,`She watches the block like she already knows the ending. “Not every fast move is money.”`,`<button onclick="perrkeyTip(${good})">Hear Her Out</button><button onclick="closePanel()">Walk Away</button>`,"Street Intel")}
 function perrkeyTip(g){if(g){let gain=rand(300,900);cash+=gain;winSound();log(`Perrkey tipped you to ${money(gain)} clean.`,"good")}else{heat+=rand(8,18);lossSound();log("Perrkey's tip smelled like heat.","warn")}closePanel();renderAll()}
 
-function startRun(){initAudio();let door=carDoorSound;if(door){door.volume=.85;door.currentTime=0;door.play().catch(()=>{})}startBg.classList.add("zooming");startMenu.classList.add("fadeOut");cloud.classList.add("fadeOut");ver.classList.add("fadeOut");setTimeout(()=>{start.style.transition="opacity .6s ease";start.style.opacity="0";setTimeout(()=>{start.style.display="none";startMusic();setStatus("Sound live. Streets open.");log("Run started. Stay sharp.","info")},600)},1200)}
+function startRun(){initAudio();let door=carDoorSound;if(door){door.volume=.85;door.currentTime=0;door.play().catch(()=>{})}startBg.classList.add("zooming");startMenu.classList.add("fadeOut");cloud.classList.add("fadeOut");ver.classList.add("fadeOut");setTimeout(()=>{start.style.transition="opacity .6s ease";start.style.opacity="0";setTimeout(()=>{start.style.display="none";window.scrollTo(0,0);startMusic();setStatus("Sound live. Streets open.");log("Run started. Stay sharp.","info")},600)},1200)}
 
 refreshPrices();renderAll();
 </script>
