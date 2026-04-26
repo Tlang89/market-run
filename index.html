@@ -733,12 +733,7 @@ function showWin(){
    🔄 HOOK INTO GAME LOOP
 ================================ */
 
-const originalRender = render;
 
-render = function(){
-  originalRender();
-  checkGoal();
-};
   /* ===== FINAL GOAL ADD-ON ONLY — DO NOT CHANGE GAME ===== */
 
 let blocksOwned = {};
@@ -805,7 +800,7 @@ function checkFinalGoal(){
     );
   }
 
-  if(goalAge() >= 99 && ownedBlockCount() < 5){
+  if(typeof goalAge === "function" && goalAge() >= 99 && ownedBlockCount() < 5){
     showPanel(
       "DIED TRYING",
       "",
