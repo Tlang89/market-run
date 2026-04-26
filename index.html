@@ -705,7 +705,46 @@ function advanceYear(){
     overlay.innerHTML = html;
     document.body.appendChild(overlay);
   };
+// MIX TAPE JACKPOT (SAFE ADD-ON)
+(function(){
+  if(window.__mixTapeJackpot) return;
+  window.__mixTapeJackpot = true;
 
+  function checkMixTapeJackpot(){
+    try{
+      if(typeof inventory === "undefined") return;
+
+      const qty = inventory["Mix Tape"] || inventory["Mix Tapes"];
+      if(!qty || qty <= 0) return;
+
+      // VERY rare chance
+      if(Math.random() > 0.01) return;
+
+      const payout = 500000 + Math.floor(Math.random() * 500000);
+
+      cash += payout;
+
+      // remove ONE tape (the one that hit)
+      if(inventory["Mix Tape"] > 0) inventory["Mix Tape"]--;
+      if(inventory["Mix Tapes"] > 0) inventory["Mix Tapes"]--;
+
+      if(typeof log === "function"){
+        log("🔥 MILLION DOLLAR MIX TAPE HIT — YOU JUST BLEW UP.", "good");
+      }
+
+      if(typeof renderAll === "function"){
+        renderAll();
+      }
+
+    }catch(e){
+      console.log("mix tape jackpot safe fail", e);
+    }
+  }
+
+  // check periodically
+  setInterval(checkMixTapeJackpot, 5000);
+
+})();
 
 </script>
 </body>
