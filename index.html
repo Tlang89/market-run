@@ -109,20 +109,34 @@ function renderMarket(){cityLabel.textContent=city;market.innerHTML=items.map((i
 function renderInv(){carrying=Object.values(inventory).reduce((a,b)=>a+b,0);cap.textContent=`${carrying}/${carryLimit}`;let ks=Object.keys(inventory).filter(k=>inventory[k]>0);inventoryEl= document.getElementById("inventory");inventoryEl.innerHTML=ks.length?ks.map(k=>`<div class="line"><span>${k}</span><span>x${inventory[k]}</span></div>`).join(""):'<div class="meta">Nothing carried. Buy low, sell high.</div>'}
 function renderAll(){renderHud();renderMarket();renderInv()}
 
-function buyItem(i){clickSound();let it=items[i];if(carrying>=carryLimit){log("Too much on you. Sell or move smarter.","bad");return}if(cash>=it.price){cash-=it.price;inventory[it.name]=(inventory[it.name]||0)+1;log(`Bought ${it.name} for ${money(it.price)}.`,"good")}else log("Not enough cash.","bad");maybeEvent(.20);renderAll()}
-function sellItem(i){clickSound();let it=items[i];if(inventory[it.name]>0){inventory[it.name]--;if(inventory[it.name]===0)delete inventory[it.name];cash+=it.price;log(`Sold ${it.name} for ${money(it.price)}.`,"good")}else log(`You do not have ${it.name}.`,"bad");maybeEvent(.20);renderAll()}
+function buyItem(i){clickSound();let it=items[i];if(carrying>=carryLimit){log("Too much on you. Sell or move smarter.","bad");return}if(cash>=it.price){cash-=it.price;inventory[it.name]=(inventory[it.name]||0)+1;log(`Bought ${it.name} for ${money(it.price)}.`,"good")}else log("Not enough cash.","bad");maybeEvent(.28);renderAll()}
+function sellItem(i){clickSound();let it=items[i];if(inventory[it.name]>0){inventory[it.name]--;if(inventory[it.name]===0)delete inventory[it.name];cash+=it.price;log(`Sold ${it.name} for ${money(it.price)}.`,"good")}else log(`You do not have ${it.name}.`,"bad");maybeEvent(.28);renderAll()}
 function deposit(){clickSound();if(cash>=500){cash-=500;bank+=500;log("Deposited $500.","info")}else log("Not enough cash to deposit.","bad");renderAll()}
 function withdraw(){clickSound();if(bank>=500){bank-=500;cash+=500;log("Withdrew $500.","info")}else log("Bank is too low.","bad");renderAll()}
-function quickFlip(){clickSound();if(cash<250){log("Need $250 to quick flip.","bad");return}cash-=250;if(Math.random()<.58){let w=rand(320,780);cash+=w;winSound();log(`Quick flip hit for ${money(w)}.`,"good")}else{lossSound();heat+=rand(2,8);log("Quick flip burned out. Heat went up.","bad")}maybeEvent(.16);renderAll()}
-function stay(){clickSound();day++;heat=Math.max(0,heat-rand(0,5));refreshPrices();setStatus(`Stayed in ${city}. Market shifted.`);log(`Stayed in ${city}. Prices moved.`,"info");maybeEvent(.30);renderAll()}
+function quickFlip(){clickSound();if(cash<250){log("Need $250 to quick flip.","bad");return}cash-=250;if(Math.random()<.58){let w=rand(320,780);cash+=w;winSound();log(`Quick flip hit for ${money(w)}.`,"good")}else{lossSound();heat+=rand(2,8);log("Quick flip burned out. Heat went up.","bad")}maybeEvent(.24);renderAll()}
+function stay(){clickSound();day++;heat=Math.max(0,heat-rand(0,5));refreshPrices();setStatus(`Stayed in ${city}. Market shifted.`);log(`Stayed in ${city}. Prices moved.`,"info");maybeEvent(.38);renderAll()}
 function showTravel(){clickSound();let bs=cities.map(c=>`<button onclick="travel('${c}')">${c}</button>`).join("");showPanel("Travel","",`Current city: ${city}<br>${profiles[city]}`,bs+`<br><button onclick="closePanel()">Stay Here</button>`)}
-function travel(next){clickSound();if(next===city){closePanel();return}city=next;day++;heat+=rand(3,12);refreshPrices();closePanel();setStatus(`Arrived in ${city}.`);log(`Traveled to ${city}.`,"info");showPanel("Arrival","",`You touched down in ${city}. The market feels different.`,`<button onclick="closePanel()">Continue</button>`);maybeEvent(.55);renderAll()}
+function travel(next){clickSound();if(next===city){closePanel();return}city=next;day++;heat+=rand(3,12);refreshPrices();closePanel();setStatus(`Arrived in ${city}.`);log(`Traveled to ${city}.`,"info");showPanel("Arrival","",`You touched down in ${city}. The market feels different.`,`<button onclick="closePanel()">Continue</button>`);maybeEvent(.70);renderAll()}
 
 function closePanel(){document.querySelector(".overlay")?.remove()}
 function showPanel(title,img,text,buttons,tag="Comic Event"){closePanel();let d=document.createElement("div");d.className="overlay";d.innerHTML=`<div class="comic"><div class="tag">${tag}</div>${img?`<img src="${img}" onerror="this.classList.add('broken')">`:""}<div class="comicTitle">${title}</div><div class="comicText">${text}</div><div>${buttons}</div></div>`;document.body.appendChild(d)}
-function maybeEvent(ch){let now=Date.now();if(now-lastEvent<cooldown)return;if(Math.random()>ch)return;lastEvent=now;let r=Math.random();if(r<.15)showRico();else if(r<.28)showEddy();else if(r<.43)showTonie();else if(r<.62)showCake();else if(r<.78)showPerrkey();else if(r<.84)showComedian()}
+function maybeEvent(ch){
+  let now=Date.now();
+  if(now-lastEvent<cooldown)return;
+  if(Math.random()>ch)return;
+  lastEvent=now;
 
-function showTonie(){warnSound();showPanel("Tonie Two-Toe",ASSETS.tonie,"You been moving like nobody gets a cut. Pay, fight, or run.",`<button onclick="toniePay()">Pay $1000</button><button onclick="tonieFight()">Fight</button><button onclick="tonieRun()">Run</button>`,"Pressure")}
+  let r=Math.random();
+
+  if(r<.14)showTonie();
+  else if(r<.27)showRico();
+  else if(r<.40)showEddy();
+  else if(r<.61)showCake();
+  else if(r<.80)showPerrkey();
+  else if(r<.90)showComedian();
+}
+
+function showTonie(){warnSound();showPanel("Tonie Two-Toe",ASSETS.tonie,"Tonie rolls up with thugs behind him. You been moving like nobody gets a cut. Pay, fight, or run.",`<button onclick="toniePay()">Pay $1000</button><button onclick="tonieFight()">Fight</button><button onclick="tonieRun()">Run</button>`,"Pressure")}
 function toniePay(){if(cash>=1000){cash-=1000;heat=Math.max(0,heat-20);log("Paid Tonie. Pressure eased.","warn")}else log("Not enough cash to pay Tonie.","bad");closePanel();renderAll()}
 function tonieFight(){health=Math.max(10,health-25);cash=Math.max(0,cash-400);heat+=18;lossSound();log("Tonie's crew worked you over.","bad");closePanel();renderAll()}
 function tonieRun(){cash=Math.max(0,cash-200);heat+=15;log("You ran from Tonie and dropped cash.","warn");closePanel();renderAll()}
@@ -140,7 +154,7 @@ function cakeDeal(hint){if(cakeWinner===null)cakeWinner=rand(1,3);let h=hint&&pe
 function cakePick(c){let cost=900;if(cash<cost){log("Not enough cash for Cake's deal.","bad");closePanel();renderAll();return}cash-=cost;if(c===cakeWinner){let it=items[rand(0,items.length-1)],q=rand(4,9);inventory[it.name]=(inventory[it.name]||0)+q;winSound();log(`Cake came through: ${q}x ${it.name}.`,"good");showPanel("GOOD BUY",ASSETS.cake,`Rare deal hit: ${q}x ${it.name}.`,`<button onclick="closePanel();renderAll()">Continue</button>`,"Deal Result")}else if(Math.random()<.35){let m=rand(250,900);cash+=m;log(`Cake's deal was messy, but you got ${money(m)} back.`,"warn");showPanel("MID BUY",ASSETS.cake,`Not great. Not dead. You got ${money(m)} back.`,`<button onclick="closePanel();renderAll()">Continue</button>`,"Deal Result")}else{let l=rand(400,1400);cash=Math.max(0,cash-l);heat+=rand(5,15);lossSound();log(`Cake burned you for ${money(l)}.`,"bad");showPanel("BAD BUY",ASSETS.cake,`Junk in the bag. Lost ${money(l)}.`,`<button onclick="closePanel();renderAll()">Continue</button>`,"Deal Result")}cakeWinner=null;perrkeyHint=null;renderAll()}
 function cakeIgnore(){log("You didn't trust Cake Jaw.","info");cakeWinner=null;perrkeyHint=null;closePanel()}
 function showPerrkeyCake(){warnSound();let truth=Math.random()<.62,real=rand(1,3);cakeWinner=real;if(truth)perrkeyHint=real;else{let f=rand(1,3);while(f===real)f=rand(1,3);perrkeyHint=f}showPanel('Perrkey "Two Bricks"',ASSETS.perrkey,`She cuts in. “I know him. Deal ${perrkeyHint} might be the one... but don't bet your life on me.”`,`<button onclick="closePanel();cakeDeal(true)">Listen</button><button onclick="perrkeyHint=null;closePanel();cakeDeal(false)">Ignore</button>`,"Warning Overlay")}
-function showPerrkey(){warnSound();let good=Math.random()<.55;showPanel('Perrkey "Two Bricks"',ASSETS.perrkey,`She watches the block. “Not every fast move is money.”`,`<button onclick="perrkeyTip(${good})">Hear Her Out</button><button onclick="closePanel()">Walk Away</button>`,"Street Intel")}
+function showPerrkey(){warnSound();let good=Math.random()<.55;showPanel('Perrkey "Two Bricks"',ASSETS.perrkey,`She watches the block like she already knows the ending. “Not every fast move is money.”`,`<button onclick="perrkeyTip(${good})">Hear Her Out</button><button onclick="closePanel()">Walk Away</button>`,"Street Intel")}
 function perrkeyTip(g){if(g){let gain=rand(300,900);cash+=gain;winSound();log(`Perrkey tipped you to ${money(gain)} clean.`,"good")}else{heat+=rand(8,18);lossSound();log("Perrkey's tip smelled like heat.","warn")}closePanel();renderAll()}
 
 function startRun(){initAudio();let door=carDoorSound;if(door){door.volume=.85;door.currentTime=0;door.play().catch(()=>{})}startBg.classList.add("zooming");startMenu.classList.add("fadeOut");cloud.classList.add("fadeOut");ver.classList.add("fadeOut");setTimeout(()=>{start.style.transition="opacity .6s ease";start.style.opacity="0";setTimeout(()=>{start.style.display="none";startMusic();setStatus("Sound live. Streets open.");log("Run started. Stay sharp.","info")},600)},1200)}
@@ -148,4 +162,3 @@ function startRun(){initAudio();let door=carDoorSound;if(door){door.volume=.85;d
 refreshPrices();renderAll();
 </script>
 </body>
-</html>
