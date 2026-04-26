@@ -669,13 +669,14 @@ function advanceYear(){
 /* CHECK GOAL */
 function checkGoal(){
 
-  if(cash >= 10000){
-    showBlockOption();
-  }
+if(cash >= 10000 && !document.querySelector(".overlay")){
+  showBlockOption();
+}  
 
-  if(blocksOwned >= totalBlocks){
-    showWin();
-  }
+  if(Object.keys(blocksOwned).length >= totalBlocks){
+  showWin();
+}
+    
 }
 
 /* BUY BLOCK */
