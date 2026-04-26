@@ -667,16 +667,7 @@ function advanceYear(){
 }
 
 /* CHECK GOAL */
-function checkGoal(){
 
-if(cash >= 10000 && !document.querySelector(".overlay")){
-  showBlockOption();
-}  
-
-  if(Object.keys(blocksOwned).length >= totalBlocks){
-  showWin();
-}
-    
 }
 
 /* BUY BLOCK */
@@ -734,128 +725,7 @@ function showWin(){
 ================================ */
 
 
-/* ===== SAFE FINAL GOAL SYSTEM — DOES NOT CHANGE INTRO OR GAMEPLAY ===== */
 
-(function(){
-  if(window.__pusherGoalInstalled) return;
-  window.__pusherGoalInstalled = true;
-
-  const BLOCK_COST = 10000;
-  const TOTAL_BLOCKS = 5;
-  const START_AGE = 18;
-
-  window.__ownedBlocks = window.__ownedBlocks || {};
-
-  function safeAge(){
-    try{
-      return START_AGE + Math.floor(day / 365);
-    }catch(e){
-      return START_AGE;
-    }
-  }
-
-  function safeCity(){
-    try{
-      return city || "Unknown";
-    }catch(e){
-      return "Unknown";
-    }
-  }
-
-  function safeCash(){
-    try{
-      return cash || 0;
-    }catch(e){
-      return 0;
-    }
-  }
-
-  function ownedCount(){
-    return Object.keys(window.__ownedBlocks).length;
-  }
-
-  function updateGoalPanel(){
-    try{
-      let panel = document.getElementById("goalPanel");
-
-      if(!panel){
-        panel = document.createElement("div");
-        panel.id = "goalPanel";
-        panel.style.border = "1px solid rgba(212,175,55,.35)";
-        panel.style.padding = "8px";
-        panel.style.marginTop = "8px";
-        panel.style.color = "#f2d97a";
-        panel.style.background = "rgba(0,0,0,.65)";
-        panel.style.fontWeight = "bold";
-
-        const target =
-          document.querySelector(".drawer") ||
-          document.querySelector(".bottom") ||
-          document.querySelector(".game") ||
-          document.body;
-
-        target.parentNode.insertBefore(panel, target);
-      }
-
-      const c = safeCity();
-      const canBuy = safeCash() >= BLOCK_COST && !window.__ownedBlocks[c];
-
-      panel.innerHTML = `
-        Goal: Own the market before age 99 — or die trying.<br>
-        Age: ${safeAge()} • Blocks Owned: ${ownedCount()}/${TOTAL_BLOCKS}
-        ${canBuy ? `<br><button onclick="buyCityBlockSafe()">BUY ${c} BLOCK — $10,000</button>` : ""}
-      `;
-
-    }catch(e){
-      console.log("Goal panel safe error:", e);
-    }
-  }
-
-  window.buyCityBlockSafe = function(){
-    try{
-      const c = safeCity();
-
-      if(safeCash() < BLOCK_COST) return;
-      if(window.__ownedBlocks[c]) return;
-
-      cash -= BLOCK_COST;
-      window.__ownedBlocks[c] = true;
-
-      if(typeof log === "function"){
-        log(`Bought the ${c} block.`, "good");
-      }
-
-      if(typeof renderAll === "function"){
-        renderAll();
-      }
-
-      updateGoalPanel();
-
-      if(ownedCount() >= TOTAL_BLOCKS){
-  s      alert("MAIN PU$HER — You own every block. The market is yours.");
-      }
-
-    }catch(e){
-      console.log("Buy block safe error:", e);
-    }
-  };
-
-try {
-  setInterval(() => {
-    if (typeof updateGoalPanel === "function") {
-      updateGoalPanel();
-    }
-  }, 1200);
-
-  setTimeout(() => {
-    if (typeof updateGoalPanel === "function") {
-      updateGoalPanel();
-    }
-  }, 1000);
-} catch(e) {
-  console.log("Goal panel safe fail:", e);
-}
-})();
   
 </script>
 </body>
