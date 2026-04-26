@@ -2,231 +2,150 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Pu$her</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>The Pu$her — Unhinged Build</title>
 <style>
-body{
-  margin:0;
-  background:#000;
-  color:#d4af37;
-  font-family:Arial;
-}
-.title{
-  font-size:40px;
-  font-weight:bold;
-  padding:20px;
-}
-.btn{
-  border:1px solid #d4af37;
-  padding:15px;
-  margin:10px;
-  text-align:center;
-  cursor:pointer;
-}
-.overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.95);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-.box{
-  border:2px solid #d4af37;
-  padding:20px;
-  width:90%;
-  max-width:400px;
-  text-align:center;
-}
+:root{--gold:#d4af37;--text:#f2d97a;--line:#333;--soft:#9b8340;--good:#76e08a;--bad:#ff7777;--warn:#ffc76d}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:#000;color:var(--gold);font-family:Arial,Helvetica,sans-serif;overflow-x:hidden}
+#start{position:fixed;inset:0;background:#000;z-index:9999;overflow:hidden}
+#startBg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform-origin:70% 62%;transition:transform 1.2s ease,opacity .6s ease}
+#start:after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.03),rgba(0,0,0,.25));pointer-events:none}
+#startMenu{position:absolute;left:50%;bottom:8%;transform:translateX(-50%);width:min(78vw,430px);display:flex;flex-direction:column;gap:14px;z-index:3;transition:opacity .55s}
+.menuBtn,.actionBtn{border:2px solid var(--gold);border-radius:11px;background:rgba(0,0,0,.35);color:var(--gold);padding:14px;text-align:center;font-weight:900;letter-spacing:2px;cursor:pointer}
+.menuBtn:active,.actionBtn:active,button:active,.pickCard:active{background:var(--gold);color:#000;transform:scale(.96)}
+.corner{position:absolute;bottom:18px;z-index:3;color:var(--gold);font-size:12px;opacity:.9}.left{left:18px}.right{right:18px}
+.zooming{transform:scale(1.35) translate(-12%,-6%);filter:brightness(1.06)}.fadeOut{opacity:0}
+.wrap{max-width:1320px;margin:0 auto;padding:10px;min-height:100vh}
+.top,.card,.panel,.feed,.sub{border:1px solid var(--line);background:linear-gradient(180deg,#171717,#0d0d0d);box-shadow:0 0 0 1px rgba(212,175,55,.04) inset}
+.top{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:12px 14px;margin-bottom:10px}
+.title{color:var(--text);font-size:34px;font-weight:900;line-height:1}.subt{color:#b65c5c;font-size:13px;font-weight:900;margin-top:5px;letter-spacing:1.5px}
+.mode{color:var(--warn);text-align:right;font-size:13px;font-weight:900}
+.alerts{display:grid;grid-template-columns:1.2fr 1fr;gap:10px;margin-bottom:10px}.card{padding:10px 12px;margin-bottom:10px}
+.label{color:var(--soft);text-transform:uppercase;letter-spacing:1.2px;font-size:11px;margin-bottom:6px}.value{color:var(--text);font-size:21px;font-weight:900}
+.hud{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr 1fr;gap:10px;margin-bottom:10px}
+.main{display:grid;grid-template-columns:1.38fr .92fr;gap:10px;align-items:start}
+.panel{min-height:480px;margin-bottom:10px}.head,.feedHead,.subHead{display:flex;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--line);background:#181818;color:var(--text);font-weight:900}
+.body,.subBody{padding:10px}
+.row{display:grid;grid-template-columns:1.35fr .65fr 1fr;gap:10px;align-items:center;padding:10px 6px;border-bottom:1px solid #252525}
+.name{color:var(--text);font-size:18px;font-weight:900}.meta{color:var(--soft);font-size:12px;margin-top:4px}.price{color:var(--gold);font-size:23px;font-weight:900;text-align:right}
+.btns{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}button{border:1px solid #646464;background:#191919;color:var(--gold);padding:8px 10px;border-radius:4px;font-weight:900;min-width:72px;cursor:pointer}.btnGold{background:#b48a28;color:#111;border-color:var(--gold)}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}.actionBtn{letter-spacing:1px}
+.line{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid #242424}.line:last-child{border-bottom:none}
+.feedBody{padding:8px 10px;height:180px;overflow:auto;background:#080808;font-size:13px;line-height:1.45}.entry{padding:6px 0;border-bottom:1px solid #1d1d1d}
+.good{color:var(--good)}.bad{color:var(--bad)}.warn{color:var(--warn)}.info{color:var(--gold)}.up{color:var(--good);font-weight:900}.down{color:var(--bad);font-weight:900}.flat{color:var(--soft);font-weight:900}
+.overlay{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;padding:20px}
+.comic{width:min(580px,92vw);background:#111;border:2px solid var(--gold);padding:18px;text-align:center;box-shadow:0 0 35px rgba(0,0,0,.8);animation:slam .26s ease-out}
+.comic img{width:100%;max-height:420px;object-fit:contain;background:#050505;border:1px solid #333;margin-bottom:12px}.comic img.broken{display:none}
+.tag{color:var(--soft);font-size:12px;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px}.comicTitle{color:var(--text);font-size:28px;font-weight:900;margin-bottom:8px}.comicText{color:var(--soft);line-height:1.45;margin-bottom:14px}
+.cardGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}.pickCard{border:2px solid var(--gold);background:#090909;color:var(--gold);padding:24px 8px;font-size:30px;font-weight:900;cursor:pointer}
+@keyframes slam{0%{transform:scale(.72) rotate(-2deg);opacity:0}70%{transform:scale(1.04) rotate(1deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+@media(max-width:900px){.hud{grid-template-columns:1fr 1fr}.main{grid-template-columns:1fr}.row{grid-template-columns:1fr}.price{text-align:left}.btns{justify-content:flex-start}.alerts{grid-template-columns:1fr}.top{display:block}.mode{text-align:left;margin-top:8px}}
 </style>
 </head>
-
 <body>
-
-<div id="menu">
-  <div class="title">THE PU$HER</div>
-  <div class="btn" onclick="startGame()">NEW RUN</div>
+<div id="start">
+  <img id="startBg" src="startscreen.PNG" alt="The Pu$her">
+  <div id="startMenu">
+    <div class="menuBtn" onclick="startRun()">START RUN</div>
+    <div class="menuBtn">CONTINUE</div>
+    <div class="menuBtn">SETTINGS</div>
+    <div class="menuBtn">CREDITS</div>
+    <div class="menuBtn">EXIT GAME</div>
+  </div>
+  <div class="corner left" id="cloud">☁ CLOUD SAVED</div>
+  <div class="corner right" id="ver">v1.0.0</div>
 </div>
 
-<div id="game" style="display:none">
-  <div class="title">Game Loaded. Streets Open.</div>
+<div class="wrap">
+  <div class="top"><div><div class="title">THE PU$HER</div><div class="subt">UNHINGED TEST RUN</div></div><div class="mode">Stack cash. Travel smart. Survive heat.</div></div>
+  <div class="alerts"><div class="card"><div class="label">Street Intel</div><div id="intel">No fresh intel yet. Watch the market.</div></div><div class="card"><div class="label">Status</div><div id="status">Quiet move. Nothing loud yet.</div></div></div>
+  <div class="hud" id="hud"></div>
+  <div class="main">
+    <div class="panel"><div class="head"><span>Black Market</span><span id="cityLabel">New York</span></div><div id="market" class="body"></div></div>
+    <div>
+      <div class="actions"><div class="actionBtn" onclick="stay()">STAY</div><div class="actionBtn" onclick="showTravel()">TRAVEL</div></div>
+      <div class="sub"><div class="subHead"><span>Inventory</span><span id="cap">0/30</span></div><div class="subBody" id="inventory"></div></div>
+      <div class="sub"><div class="subHead"><span>Money Moves</span><span>Safe / Risk</span></div><div class="subBody"><div class="line"><span>Bank $500</span><button onclick="deposit()">Deposit</button></div><div class="line"><span>Pull $500</span><button onclick="withdraw()">Withdraw</button></div><div class="line"><span>Quick Flip $250</span><button onclick="quickFlip()">Flip</button></div></div></div>
+    </div>
+  </div>
+  <div class="feed"><div class="feedHead">Street Feed</div><div id="feed" class="feedBody"></div></div>
 </div>
 
-<audio id="carDoorSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_2b6c9f0d1c.mp3"></audio>
-<audio id="voicePlaya" src="https://cdn.pixabay.com/audio/2022/03/15/audio_6c9b9b4e3c.mp3"></audio>
+<audio id="voicePlaya" src="playa_hand.m4a"></audio>
+<audio id="carDoorSound" src="https://actions.google.com/sounds/v1/doors/wood_door_open.ogg"></audio>
 
 <script>
+const ASSETS={tonie:"tonie.png",rico:"Rico.png",eddy:"eddy_silent.png",comedian:"The Comedian.png",comedianAlt:"comedian.png",cake:"cake_jaw_jesse.png",perrkey:"perrkey_two_bricks.png"};
+let cash=3000,bank=0,day=1,city="New York",health=100,heat=0,inventory={},carrying=0,carryLimit=30,cakeWinner=null,perrkeyHint=null,lastEvent=0,cooldown=7000;
+const cities=["New York","Chicago","Miami","Los Angeles","Atlanta"];
+const profiles={"New York":"watched, profitable, tense.","Chicago":"cold, windy pressure.","Miami":"humid money and risky watches.","Los Angeles":"long plays and electronics.","Atlanta":"tapes, movement, street rumors."};
+const boosts={"New York":{"Pagers":1.18,"Jewelry":1.08},"Chicago":{"Sneakers":1.25,"Bootleg Tapes":1.12},"Miami":{"Luxury Watches":1.30,"Jewelry":1.10},"Los Angeles":{"Electronics":1.26,"Luxury Watches":1.08},"Atlanta":{"Bootleg Tapes":1.25,"Hot Merchandise":1.12}};
+const items=[{name:"Pagers",base:120,risk:1,trend:0,last:120},{name:"Sneakers",base:200,risk:1,trend:0,last:200},{name:"Jewelry",base:500,risk:2,trend:0,last:500},{name:"Electronics",base:350,risk:2,trend:0,last:350},{name:"Bootleg Tapes",base:95,risk:2,trend:0,last:95},{name:"Luxury Watches",base:900,risk:3,trend:0,last:900},{name:"Hot Merchandise",base:1300,risk:4,trend:0,last:1300}];
 
-// ===== AUDIO SYSTEM =====
-let audioCtx;
-let soundtrackTimer;
+function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function money(n){return "$"+Math.floor(n).toLocaleString()}
+function heatText(){return heat<25?"Low":heat<55?"Medium":heat<85?"High":"Burning"}
+function log(msg,type="info"){let d=document.createElement("div");d.className="entry "+type;d.textContent=`[Day ${day}] ${msg}`;feed.prepend(d)}
+function setIntel(msg){intel.textContent=msg;log("Street Intel: "+msg,"warn")}
+function setStatus(msg){status.textContent=msg}
 
-function initAudio(){
-  if(!audioCtx){
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-}
+let audioCtx=null,music=null,step=0;
+function initAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==="suspended")audioCtx.resume().catch(()=>{})}
+function beep(f,d=.08,v=.03,t="square"){if(!audioCtx)return;let o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=t;o.frequency.value=f;g.gain.setValueAtTime(.0001,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(v,audioCtx.currentTime+.012);g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+d);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+d+.03)}
+function clickSound(){initAudio();beep(880,.045,.027);setTimeout(()=>beep(440,.05,.018,"triangle"),45)}
+function warnSound(){initAudio();beep(110,.12,.05,"sawtooth");setTimeout(()=>beep(82,.14,.04,"sawtooth"),90)}
+function winSound(){initAudio();beep(440,.07,.035);setTimeout(()=>beep(660,.07,.035),80);setTimeout(()=>beep(880,.1,.035),160)}
+function lossSound(){initAudio();beep(220,.09,.045,"sawtooth");setTimeout(()=>beep(146,.16,.035,"sawtooth"),110)}
+function startMusic(){initAudio();if(music)return;let seq=[220,0,196,0,185,0,196,0,220,0,246,0,220,196,185,0];music=setInterval(()=>{let n=seq[step%seq.length];if(step%2===0)beep(120,.03,.009);if(n&&step%2===0)beep(n,.08,.016,"triangle");if(step%16===0)beep(330,.09,.013);step++},340)}
+function stopMusic(){if(music){clearInterval(music);music=null}}
 
-function beep(freq,time,vol,type="square"){
-  const o = audioCtx.createOscillator();
-  const g = audioCtx.createGain();
-  o.type=type;
-  o.frequency.value=freq;
-  g.gain.value=vol;
-  o.connect(g);
-  g.connect(audioCtx.destination);
-  o.start();
-  setTimeout(()=>o.stop(),time);
-}
+function trend(item){let diff=(item.price||item.base)-(item.last||item.base);if(item.trend>1||diff>25)return'<span class="up">📈 Rising</span>';if(item.trend<-1||diff<-25)return'<span class="down">📉 Falling</span>';return'<span class="flat">➖ Stable</span>'}
+function refreshPrices(){items.forEach(it=>{it.last=it.price||it.base;let b=boosts[city]?.[it.name]||1;it.trend+=rand(-2,2);it.trend=Math.max(-5,Math.min(5,it.trend));let swing=it.base*(it.trend*.08),chaos=heat>60?rand(-40,60):rand(-20,20);it.price=Math.max(25,Math.floor((it.base+swing+chaos)*b))});if(Math.random()<.75)generateIntel()}
+function generateIntel(){let it=items[rand(0,items.length-1)],truth=Math.random()<.70,msg="";if(truth){msg=it.trend>1?`${it.name} is heating up in ${city}. Could spike.`:it.trend<-1?`${it.name} is cooling down in ${city}. Might drop.`:`${it.name} looks stable in ${city}.`}else msg=`Rumor on ${it.name} sounds messy. Could be a fake lead.`;setIntel(msg)}
 
-function startMusic(){
-  initAudio();
-  if(soundtrackTimer) return;
+function renderHud(){hud.innerHTML=`<div class="card"><div class="label">City</div><div class="value">${city}</div></div><div class="card"><div class="label">Cash</div><div class="value">${money(cash)}</div></div><div class="card"><div class="label">Bank</div><div class="value">${money(bank)}</div></div><div class="card"><div class="label">Heat</div><div class="value">${heatText()}</div></div><div class="card"><div class="label">Health / Day</div><div class="value">${health} • Day ${day}</div></div>`}
+function renderMarket(){cityLabel.textContent=city;market.innerHTML=items.map((it,i)=>`<div class="row"><div><div class="name">${it.name}</div><div class="meta">Risk ${it.risk}/5 • ${trend(it)}</div></div><div class="price">${money(it.price)}</div><div class="btns"><button class="btnGold" onclick="buyItem(${i})">Buy</button><button onclick="sellItem(${i})">Sell</button></div></div>`).join("")}
+function renderInv(){carrying=Object.values(inventory).reduce((a,b)=>a+b,0);cap.textContent=`${carrying}/${carryLimit}`;let ks=Object.keys(inventory).filter(k=>inventory[k]>0);inventoryEl= document.getElementById("inventory");inventoryEl.innerHTML=ks.length?ks.map(k=>`<div class="line"><span>${k}</span><span>x${inventory[k]}</span></div>`).join(""):'<div class="meta">Nothing carried. Buy low, sell high.</div>'}
+function renderAll(){renderHud();renderMarket();renderInv()}
 
-  let step=0;
+function buyItem(i){clickSound();let it=items[i];if(carrying>=carryLimit){log("Too much on you. Sell or move smarter.","bad");return}if(cash>=it.price){cash-=it.price;inventory[it.name]=(inventory[it.name]||0)+1;log(`Bought ${it.name} for ${money(it.price)}.`,"good")}else log("Not enough cash.","bad");maybeEvent(.20);renderAll()}
+function sellItem(i){clickSound();let it=items[i];if(inventory[it.name]>0){inventory[it.name]--;if(inventory[it.name]===0)delete inventory[it.name];cash+=it.price;log(`Sold ${it.name} for ${money(it.price)}.`,"good")}else log(`You do not have ${it.name}.`,"bad");maybeEvent(.20);renderAll()}
+function deposit(){clickSound();if(cash>=500){cash-=500;bank+=500;log("Deposited $500.","info")}else log("Not enough cash to deposit.","bad");renderAll()}
+function withdraw(){clickSound();if(bank>=500){bank-=500;cash+=500;log("Withdrew $500.","info")}else log("Bank is too low.","bad");renderAll()}
+function quickFlip(){clickSound();if(cash<250){log("Need $250 to quick flip.","bad");return}cash-=250;if(Math.random()<.58){let w=rand(320,780);cash+=w;winSound();log(`Quick flip hit for ${money(w)}.`,"good")}else{lossSound();heat+=rand(2,8);log("Quick flip burned out. Heat went up.","bad")}maybeEvent(.16);renderAll()}
+function stay(){clickSound();day++;heat=Math.max(0,heat-rand(0,5));refreshPrices();setStatus(`Stayed in ${city}. Market shifted.`);log(`Stayed in ${city}. Prices moved.`,"info");maybeEvent(.30);renderAll()}
+function showTravel(){clickSound();let bs=cities.map(c=>`<button onclick="travel('${c}')">${c}</button>`).join("");showPanel("Travel","",`Current city: ${city}<br>${profiles[city]}`,bs+`<br><button onclick="closePanel()">Stay Here</button>`)}
+function travel(next){clickSound();if(next===city){closePanel();return}city=next;day++;heat+=rand(3,12);refreshPrices();closePanel();setStatus(`Arrived in ${city}.`);log(`Traveled to ${city}.`,"info");showPanel("Arrival","",`You touched down in ${city}. The market feels different.`,`<button onclick="closePanel()">Continue</button>`);maybeEvent(.55);renderAll()}
 
-  soundtrackTimer=setInterval(()=>{
-    if(step%2===0) beep(120,60,0.01);
-    if(step%4===0) beep(220,80,0.02,"triangle");
-    if(step%8===0) beep(330,100,0.02);
-    step++;
-  },300);
-}
+function closePanel(){document.querySelector(".overlay")?.remove()}
+function showPanel(title,img,text,buttons,tag="Comic Event"){closePanel();let d=document.createElement("div");d.className="overlay";d.innerHTML=`<div class="comic"><div class="tag">${tag}</div>${img?`<img src="${img}" onerror="this.classList.add('broken')">`:""}<div class="comicTitle">${title}</div><div class="comicText">${text}</div><div>${buttons}</div></div>`;document.body.appendChild(d)}
+function maybeEvent(ch){let now=Date.now();if(now-lastEvent<cooldown)return;if(Math.random()>ch)return;lastEvent=now;let r=Math.random();if(r<.15)showRico();else if(r<.28)showEddy();else if(r<.43)showTonie();else if(r<.62)showCake();else if(r<.78)showPerrkey();else if(r<.84)showComedian()}
 
-function stopMusic(){
-  clearInterval(soundtrackTimer);
-  soundtrackTimer=null;
-}
+function showTonie(){warnSound();showPanel("Tonie Two-Toe",ASSETS.tonie,"You been moving like nobody gets a cut. Pay, fight, or run.",`<button onclick="toniePay()">Pay $1000</button><button onclick="tonieFight()">Fight</button><button onclick="tonieRun()">Run</button>`,"Pressure")}
+function toniePay(){if(cash>=1000){cash-=1000;heat=Math.max(0,heat-20);log("Paid Tonie. Pressure eased.","warn")}else log("Not enough cash to pay Tonie.","bad");closePanel();renderAll()}
+function tonieFight(){health=Math.max(10,health-25);cash=Math.max(0,cash-400);heat+=18;lossSound();log("Tonie's crew worked you over.","bad");closePanel();renderAll()}
+function tonieRun(){cash=Math.max(0,cash-200);heat+=15;log("You ran from Tonie and dropped cash.","warn");closePanel();renderAll()}
+function showRico(){warnSound();showPanel('Rico "The Bat"',ASSETS.rico,"Wrong block. Wrong time.",`<button onclick="ricoFight()">Fight</button><button onclick="ricoRun()">Run</button>`,"Street Threat")}
+function ricoFight(){health=Math.max(10,health-18);cash=Math.max(0,cash-150);heat+=10;lossSound();log("You fought Rico and paid for it.","bad");closePanel();renderAll()}
+function ricoRun(){heat+=5;log("You slipped away from Rico.","info");closePanel();renderAll()}
+function showEddy(){warnSound();showPanel('Eddy "Silent"',ASSETS.eddy,"He was there before you noticed.",`<button onclick="eddyFight()">Fight</button><button onclick="eddyRun()">Run</button>`,"Silent Danger")}
+function eddyFight(){health=Math.max(10,health-22);cash=Math.max(0,cash-200);heat+=12;lossSound();log("Eddy barely moved. You did.","bad");closePanel();renderAll()}
+function eddyRun(){heat+=4;log("You backed off from Eddy.","warn");closePanel();renderAll()}
+function showComedian(){stopMusic();let v=voicePlaya;if(v){v.currentTime=0;v.volume=.85;v.play().catch(()=>{})}showPanel("The Comedian",ASSETS.comedian,"Funny thing about luck... it don't knock twice.",`<button onclick="playHand()">Play a Hand</button><button onclick="closePanel();startMusic()">Ignore</button>`,"Luck Can Flip")}
+function playHand(){let roll=Math.random();if(roll<.34){let w=rand(2000,10000);cash+=w;winSound();log(`The Comedian gave POWER: +${money(w)}.`,"good");showPanel("POWER","",`<div class="good">You feel momentum.</div><br>+${money(w)}`,`<button onclick="closePanel();startMusic();renderAll()">Continue</button>`,"Card Reveal")}else if(roll<.74){let l=rand(1000,7000);cash=Math.max(0,cash-l);heat+=12;lossSound();log(`The Comedian gave PAIN: -${money(l)}.`,"bad");showPanel("PAIN","",`<div class="bad">Luck cut you deep.</div><br>-${money(l)}`,`<button onclick="closePanel();startMusic();renderAll()">Continue</button>`,"Card Reveal")}else{log("The Comedian vanished.","warn");showPanel("VANISHED","",`<div class="warn">He laughs, then he's gone.</div>`,`<button onclick="closePanel();startMusic()">Continue</button>`,"Card Reveal")}renderAll()}
 
-// ===== GAME START =====
-function startGame(){
-  initAudio();
+function showCake(){clickSound();if(Math.random()<.45){showPerrkeyCake();return}cakeDeal(false)}
+function cakeDeal(hint){if(cakeWinner===null)cakeWinner=rand(1,3);let h=hint&&perrkeyHint?`<br><span class="warn">Perrkey hinted at Deal ${perrkeyHint}.</span>`:"";showPanel("Cake Jaw Jesse",ASSETS.cake,`He talks fast and looks scared. “Three big buys. One is real. Don't waste my damn time.”${h}`,`<div class="cardGrid"><div class="pickCard" onclick="cakePick(1)">A</div><div class="pickCard" onclick="cakePick(2)">B</div><div class="pickCard" onclick="cakePick(3)">C</div></div><button onclick="cakeIgnore()">Ignore</button>`,"Untrustworthy Deal")}
+function cakePick(c){let cost=900;if(cash<cost){log("Not enough cash for Cake's deal.","bad");closePanel();renderAll();return}cash-=cost;if(c===cakeWinner){let it=items[rand(0,items.length-1)],q=rand(4,9);inventory[it.name]=(inventory[it.name]||0)+q;winSound();log(`Cake came through: ${q}x ${it.name}.`,"good");showPanel("GOOD BUY",ASSETS.cake,`Rare deal hit: ${q}x ${it.name}.`,`<button onclick="closePanel();renderAll()">Continue</button>`,"Deal Result")}else if(Math.random()<.35){let m=rand(250,900);cash+=m;log(`Cake's deal was messy, but you got ${money(m)} back.`,"warn");showPanel("MID BUY",ASSETS.cake,`Not great. Not dead. You got ${money(m)} back.`,`<button onclick="closePanel();renderAll()">Continue</button>`,"Deal Result")}else{let l=rand(400,1400);cash=Math.max(0,cash-l);heat+=rand(5,15);lossSound();log(`Cake burned you for ${money(l)}.`,"bad");showPanel("BAD BUY",ASSETS.cake,`Junk in the bag. Lost ${money(l)}.`,`<button onclick="closePanel();renderAll()">Continue</button>`,"Deal Result")}cakeWinner=null;perrkeyHint=null;renderAll()}
+function cakeIgnore(){log("You didn't trust Cake Jaw.","info");cakeWinner=null;perrkeyHint=null;closePanel()}
+function showPerrkeyCake(){warnSound();let truth=Math.random()<.62,real=rand(1,3);cakeWinner=real;if(truth)perrkeyHint=real;else{let f=rand(1,3);while(f===real)f=rand(1,3);perrkeyHint=f}showPanel('Perrkey "Two Bricks"',ASSETS.perrkey,`She cuts in. “I know him. Deal ${perrkeyHint} might be the one... but don't bet your life on me.”`,`<button onclick="closePanel();cakeDeal(true)">Listen</button><button onclick="perrkeyHint=null;closePanel();cakeDeal(false)">Ignore</button>`,"Warning Overlay")}
+function showPerrkey(){warnSound();let good=Math.random()<.55;showPanel('Perrkey "Two Bricks"',ASSETS.perrkey,`She watches the block. “Not every fast move is money.”`,`<button onclick="perrkeyTip(${good})">Hear Her Out</button><button onclick="closePanel()">Walk Away</button>`,"Street Intel")}
+function perrkeyTip(g){if(g){let gain=rand(300,900);cash+=gain;winSound();log(`Perrkey tipped you to ${money(gain)} clean.`,"good")}else{heat+=rand(8,18);lossSound();log("Perrkey's tip smelled like heat.","warn")}closePanel();renderAll()}
 
-  document.getElementById("menu").style.display="none";
-  document.getElementById("game").style.display="block";
+function startRun(){initAudio();let door=carDoorSound;if(door){door.volume=.85;door.currentTime=0;door.play().catch(()=>{})}startBg.classList.add("zooming");startMenu.classList.add("fadeOut");cloud.classList.add("fadeOut");ver.classList.add("fadeOut");setTimeout(()=>{start.style.transition="opacity .6s ease";start.style.opacity="0";setTimeout(()=>{start.style.display="none";startMusic();setStatus("Sound live. Streets open.");log("Run started. Stay sharp.","info")},600)},1200)}
 
-  // Rusty car door
-  const door=document.getElementById("carDoorSound");
-  door.play();
-
-  setTimeout(()=>{
-    startMusic();
-    introSequence();
-  },800);
-}
-
-// ===== CHARACTER SYSTEM =====
-function popup(title,text,buttons){
-  const div=document.createElement("div");
-  div.className="overlay";
-  div.innerHTML=`
-    <div class="box">
-      <h2>${title}</h2>
-      <p>${text}</p>
-      ${buttons}
-    </div>
-  `;
-  document.body.appendChild(div);
-}
-
-function closePop(){
-  document.querySelector(".overlay")?.remove();
-}
-
-// ===== INTRO SHOW ALL =====
-function introSequence(){
-  showTonie();
-  setTimeout(showRico,2000);
-  setTimeout(showEddy,4000);
-  setTimeout(showCake,6000);
-  setTimeout(showPerrkey,8000);
-}
-
-// ===== CHARACTERS =====
-
-function showTonie(){
-  popup("Tonie Two-Toe",
-    "Pay. Fight. Or run.",
-    `<button onclick="closePop()">Next</button>`
-  );
-}
-
-function showRico(){
-  popup("Rico",
-    "Wrong place.",
-    `<button onclick="closePop()">Fight</button>
-     <button onclick="closePop()">Run</button>`
-  );
-}
-
-function showEddy(){
-  popup("Eddy",
-    "You didn’t see him coming.",
-    `<button onclick="closePop()">Fight</button>
-     <button onclick="closePop()">Run</button>`
-  );
-}
-
-function showCake(){
-  popup("Cake Jaw Jesse",
-    "I got something BIG… or maybe I don’t.",
-    `<button onclick="closePop()">Buy A</button>
-     <button onclick="closePop()">Buy B</button>
-     <button onclick="closePop()">Buy C</button>
-     <button onclick="closePop()">Ignore</button>`
-  );
-}
-
-function showPerrkey(){
-  popup("Perrkey 'Two Bricks'",
-    "Don’t trust him… but don’t trust me either.",
-    `<button onclick="closePop()">Listen</button>
-     <button onclick="closePop()">Ignore</button>`
-  );
-}
-
-// ===== COMEDIAN (RARE) =====
-function showComedian(){
-
-  stopMusic();
-
-  const voice=document.getElementById("voicePlaya");
-  voice.play();
-
-  popup("The Comedian",
-    "Funny thing about luck...",
-    `<button onclick="playHand()">Play a Hand</button>
-     <button onclick="closePop(); startMusic()">Ignore</button>`
-  );
-
-  setTimeout(startMusic,3000);
-}
-
-function playHand(){
-  closePop();
-
-  const win = Math.random() > 0.5;
-
-  popup("Cards",
-    win ? "POWER — You win big." : "PAIN — You lose.",
-    `<button onclick="closePop()">Continue</button>`
-  );
-}
-
-// ===== RANDOM EVENTS =====
-setInterval(()=>{
-  const r=Math.random();
-
-  if(r<0.15) showRico();
-  else if(r<0.30) showEddy();
-  else if(r<0.50) showCake();
-  else if(r<0.65) showPerrkey();
-  else if(r<0.70) showComedian();
-
-},8000);
-
+refreshPrices();renderAll();
 </script>
-
 </body>
 </html>
