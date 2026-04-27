@@ -406,14 +406,58 @@ function travel(next){
 function deposit(){
   if(gameEnded)return;
   clickSound();
-  if(cash<=0){log("No cash to deposit.","bad");return}
-  bank+=cash;log("Deposited "+money(cash),"good");cash=0;renderAll();
+
+  if(cash <= 0){
+    log("No cash to deposit.", "bad");
+    return;
+  }
+
+  let amount = prompt("Deposit how much?");
+  amount = parseInt(amount);
+
+  if(isNaN(amount) || amount <= 0){
+    log("Invalid amount.", "bad");
+    return;
+  }
+
+  if(amount > cash){
+    log("Not enough cash.", "bad");
+    return;
+  }
+
+  cash -= amount;
+  bank += amount;
+
+  log("Deposited " + money(amount), "good");
+  renderAll();
 }
 function withdraw(){
   if(gameEnded)return;
   clickSound();
-  if(bank<=0){log("No money in bank.","bad");return}
-  cash+=bank;log("Withdrew "+money(bank),"good");bank=0;renderAll();
+
+  if(bank <= 0){
+    log("No money in bank.", "bad");
+    return;
+  }
+
+  let amount = prompt("Withdraw how much?");
+  amount = parseInt(amount);
+
+  if(isNaN(amount) || amount <= 0){
+    log("Invalid amount.", "bad");
+    return;
+  }
+
+  if(amount > bank){
+    log("Not enough in bank.", "bad");
+    return;
+  }
+
+  bank -= amount;
+  cash += amount;
+
+  log("Withdrew " + money(amount), "good");
+  renderAll();
 }
 function closePanel(){document.querySelector(".overlay")?.remove()}
 function showPanel(title,img,text,buttons,tag="Comic Event"){
