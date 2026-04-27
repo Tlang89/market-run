@@ -638,7 +638,29 @@ function startRun(){
 
 refreshPrices();
 renderAll();
-  
+function deposit(){
+  if(cash <= 0){
+    log("No cash to deposit.", "bad");
+    return;
+  }
+
+  bank += cash;
+  log("Deposited " + money(cash), "good");
+  cash = 0;
+  renderAll();
+}
+
+function withdraw(){
+  if(bank <= 0){
+    log("No money in bank.", "bad");
+    return;
+  }
+
+  cash += bank;
+  log("Withdrew " + money(bank), "good");
+  bank = 0;
+  renderAll();
+}  
 
 </script>
 </body>
