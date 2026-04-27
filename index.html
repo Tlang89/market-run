@@ -40,9 +40,10 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
 .fadeOut{opacity:0}
 
 .game{
-  height:100vh;display:flex;flex-direction:column;gap:6px;padding:8px;
+  height:100vh;display:flex;flex-direction:column;gap:8px;padding:8px;
   background:linear-gradient(rgba(0,0,0,.62),rgba(0,0,0,.92)),url("New York Street.png") center top / cover no-repeat;
-  overflow:hidden;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
 }
 .header{
   flex-shrink:0;border:1px solid var(--line);
@@ -64,7 +65,7 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
   font-size:14px;letter-spacing:.5px;font-weight:800;line-height:1.25;
 }
 .marketWrap{
-  flex:1;min-height:0;border:1px solid rgba(212,175,55,.35);
+  flex:0 0 auto;min-height:265px;border:1px solid rgba(212,175,55,.35);
   background:rgba(8,8,8,.82);display:flex;flex-direction:column;overflow:hidden;
 }
 .marketHead{
@@ -72,17 +73,17 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
   padding:9px 12px;border-bottom:1px solid var(--line);background:rgba(18,18,18,.9);
   color:var(--bright);font-size:20px;font-weight:900;
 }
-.market{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px}
+.market{flex:1;min-height:215px;max-height:310px;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px}
 .itemCard{
   border:1px solid rgba(212,175,55,.2);
   background:linear-gradient(135deg,rgba(255,255,255,.035),rgba(212,175,55,.025));
-  padding:12px;margin-bottom:10px;box-shadow:inset 0 0 14px rgba(212,175,55,.025);
+  padding:10px;margin-bottom:8px;box-shadow:inset 0 0 14px rgba(212,175,55,.025);
 }
 .itemTop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-.itemName{color:var(--bright);font-size:22px;font-weight:900}
-.price{color:var(--gold);font-size:26px;font-weight:900;white-space:nowrap}
+.itemName{color:var(--bright);font-size:20px;font-weight:900}
+.price{color:var(--gold);font-size:23px;font-weight:900;white-space:nowrap}
 .meta{color:var(--soft);font-size:13px;margin-top:4px}
-.spark{height:28px;width:100%;border:1px solid rgba(212,175,55,.32);background:#060606;margin:10px 0 8px}
+.spark{height:22px;width:100%;border:1px solid rgba(212,175,55,.32);background:#060606;margin:10px 0 8px}
 .buttons{display:flex;gap:10px;flex-wrap:wrap}
 
 .bottom{flex-shrink:0;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
@@ -144,8 +145,8 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
 .cardGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
 .pickCard{border:2px solid var(--gold);background:#050505;color:var(--gold);padding:24px 8px;font-size:36px;font-weight:900;cursor:pointer}
 
-.hud,.intel,.marketWrap,.bottom,.drawer{opacity:0;transform:translateY(18px);animation:panelIn .42s ease forwards}
-.hud{animation-delay:.06s}.intel{animation-delay:.12s}.marketWrap{animation-delay:.18s}.bottom{animation-delay:.24s}.drawer{animation-delay:.30s}
+.hud,.marketWrap,.intel,.bottom,.drawer{opacity:0;transform:translateY(18px);animation:panelIn .42s ease forwards}
+.hud{animation-delay:.06s}.marketWrap{animation-delay:.12s}.intel{animation-delay:.18s}.bottom{animation-delay:.24s}.drawer{animation-delay:.30s}
 
 @keyframes panelIn{to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -184,12 +185,13 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
 
 <div class="game" id="game">
   <div class="hud" id="hud"></div>
-  <div class="intel" id="intel">No fresh intel yet. Watch the market.</div>
 
   <div class="marketWrap" id="marketWrap">
     <div class="marketHead"><span>Black Market</span><span id="cityLabel">New York</span></div>
     <div class="market" id="market"></div>
   </div>
+
+  <div class="intel" id="intel">No fresh intel yet. Watch the market.</div>
 
   <div class="bottom">
     <div class="action" onclick="stay()">STAY</div>
@@ -420,6 +422,7 @@ function renderInv(){
 function renderAll(){
   if(gameEnded)return;
   setBg();renderHud();renderMarket();renderInv();checkEndgame();
+  if(!gameEnded && startScreen.style.display==="none" && !music) startMusic();
 }
 function agePressure(){
   if(day>365 && Math.random()<.06){health=Math.max(0,health-1);log("The years are wearing on you.","warn")}
@@ -776,7 +779,10 @@ function policeBust(){
   renderAll();
 }
 
-function closePanel(){document.querySelector(".overlay")?.remove()}
+function closePanel(){
+  document.querySelector(".overlay")?.remove();
+  if(!gameEnded && startScreen.style.display==="none") startMusic();
+}
 function showPanel(title,img,text,buttons,tag="Comic Event"){
   closePanel();
   const d=document.createElement("div");
@@ -813,7 +819,7 @@ function showEddy(){warnSound();showPanel('Eddy "Silent"',ASSETS.eddy,"He was th
 function eddyFight(){health=Math.max(0,health-22);cash=Math.max(0,cash-200);heat+=12;lossSound();log("Eddy barely moved. You did.","bad");closePanel();renderAll()}
 function eddyRun(){heat+=4;log("You backed off from Eddy.","warn");closePanel();renderAll()}
 function showComedian(){
-  stopMusic();
+  startMusic();
   let v=voicePlaya;
   if(v){v.currentTime=0;v.volume=.85;v.play().catch(()=>{})}
   showPanel("The Comedian",ASSETS.comedian,"Funny thing about luck... it don't knock twice.",`<button onclick="playHand()">Play a Hand</button><button onclick="closePanel();startMusic();renderAll()">Ignore</button>`,"Luck Can Flip");
