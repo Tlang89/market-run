@@ -40,7 +40,7 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
 .fadeOut{opacity:0}
 
 .game{
-  height:100vh;display:flex;flex-direction:column;gap:8px;padding:8px;
+  height:100vh;display:flex;flex-direction:column;gap:6px;padding:8px;
   background:linear-gradient(rgba(0,0,0,.62),rgba(0,0,0,.92)),url("New York Street.png") center top / cover no-repeat;
   overflow:hidden;
 }
@@ -144,7 +144,7 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
 .cardGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
 .pickCard{border:2px solid var(--gold);background:#050505;color:var(--gold);padding:24px 8px;font-size:36px;font-weight:900;cursor:pointer}
 
-.header,.hud,.intel,.marketWrap,.bottom,.drawer{opacity:0;transform:translateY(18px);animation:panelIn .42s ease forwards}
+.hud,.intel,.marketWrap,.bottom,.drawer{opacity:0;transform:translateY(18px);animation:panelIn .42s ease forwards}
 .hud{animation-delay:.06s}.intel{animation-delay:.12s}.marketWrap{animation-delay:.18s}.bottom{animation-delay:.24s}.drawer{animation-delay:.30s}
 
 @keyframes panelIn{to{opacity:1;transform:translateY(0)}}
@@ -177,22 +177,12 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
   <img id="startBg" src="startscreen.PNG" alt="The Pu$her">
   <div id="startMenu">
     <div class="startBtn" onclick="startRun()">START RUN</div>
-    <div class="startBtn">CONTINUE</div>
-    <div class="startBtn">SETTINGS</div>
-    <div class="startBtn">CREDITS</div>
-    <div class="startBtn">EXIT GAME</div>
   </div>
   <div class="corner left" id="cloud">☁ CLOUD SAVED</div>
   <div class="corner right" id="ver">v1.0.0</div>
 </div>
 
 <div class="game" id="game">
-  <div class="header">
-    <div class="title">THE PU$HER</div>
-    <div class="sub">FINAL GAME BUILD</div>
-    <div class="tagline">Stack cash. Travel smart. Survive the years.</div>
-  </div>
-
   <div class="hud" id="hud"></div>
   <div class="intel" id="intel">No fresh intel yet. Watch the market.</div>
 
