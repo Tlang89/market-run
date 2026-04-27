@@ -215,6 +215,7 @@ const ASSETS={
 let cash=3000, bank=0, day=1, city="New York", health=100, heat=0, blocksOwned=0;
 let inventory={}, carrying=0, carryLimit=30;
 let cakeWinner=null, perrkeyHint=null, lastEvent=0, cooldown=6500;
+let brokeTravelCount=0;
 let gameEnded=false;
 
 const cities=["New York","Chicago","Miami","Los Angeles","Atlanta"];
@@ -366,6 +367,76 @@ function agePressure(){
   if(day>365 && Math.random()<.06){health=Math.max(0,health-1);log("The years are wearing on you.","warn")}
   if(heat>=85 && Math.random()<.12){health=Math.max(0,health-2);log("Burning heat is taking a toll.","bad")}
 }
+
+function hasInventory(){
+  return Object.values(inventory).reduce((a,b)=>a+b,0) > 0;
+}
+
+function isFlatBroke(){
+  return cash <= 0 && bank <= 0 && !hasInventory();
+}
+
+function brokeCheck(reason){
+  if(gameEnded)return;
+
+  if(isFlatBroke()){
+    brokeTravelCount++;
+    log("Flat broke streak: " + brokeTravelCount + "/12.", "bad");
+
+    if(Math.random() < .38){
+      luckyBreak();
+    }
+
+    if(brokeTravelCount >= 12 && isFlatBroke()){
+      gameEnded = true;
+      stopMusic();
+      lossSound();
+      showPanel(
+  "YOU LOST",
+  ASSETS.comedian,
+  `You ran out of moves.<br><br>
+  You are now homeless.<br><br>
+  Get off this game and find a job…<br>
+  or play again.`,
+  `<button onclick="location.reload()">PLAY AGAIN</button>`,
+  "The Comedian"
+);
+    }
+  }else{
+    brokeTravelCount = 0;
+  }
+}
+
+function luckyBreak(){
+  let roll = Math.random();
+
+  if(roll < .35){
+    let gain = rand(300, 1200);
+    cash += gain;
+    winSound();
+    log("Lucky break: odd job paid " + money(gain) + ".","good");
+    showPanel("LUCKY BREAK","",`You caught a small job and got back on your feet.<br>+${money(gain)}`,`<button onclick="closePanel();renderAll()">Keep Moving</button>`,"Second Chance");
+  }else if(roll < .62){
+    let item = items[rand(0, items.length-2)];
+    inventory[item.name] = (inventory[item.name] || 0) + 1;
+    winSound();
+    log("Lucky break: found 1x " + item.name + ".","good");
+    showPanel("LUCKY FIND","",`Somebody left something useful behind.<br>Found 1x ${item.name}.`,`<button onclick="closePanel();renderAll()">Keep Moving</button>`,"Second Chance");
+  }else if(roll < .82){
+    let gain = rand(100, 500);
+    cash += gain;
+    health = Math.min(100, health + rand(3, 10));
+    winSound();
+    log("Lucky break: helped a stranger for " + money(gain) + ".","good");
+  }else{
+    heat = Math.max(0, heat - rand(8, 18));
+    health = Math.min(100, health + rand(5, 15));
+    log("Lucky break: laid low and recovered a little.","good");
+  }
+
+  brokeTravelCount = 0;
+}
+
 function buyItem(i){
   if(gameEnded)return;
   clickSound();
@@ -390,7 +461,7 @@ function sellItem(i){
 function stay(){
   if(gameEnded)return;
   clickSound();day++;heat=Math.max(0,heat-rand(0,4));agePressure();refreshPrices();
-  log(`Stayed in ${city}.`,"info");maybeEvent(.36);renderAll();
+  log(`Stayed in ${city}.`,"info");maybeEvent(.36);brokeCheck("stay");renderAll();
 }
 function showTravel(){
   if(gameEnded)return;
@@ -403,7 +474,7 @@ function travel(next){
   if(next===city){closePanel();return}
   city=next;day++;heat+=rand(3,10);agePressure();refreshPrices();closePanel();
   showPanel("Arrival","",`You touched down in ${city}. The market feels different.`,`<button onclick="closePanel()">Continue</button>`,"Comic Event");
-  log(`Traveled to ${city}.`,"info");maybeEvent(.62);renderAll();
+  log(`Traveled to ${city}.`,"info");maybeEvent(.62);brokeCheck("travel");renderAll();
 }
 function deposit(){
   if(gameEnded)return;
@@ -531,6 +602,7 @@ function robberyEvent(){
     log("Robbed for " + money(cashLoss) + ".","bad");
   }
 
+  brokeCheck("robbery");
   renderAll();
 }
 
@@ -580,6 +652,7 @@ function policeBust(){
   lossSound();
   showPanel("BUSTED","",`Police cleaned you out.<br>Cash seized: ${money(seizedCash)}<br>Items seized: ${seizedItems}`,`<button onclick="closePanel();renderAll()">Start Over From Here</button>`,"Police");
   log("Busted. Cash and inventory seized.","bad");
+  brokeCheck("bust");
   renderAll();
 }
 
