@@ -580,7 +580,7 @@ invBox.innerHTML = keys.map(k=>`
       </div>
     `).join("");
   }else{
-   invBox.innerHTML = 
+   invBox.innerHTML = `<div class="meta">Nothing carried.</div>`;
   }
 }
 function renderAll(){setBg();renderHud();renderMarket();renderInv()}
