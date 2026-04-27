@@ -572,14 +572,15 @@ function renderInv(){
   const keys=Object.keys(inventory).filter(k=>inventory[k]>0);
 
   if(keys.length){
-    inventory.innerHTML=keys.map(k=>`
+    const invBox = document.getElementById("inventory");
+invBox.innerHTML = keys.map(k=>`
       <div class="line">
         <span>${k}</span>
         <span>x${inventory[k]}</span>
       </div>
     `).join("");
   }else{
-    inventory.innerHTML=`<div class="meta">Nothing carried.</div>`;
+   invBox.innerHTML = 
   }
 }
 function renderAll(){setBg();renderHud();renderMarket();renderInv()}
