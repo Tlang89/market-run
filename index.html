@@ -3,26 +3,31 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>The Pu$her — Locked Game Build</title>
+<title>The Pu$her — Final Game Build</title>
 
-<style> 
-button {
-  touch-action: manipulation;
-  }
+<style>
 :root{
   --gold:#d4af37;
   --bright:#f2d97a;
   --soft:#9b8340;
-  --panel:rgba(10,10,10,.82);
-  --line:rgba(212,175,55,.28);
+  --panel:rgba(10,10,10,.84);
+  --line:rgba(212,175,55,.32);
   --good:#77e08a;
   --bad:#ff7777;
   --warn:#ffc76d;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;overflow:hidden;background:#000;color:var(--gold);font-family:Arial,Helvetica,sans-serif}
+html,body{
+  margin:0;height:100%;overflow:hidden;background:#000;color:var(--gold);
+  font-family:Arial,Helvetica,sans-serif;
+}
+button{
+  touch-action:manipulation;border:1px solid #666;background:#171717;color:var(--gold);
+  padding:10px 12px;border-radius:5px;font-weight:900;min-width:78px;cursor:pointer;
+}
+button:active{background:var(--gold);color:#000;transform:scale(.96)}
+.btnGold{background:#b99128;color:#111;border-color:var(--gold)}
 
-/* START SCREEN */
 #startScreen{position:fixed;inset:0;z-index:9999;background:#000;overflow:hidden}
 #startBg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform-origin:70% 62%;transition:transform 1.15s ease,opacity .55s ease}
 #startScreen:after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.04),rgba(0,0,0,.28))}
@@ -31,379 +36,118 @@ html,body{margin:0;height:100%;overflow:hidden;background:#000;color:var(--gold)
 .startBtn:active{background:var(--gold);color:#000;transform:scale(.96)}
 .corner{position:absolute;bottom:18px;z-index:3;color:var(--gold);font-size:12px;letter-spacing:.8px;opacity:.9}
 .corner.left{left:18px}.corner.right{right:18px}
-.zooming{transform:scale(1.35) translate(-12%,-6%);filter:brightness(1.05)}
+.zooming{transform:scale(1.18);filter:brightness(1.05)}
 .fadeOut{opacity:0}
 
-/* GAME LAYOUT — LOCKED */
 .game{
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  padding:10px;
-  background:
-    linear-gradient(rgba(0,0,0,.62),rgba(0,0,0,.92)),
-    url("New York Street.png") center top / cover no-repeat;
+  height:100vh;display:flex;flex-direction:column;gap:8px;padding:8px;
+  background:linear-gradient(rgba(0,0,0,.62),rgba(0,0,0,.92)),url("New York Street.png") center top / cover no-repeat;
   overflow:hidden;
 }
 .header{
-  flex-shrink:0;
-  border:1px solid var(--line);
+  flex-shrink:0;border:1px solid var(--line);
   background:linear-gradient(180deg,rgba(20,20,20,.88),rgba(8,8,8,.82));
-  padding:12px 14px;
-  box-shadow:0 0 24px rgba(0,0,0,.75), inset 0 0 20px rgba(212,175,55,.04);
+  padding:8px 14px;box-shadow:0 0 24px rgba(0,0,0,.75), inset 0 0 20px rgba(212,175,55,.04);
 }
-.title{font-size:clamp(30px,8vw,56px);line-height:.95;font-weight:900;color:var(--bright);letter-spacing:1px}
-.sub{margin-top:6px;color:#c76f6f;font-weight:900;letter-spacing:2px;font-size:13px}
-.tagline{margin-top:8px;color:var(--warn);font-weight:800}
+.title{font-size:clamp(30px,8vw,48px);line-height:.95;font-weight:900;color:var(--bright);letter-spacing:1px}
+.sub{margin-top:5px;color:#c76f6f;font-weight:900;letter-spacing:2px;font-size:13px}
+.tagline{margin-top:5px;color:var(--warn);font-weight:800}
 
-.hud{
-  flex-shrink:0;
-  display:grid;
-  grid-template-columns:1.2fr 1fr 1fr 1fr;
-  gap:8px;
-}
-.hudCard{
-  border:1px solid var(--line);
-  background:var(--panel);
-  padding:9px 10px;
-  min-height:58px;
-}
+.hud{flex-shrink:0;display:grid;grid-template-columns:1.2fr 1fr 1fr 1.2fr;gap:8px}
+.hudCard{border:1px solid var(--line);background:var(--panel);padding:7px 10px;min-height:48px}
 .label{text-transform:uppercase;color:var(--soft);font-size:10px;letter-spacing:1.5px;margin-bottom:4px}
-.value{color:var(--bright);font-size:clamp(16px,4.5vw,24px);font-weight:900}
+.value{color:var(--bright);font-size:clamp(15px,4vw,22px);font-weight:900}
 
 .intel{
-  flex-shrink:0;
-  border:1px solid var(--line);
-  background:rgba(5,5,5,.78);
-  padding:9px 10px;
-  color:var(--warn);
-  font-weight:800;
-  line-height:1.25;
+  flex-shrink:0;border:1px solid var(--line);border-left:3px solid var(--gold);
+  background:rgba(0,0,0,.85);padding:6px 10px;color:var(--warn);
+  font-size:14px;letter-spacing:.5px;font-weight:800;line-height:1.25;
 }
-
 .marketWrap{
-  flex:1;
-  min-height:0;
-  border:1px solid var(--line);
-  background:rgba(8,8,8,.82);
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
+  flex:1;min-height:0;border:1px solid rgba(212,175,55,.35);
+  background:rgba(8,8,8,.82);display:flex;flex-direction:column;overflow:hidden;
 }
 .marketHead{
-  flex-shrink:0;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:10px 12px;
-  border-bottom:1px solid var(--line);
-  background:rgba(18,18,18,.9);
-  color:var(--bright);
-  font-size:20px;
-  font-weight:900;
+  flex-shrink:0;display:flex;justify-content:space-between;align-items:center;
+  padding:9px 12px;border-bottom:1px solid var(--line);background:rgba(18,18,18,.9);
+  color:var(--bright);font-size:20px;font-weight:900;
 }
-.market{
-  flex:1;
-  min-height:0;
-  overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
-  padding:10px;
-}
+.market{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px}
 .itemCard{
   border:1px solid rgba(212,175,55,.2);
   background:linear-gradient(135deg,rgba(255,255,255,.035),rgba(212,175,55,.025));
-  padding:12px;
-  margin-bottom:10px;
-  box-shadow:inset 0 0 14px rgba(212,175,55,.025);
+  padding:12px;margin-bottom:10px;box-shadow:inset 0 0 14px rgba(212,175,55,.025);
 }
 .itemTop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
 .itemName{color:var(--bright);font-size:22px;font-weight:900}
 .price{color:var(--gold);font-size:26px;font-weight:900;white-space:nowrap}
 .meta{color:var(--soft);font-size:13px;margin-top:4px}
 .spark{height:28px;width:100%;border:1px solid rgba(212,175,55,.32);background:#060606;margin:10px 0 8px}
-.buttons{display:flex;gap:10px}
-button{
-  border:1px solid #666;
-  background:#171717;
-  color:var(--gold);
-  padding:10px 12px;
-  border-radius:5px;
-  font-weight:900;
-  min-width:78px;
-}
-button:active{background:var(--gold);color:#000;transform:scale(.96)}
-.btnGold{background:#b99128;color:#111;border-color:var(--gold)}
+.buttons{display:flex;gap:10px;flex-wrap:wrap}
 
-.bottom{
-  flex-shrink:0;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-}
+.bottom{flex-shrink:0;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}
 .action{
-  border:2px solid var(--gold);
-  border-radius:12px;
-  background:rgba(0,0,0,.72);
-  color:var(--gold);
-  text-align:center;
-  font-weight:900;
-  letter-spacing:2px;
-  padding:14px 8px;
-  cursor:pointer;
+  border:2px solid var(--gold);border-radius:12px;background:rgba(0,0,0,.72);
+  color:var(--gold);text-align:center;font-weight:900;letter-spacing:1px;font-size:15px;
+  padding:10px 6px;cursor:pointer;
 }
 .action:active{background:var(--gold);color:#000;transform:scale(.97)}
 
-.drawer{
-  flex-shrink:0;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-}
-.miniPanel{
-  border:1px solid var(--line);
-  background:rgba(8,8,8,.82);
-  min-height:70px;
-  max-height:120px;
-  overflow:auto;
-}
-.miniHead{
-  display:flex;
-  justify-content:space-between;
-  padding:8px 10px;
-  color:var(--bright);
-  font-weight:900;
-  border-bottom:1px solid rgba(212,175,55,.18);
-}
-.miniBody{padding:8px 10px;font-size:13px;line-height:1.35}
-.line{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.drawer{flex-shrink:0;display:grid;grid-template-columns:1fr 1fr;gap:8px;opacity:.95}
+.miniPanel{border:1px solid var(--line);background:rgba(8,8,8,.82);min-height:58px;max-height:82px;overflow:auto}
+.miniHead{display:flex;justify-content:space-between;padding:7px 10px;color:var(--bright);font-weight:900;border-bottom:1px solid rgba(212,175,55,.18)}
+.miniBody{padding:7px 10px;font-size:13px;line-height:1.35}
+.line{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.08)}
 .line:last-child{border-bottom:none}
 
 .good{color:var(--good)}.bad{color:var(--bad)}.warn{color:var(--warn)}.info{color:var(--gold)}
 .up{color:var(--good);font-weight:900}.down{color:var(--bad);font-weight:900}.flat{color:var(--soft);font-weight:900}
 
-/* COMIC POPUPS */
 .overlay{
-  position:fixed;
-  inset:0;
-  z-index:10000;
-  background:rgba(0,0,0,.88);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:18px;
+  position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.88);
+  display:flex;align-items:center;justify-content:center;padding:18px;animation:fadeIn .18s ease;
 }
 .comic{
   width:min(620px,94vw);
-  background:
-    linear-gradient(rgba(0,0,0,.72),rgba(0,0,0,.9)),
-    radial-gradient(circle at top,rgba(212,175,55,.14),transparent 45%),
-    #111;
-  border:3px solid var(--gold);
-  padding:16px;
-  text-align:center;
-  box-shadow:0 0 38px rgba(0,0,0,.85);
-  animation:slam .24s ease-out;
+  background:linear-gradient(rgba(0,0,0,.72),rgba(0,0,0,.9)),radial-gradient(circle at top,rgba(212,175,55,.14),transparent 45%),#111;
+  border:3px solid var(--gold);padding:16px;text-align:center;box-shadow:0 0 38px rgba(0,0,0,.85);
+  transform:scale(.66);opacity:0;animation:comicSlam .26s cubic-bezier(.2,1.45,.4,1) forwards;
 }
-.comic img{
-  width:100%;
-  max-height:42vh;
-  object-fit:contain;
-  background:#030303;
-  border:1px solid rgba(212,175,55,.22);
-  margin-bottom:10px;
-}
+.comic img{width:100%;max-height:42vh;object-fit:contain;background:#030303;border:1px solid rgba(212,175,55,.22);margin-bottom:10px}
 .comic img.broken{display:none}
 .comicTag{color:var(--soft);font-size:12px;text-transform:uppercase;letter-spacing:3px;margin-bottom:8px}
 .comicTitle{color:var(--bright);font-size:clamp(28px,8vw,44px);font-weight:900;margin-bottom:8px}
 .comicText{color:var(--soft);font-size:18px;line-height:1.35;margin-bottom:14px}
 .cardGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
 .pickCard{border:2px solid var(--gold);background:#050505;color:var(--gold);padding:24px 8px;font-size:36px;font-weight:900;cursor:pointer}
-.pickCard:active{background:var(--gold);color:#000}
-@keyframes slam{0%{transform:scale(.75) rotate(-2deg);opacity:0}70%{transform:scale(1.04) rotate(1deg)}100%{transform:scale(1) rotate(0)}}
+
+.header,.hud,.intel,.marketWrap,.bottom,.drawer{opacity:0;transform:translateY(18px);animation:panelIn .42s ease forwards}
+.hud{animation-delay:.06s}.intel{animation-delay:.12s}.marketWrap{animation-delay:.18s}.bottom{animation-delay:.24s}.drawer{animation-delay:.30s}
+
+@keyframes panelIn{to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes comicSlam{0%{transform:scale(.66) rotate(-3deg);opacity:0}60%{transform:scale(1.045) rotate(1deg);opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes marketPulse{0%{transform:scale(1)}50%{transform:scale(1.018);box-shadow:0 0 24px rgba(212,175,55,.22)}100%{transform:scale(1)}}
+@keyframes shake{0%{transform:translateX(0)}25%{transform:translateX(-4px)}50%{transform:translateX(4px)}75%{transform:translateX(-2px)}100%{transform:translateX(0)}}
+.marketPulse{animation:marketPulse .32s ease}
 
 @media(max-width:560px){
   .game{padding:8px;gap:8px}
   .hud{grid-template-columns:1fr 1fr}
+  .bottom{grid-template-columns:1fr 1fr}
   .drawer{grid-template-columns:1fr}
   .miniPanel{max-height:92px}
   .itemName{font-size:20px}
   .price{font-size:23px}
   .comicText{font-size:16px}
 }
-
-/* ===== GAMEPLAY PANEL ANIMATION ONLY — INTRO UNTOUCHED ===== */
-.header,
-.hud,
-.intel,
-.marketWrap,
-.bottom,
-.drawer{
-  opacity:0;
-  transform:translateY(18px);
-  animation:panelIn .42s ease forwards;
+@media(min-width:700px){
+  .title{font-size:42px}
+  .market{max-height:210px}
 }
-
-.hud{ animation-delay:.06s; }
-.intel{ animation-delay:.12s; }
-.marketWrap{ animation-delay:.18s; }
-.bottom{ animation-delay:.24s; }
-.drawer{ animation-delay:.30s; }
-
-@keyframes panelIn{
-  to{
-    opacity:1;
-    transform:translateY(0);
-  }
-}
-
-button,
-.action{
-  transition:transform .14s ease, box-shadow .14s ease, background .14s ease;
-}
-
-button:active,
-.action:active{
-  transform:scale(.95);
-  box-shadow:0 0 18px rgba(212,175,55,.45);
-}
-
-.marketPulse{
-  animation:marketPulse .32s ease;
-}
-
-@keyframes marketPulse{
-  0%{ transform:scale(1); }
-  50%{ transform:scale(1.018); box-shadow:0 0 24px rgba(212,175,55,.22); }
-  100%{ transform:scale(1); }
-}
-
-.overlay{
-  animation:fadeIn .18s ease;
-}
-
-.comic{
-  transform:scale(.66);
-  opacity:0;
-  animation:comicSlam .26s cubic-bezier(.2,1.45,.4,1) forwards;
-}
-
-@keyframes comicSlam{
-  0%{
-    transform:scale(.66) rotate(-3deg);
-    opacity:0;
-  }
-  60%{
-    transform:scale(1.045) rotate(1deg);
-    opacity:1;
-  }
-  100%{
-    transform:scale(1) rotate(0);
-    opacity:1;
-  }
-}
-
-@keyframes fadeIn{
-  from{opacity:0;}
-  to{opacity:1;}
-}
-
-@keyframes shake{
-  0%{transform:translateX(0);}
-  25%{transform:translateX(-4px);}
-  50%{transform:translateX(4px);}
-  75%{transform:translateX(-2px);}
-  100%{transform:translateX(0);}
-}
-/* FINAL POLISH — NO GAME CHANGE */
-.marketWrap{
-  border:1px solid rgba(212,175,55,.35);
-}
-
-.intel{
-  font-size:14px;
-  letter-spacing:.5px;
-  background:rgba(0,0,0,.85);
-  border-left:3px solid var(--gold);
-}
-
-.action{
-  font-size:16px;
-}
-
-.drawer{
-  opacity:.95;
-}
-  
-  /* LAPTOP MARKET FIX — VISUAL ONLY */
-@media (min-width:700px){
-  .header{
-    padding:8px 14px;
-  }
-
-  .title{
-    font-size:42px;
-  }
-
-  .tagline{
-    margin-top:4px;
-  }
-
-  .hudCard{
-    min-height:48px;
-    padding:7px 10px;
-  }
-
-  .intel{
-    padding:6px 10px;
-  }
-
-  .action{
-    padding:10px 8px;
-  }
-
-  .miniPanel{
-    max-height:92px;
-    min-height:58px;
-  }
-
-  .marketWrap{
-    min-height:260px;
-  }
-
-  .market{
-    min-height:220px;
-  }
-}
-/* DESKTOP HEIGHT FIX — keeps bottom panels visible */
-@media (min-width:700px){
-  .marketWrap{
-    min-height:0;
-    flex:1;
-  }
-
-  .market{
-  min-height:0;
-  max-height:200px;
-  overflow-y:auto;
-}
-
-  .drawer{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-  }
-
-  .miniPanel{
-    max-height:82px;
-    min-height:58px;
-  }
-
-  .bottom{
-    flex-shrink:0;
-  }
-}  
 </style>
 </head>
+
 <body>
 
 <div id="startScreen">
@@ -422,30 +166,29 @@ button:active,
 <div class="game" id="game">
   <div class="header">
     <div class="title">THE PU$HER</div>
-    <div class="sub">LOCKED GAME BUILD</div>
-    <div class="tagline">Stack cash. Travel smart. Survive heat.</div>
+    <div class="sub">FINAL GAME BUILD</div>
+    <div class="tagline">Stack cash. Travel smart. Survive the years.</div>
   </div>
 
   <div class="hud" id="hud"></div>
-
   <div class="intel" id="intel">No fresh intel yet. Watch the market.</div>
 
-  <div class="marketWrap">
+  <div class="marketWrap" id="marketWrap">
     <div class="marketHead"><span>Black Market</span><span id="cityLabel">New York</span></div>
     <div class="market" id="market"></div>
   </div>
 
-<div class="bottom">
-  <div class="action" onclick="stay()">STAY</div>
-  <div class="action" onclick="deposit()">DEPOSIT</div>
-  <div class="action" onclick="withdraw()">WITHDRAW</div>
-  <div class="action" onclick="showTravel()">TRAVEL</div>
-</div>
+  <div class="bottom">
+    <div class="action" onclick="stay()">STAY</div>
+    <div class="action" onclick="deposit()">DEPOSIT</div>
+    <div class="action" onclick="withdraw()">WITHDRAW</div>
+    <div class="action" onclick="showTravel()">TRAVEL</div>
+  </div>
 
   <div class="drawer">
     <div class="miniPanel">
       <div class="miniHead"><span>Inventory</span><span id="cap">0/30</span></div>
-      <div class="miniBody" id="inventory"></div>
+      <div class="miniBody" id="inventoryBox"></div>
     </div>
     <div class="miniPanel">
       <div class="miniHead"><span>Street Feed</span><span>Live</span></div>
@@ -467,8 +210,10 @@ const ASSETS={
   perrkey:"perrkey_two_bricks.PNG"
 };
 
-let cash=3000,bank=0,day=1,city="New York",health=100,heat=0;
-let inventory={},carrying=0,carryLimit=30,cakeWinner=null,perrkeyHint=null,lastEvent=0,cooldown=6500;
+let cash=3000, bank=0, day=1, city="New York", health=100, heat=0;
+let inventory={}, carrying=0, carryLimit=30;
+let cakeWinner=null, perrkeyHint=null, lastEvent=0, cooldown=6500;
+let gameEnded=false;
 
 const cities=["New York","Chicago","Miami","Los Angeles","Atlanta"];
 const cityBg={
@@ -486,30 +231,62 @@ const cityBias={
   "Atlanta":{"Bootleg Tapes":1.25,"Hot Merchandise":1.12}
 };
 const items=[
-  {name:"Pagers",base:120,risk:1,trend:0,last:120,history:[120,120,120,120]},
-  {name:"Sneakers",base:200,risk:1,trend:0,last:200,history:[200,200,200,200]},
-  {name:"Jewelry",base:500,risk:2,trend:0,last:500,history:[500,500,500,500]},
-  {name:"Electronics",base:350,risk:2,trend:0,last:350,history:[350,350,350,350]},
-  {name:"Bootleg Tapes",base:95,risk:2,trend:0,last:95,history:[95,95,95,95]},
-  {name:"Luxury Watches",base:900,risk:3,trend:0,last:900,history:[900,900,900,900]},
-  {name:"Hot Merchandise",base:1300,risk:4,trend:0,last:1300,history:[1300,1300,1300,1300]}
+  {name:"Pagers",base:120,risk:1,trend:0,last:120,price:120,history:[120,120,120,120]},
+  {name:"Sneakers",base:200,risk:1,trend:0,last:200,price:200,history:[200,200,200,200]},
+  {name:"Jewelry",base:500,risk:2,trend:0,last:500,price:500,history:[500,500,500,500]},
+  {name:"Electronics",base:350,risk:2,trend:0,last:350,price:350,history:[350,350,350,350]},
+  {name:"Bootleg Tapes",base:95,risk:2,trend:0,last:95,price:95,history:[95,95,95,95]},
+  {name:"Luxury Watches",base:900,risk:3,trend:0,last:900,price:900,history:[900,900,900,900]},
+  {name:"Hot Merchandise",base:1300,risk:4,trend:0,last:1300,price:1300,history:[1300,1300,1300,1300]},
+  {name:"Million Dollar Mixtape",base:5000,risk:5,trend:0,last:5000,price:5000,history:[5000,5000,5000,5000]}
 ];
 
+function yearNow(){return Math.floor((day-1)/365)+1}
+function dayOfYear(){return ((day-1)%365)+1}
 function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a}
 function money(n){return "$"+Math.floor(n).toLocaleString()}
 function heatText(){return heat<25?"Low":heat<55?"Medium":heat<85?"High":"Burning"}
-function log(msg,type="info"){const d=document.createElement("div");d.className="line "+type;d.innerHTML=`<span>Day ${day}</span><span>${msg}</span>`;feed.prepend(d)}
+
+function log(msg,type="info"){
+  const d=document.createElement("div");
+  d.className="line "+type;
+  d.innerHTML=`<span>Y${yearNow()} D${dayOfYear()}</span><span>${msg}</span>`;
+  feed.prepend(d);
+}
 function setIntel(msg){intel.textContent=msg;log("Intel: "+msg,"warn")}
 function setBg(){game.style.background=`linear-gradient(rgba(0,0,0,.62),rgba(0,0,0,.92)),url("${cityBg[city]||"New York Street.png"}") center top / cover no-repeat`}
 
 let audioCtx=null,music=null,step=0;
-function initAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==="suspended")audioCtx.resume().catch(()=>{})}
-function beep(f,d=.08,v=.03,t="square"){if(!audioCtx)return;let o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=t;o.frequency.value=f;g.gain.setValueAtTime(.0001,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(v,audioCtx.currentTime+.012);g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+d);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+d+.03)}
+function initAudio(){
+  if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  if(audioCtx.state==="suspended") audioCtx.resume().catch(()=>{});
+}
+function beep(f,d=.08,v=.03,t="square"){
+  initAudio();
+  if(!audioCtx)return;
+  let o=audioCtx.createOscillator(),g=audioCtx.createGain();
+  o.type=t;o.frequency.value=f;
+  g.gain.setValueAtTime(.0001,audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(v,audioCtx.currentTime+.012);
+  g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+d);
+  o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+d+.03);
+}
 function clickSound(){initAudio();beep(880,.045,.027);setTimeout(()=>beep(440,.05,.018,"triangle"),45)}
 function warnSound(){initAudio();beep(110,.12,.05,"sawtooth");setTimeout(()=>beep(82,.14,.04,"sawtooth"),90)}
 function winSound(){initAudio();beep(440,.07,.035);setTimeout(()=>beep(660,.07,.035),80);setTimeout(()=>beep(880,.1,.035),160)}
 function lossSound(){initAudio();beep(220,.09,.045,"sawtooth");setTimeout(()=>beep(146,.16,.035,"sawtooth"),110)}
-function startMusic(){initAudio();if(music)return;let seq=[220,0,196,0,185,0,196,0,220,0,246,0,220,196,185,0];music=setInterval(()=>{let n=seq[step%seq.length];if(step%2===0)beep(120,.03,.009);if(n&&step%2===0)beep(n,.08,.016,"triangle");if(step%16===0)beep(330,.09,.013);step++},340)}
+function startMusic(){
+  initAudio();
+  if(music)return;
+  let seq=[220,0,196,0,185,0,196,0,220,0,246,0,220,196,185,0];
+  music=setInterval(()=>{
+    let n=seq[step%seq.length];
+    if(step%2===0)beep(120,.03,.009);
+    if(n&&step%2===0)beep(n,.08,.016,"triangle");
+    if(step%16===0)beep(330,.09,.013);
+    step++;
+  },340);
+}
 function stopMusic(){if(music){clearInterval(music);music=null}}
 
 function trendLabel(item){
@@ -536,7 +313,7 @@ function refreshPrices(){
     item.history.push(item.price);
     if(item.history.length>8)item.history.shift();
   });
-  if(Math.random()<.75)generateIntel();
+  if(Math.random()<.65)generateIntel();
 }
 function generateIntel(){
   let item=items[rand(0,items.length-1)],trueIntel=Math.random()<.7,msg;
@@ -547,19 +324,21 @@ function generateIntel(){
   }else msg=`Rumor on ${item.name} sounds messy. Could be fake.`;
   setIntel(msg);
 }
-
 function renderHud(){
   hud.innerHTML=`
     <div class="hudCard"><div class="label">City</div><div class="value">${city}</div></div>
     <div class="hudCard"><div class="label">Cash</div><div class="value">${money(cash)}</div></div>
     <div class="hudCard"><div class="label">Bank</div><div class="value">${money(bank)}</div></div>
-    <div class="hudCard"><div class="label">Heat / Day</div><div class="value">${heatText()} • ${day}</div></div>`;
+    <div class="hudCard"><div class="label">Time / Heat</div><div class="value">Y${yearNow()} D${dayOfYear()} • ${heatText()}</div></div>`;
 }
 function renderMarket(){
   cityLabel.textContent=city;
   market.innerHTML=items.map((it,i)=>`
     <div class="itemCard">
-      <div class="itemTop"><div><div class="itemName">${it.name}</div><div class="meta">Risk ${it.risk}/5 • ${trendLabel(it)}</div></div><div class="price">${money(it.price)}</div></div>
+      <div class="itemTop">
+        <div><div class="itemName">${it.name}</div><div class="meta">Risk ${it.risk}/5 • ${trendLabel(it)}</div></div>
+        <div class="price">${money(it.price)}</div>
+      </div>
       ${spark(it)}
       <div class="buttons"><button class="btnGold" onclick="buyItem(${i})">Buy</button><button onclick="sellItem(${i})">Sell</button></div>
     </div>`).join("");
@@ -570,27 +349,72 @@ function renderInv(){
   carrying=Object.values(inventory).reduce((a,b)=>a+b,0);
   cap.textContent=`${carrying}/${carryLimit}`;
   const keys=Object.keys(inventory).filter(k=>inventory[k]>0);
-const invBox = document.getElementById("inventory");
+  const invBox=document.getElementById("inventoryBox");
   if(keys.length){
-    
-invBox.innerHTML = keys.map(k=>`
-      <div class="line">
-        <span>${k}</span>
-        <span>x${inventory[k]}</span>
-      </div>
+    invBox.innerHTML=keys.map(k=>`
+      <div class="line"><span>${k}</span><span>x${inventory[k]}</span></div>
     `).join("");
-  }else{
-   invBox.innerHTML = `<div class="meta">Nothing carried.</div>`;
-  }
+  }else invBox.innerHTML=`<div class="meta">Nothing carried.</div>`;
 }
-function renderAll(){setBg();renderHud();renderMarket();renderInv()}
-
-function buyItem(i){clickSound();let it=items[i];if(carrying>=carryLimit){log("Too much on you.","bad");return}if(cash>=it.price){cash-=it.price;inventory[it.name]=(inventory[it.name]||0)+1;log(`Bought ${it.name}`,"good")}else log("Not enough cash.","bad");maybeEvent(.24);renderAll()}
-function sellItem(i){clickSound();let it=items[i];if(inventory[it.name]>0){inventory[it.name]--;if(inventory[it.name]===0)delete inventory[it.name];cash+=it.price;log(`Sold ${it.name}`,"good")}else log(`No ${it.name}.`,"bad");maybeEvent(.24);renderAll()}
-function stay(){clickSound();day++;heat=Math.max(0,heat-rand(0,4));refreshPrices();log(`Stayed in ${city}.`,"info");maybeEvent(.36);renderAll()}
-function showTravel(){clickSound();showPanel("Travel","",`Current city: ${city}`,cities.map(c=>`<button onclick="travel('${c}')">${c}</button>`).join("")+`<br><button onclick="closePanel()">Cancel</button>`,"Move")}
-function travel(next){clickSound();if(next===city){closePanel();return}city=next;day++;heat+=rand(3,10);refreshPrices();closePanel();showPanel("Arrival","",`You touched down in ${city}. The market feels different.`,`<button onclick="closePanel()">Continue</button>`,"Comic Event");log(`Traveled to ${city}.`,"info");maybeEvent(.62);renderAll()}
-
+function renderAll(){
+  if(gameEnded)return;
+  setBg();renderHud();renderMarket();renderInv();checkEndgame();
+}
+function agePressure(){
+  if(day>365 && Math.random()<.06){health=Math.max(0,health-1);log("The years are wearing on you.","warn")}
+  if(heat>=85 && Math.random()<.12){health=Math.max(0,health-2);log("Burning heat is taking a toll.","bad")}
+}
+function buyItem(i){
+  if(gameEnded)return;
+  clickSound();
+  let it=items[i];
+  if(carrying>=carryLimit){log("Too much on you.","bad");return}
+  if(cash>=it.price){
+    cash-=it.price;inventory[it.name]=(inventory[it.name]||0)+1;log(`Bought ${it.name}`,"good");
+    if(it.name==="Million Dollar Mixtape" && Math.random()<.08)mixtapeLegend();
+  }else log("Not enough cash.","bad");
+  maybeEvent(.24);renderAll();
+}
+function sellItem(i){
+  if(gameEnded)return;
+  clickSound();
+  let it=items[i];
+  if(inventory[it.name]>0){
+    inventory[it.name]--;if(inventory[it.name]===0)delete inventory[it.name];
+    cash+=it.price;log(`Sold ${it.name}`,"good");
+  }else log(`No ${it.name}.`,"bad");
+  maybeEvent(.24);renderAll();
+}
+function stay(){
+  if(gameEnded)return;
+  clickSound();day++;heat=Math.max(0,heat-rand(0,4));agePressure();refreshPrices();
+  log(`Stayed in ${city}.`,"info");maybeEvent(.36);renderAll();
+}
+function showTravel(){
+  if(gameEnded)return;
+  clickSound();
+  showPanel("Travel","",`Current city: ${city}`,cities.map(c=>`<button onclick="travel('${c}')">${c}</button>`).join("")+`<br><br><button onclick="closePanel()">Cancel</button>`,"Move");
+}
+function travel(next){
+  if(gameEnded)return;
+  clickSound();
+  if(next===city){closePanel();return}
+  city=next;day++;heat+=rand(3,10);agePressure();refreshPrices();closePanel();
+  showPanel("Arrival","",`You touched down in ${city}. The market feels different.`,`<button onclick="closePanel()">Continue</button>`,"Comic Event");
+  log(`Traveled to ${city}.`,"info");maybeEvent(.62);renderAll();
+}
+function deposit(){
+  if(gameEnded)return;
+  clickSound();
+  if(cash<=0){log("No cash to deposit.","bad");return}
+  bank+=cash;log("Deposited "+money(cash),"good");cash=0;renderAll();
+}
+function withdraw(){
+  if(gameEnded)return;
+  clickSound();
+  if(bank<=0){log("No money in bank.","bad");return}
+  cash+=bank;log("Withdrew "+money(bank),"good");bank=0;renderAll();
+}
 function closePanel(){document.querySelector(".overlay")?.remove()}
 function showPanel(title,img,text,buttons,tag="Comic Event"){
   closePanel();
@@ -602,31 +426,131 @@ function showPanel(title,img,text,buttons,tag="Comic Event"){
   setTimeout(()=>document.body.style.animation="",200);
 }
 function maybeEvent(ch){
-  let now=Date.now();if(now-lastEvent<cooldown)return;if(Math.random()>ch)return;lastEvent=now;
+  if(gameEnded)return;
+  let now=Date.now();
+  if(now-lastEvent<cooldown)return;
+  if(Math.random()>ch)return;
+  lastEvent=now;
   let r=Math.random();
-  if(r<.14)showTonie();else if(r<.27)showRico();else if(r<.40)showEddy();else if(r<.61)showCake();else if(r<.80)showPerrkey();else if(r<.90)showComedian();
+  if(r<.14)showTonie();
+  else if(r<.27)showRico();
+  else if(r<.40)showEddy();
+  else if(r<.61)showCake();
+  else if(r<.80)showPerrkey();
+  else if(r<.93)showComedian();
 }
-
 function showTonie(){warnSound();showPanel("Tonie Two-Toe",ASSETS.tonie,"Tonie rolls up with thugs behind him. Pay, fight, or run.",`<button onclick="toniePay()">Pay $1000</button><button onclick="tonieFight()">Fight</button><button onclick="tonieRun()">Run</button>`,"Pressure")}
 function toniePay(){if(cash>=1000){cash-=1000;heat=Math.max(0,heat-20);log("Paid Tonie.","warn")}else log("Not enough cash.","bad");closePanel();renderAll()}
-function tonieFight(){health=Math.max(10,health-25);cash=Math.max(0,cash-400);heat+=18;lossSound();log("Tonie's thugs worked you over.","bad");closePanel();renderAll()}
+function tonieFight(){health=Math.max(0,health-25);cash=Math.max(0,cash-400);heat+=18;lossSound();log("Tonie's thugs worked you over.","bad");closePanel();renderAll()}
 function tonieRun(){cash=Math.max(0,cash-200);heat+=15;log("You ran from Tonie.","warn");closePanel();renderAll()}
 function showRico(){warnSound();showPanel('Rico "The Bat"',ASSETS.rico,"Wrong block. Wrong time.",`<button onclick="ricoFight()">Fight</button><button onclick="ricoRun()">Run</button>`,"Street Threat")}
-function ricoFight(){health=Math.max(10,health-18);cash=Math.max(0,cash-150);heat+=10;lossSound();log("You fought Rico.","bad");closePanel();renderAll()}
+function ricoFight(){health=Math.max(0,health-18);cash=Math.max(0,cash-150);heat+=10;lossSound();log("You fought Rico.","bad");closePanel();renderAll()}
 function ricoRun(){heat+=5;log("You slipped away from Rico.","info");closePanel();renderAll()}
 function showEddy(){warnSound();showPanel('Eddy "Silent"',ASSETS.eddy,"He was there before you noticed.",`<button onclick="eddyFight()">Fight</button><button onclick="eddyRun()">Run</button>`,"Silent Danger")}
-function eddyFight(){health=Math.max(10,health-22);cash=Math.max(0,cash-200);heat+=12;lossSound();log("Eddy barely moved. You did.","bad");closePanel();renderAll()}
+function eddyFight(){health=Math.max(0,health-22);cash=Math.max(0,cash-200);heat+=12;lossSound();log("Eddy barely moved. You did.","bad");closePanel();renderAll()}
 function eddyRun(){heat+=4;log("You backed off from Eddy.","warn");closePanel();renderAll()}
-function showComedian(){stopMusic();let v=voicePlaya;if(v){v.currentTime=0;v.volume=.85;v.play().catch(()=>{})}showPanel("The Comedian",ASSETS.comedian,"Funny thing about luck... it don't knock twice.",`<button onclick="playHand()">Play a Hand</button><button onclick="closePanel();startMusic()">Ignore</button>`,"Luck Can Flip")}
-function playHand(){let roll=Math.random();if(roll<.34){let w=rand(2000,10000);cash+=w;winSound();showPanel("POWER","",`You feel momentum.<br>+${money(w)}`,`<button onclick="closePanel();startMusic();renderAll()">Continue</button>`,"Card Reveal");log(`Comedian POWER +${money(w)}`,"good")}else if(roll<.74){let l=rand(1000,7000);cash=Math.max(0,cash-l);heat+=12;lossSound();showPanel("PAIN","",`Luck cut you deep.<br>-${money(l)}`,`<button onclick="closePanel();startMusic();renderAll()">Continue</button>`,"Card Reveal");log(`Comedian PAIN -${money(l)}`,"bad")}else{showPanel("VANISHED","",`He laughs, then he's gone.`,`<button onclick="closePanel();startMusic()">Continue</button>`,"Card Reveal");log("Comedian vanished.","warn")}renderAll()}
+function showComedian(){
+  stopMusic();
+  let v=voicePlaya;
+  if(v){v.currentTime=0;v.volume=.85;v.play().catch(()=>{})}
+  showPanel("The Comedian",ASSETS.comedian,"Funny thing about luck... it don't knock twice.",`<button onclick="playHand()">Play a Hand</button><button onclick="closePanel();startMusic();renderAll()">Ignore</button>`,"Luck Can Flip");
+}
+function playHand(){
+  let roll=Math.random();
+  if(roll<.30){
+    let w=rand(2000,12000);cash+=w;winSound();
+    showPanel("POWER","",`You feel momentum.<br>+${money(w)}`,`<button onclick="closePanel();startMusic();renderAll()">Continue</button>`,"Card Reveal");
+    log(`Comedian POWER +${money(w)}`,"good");
+  }else if(roll<.68){
+    let l=rand(1000,7000);cash=Math.max(0,cash-l);heat+=12;lossSound();
+    showPanel("PAIN","",`Luck cut you deep.<br>-${money(l)}`,`<button onclick="closePanel();startMusic();renderAll()">Continue</button>`,"Card Reveal");
+    log(`Comedian PAIN -${money(l)}`,"bad");
+  }else if(roll<.86){
+    inventory["Million Dollar Mixtape"]=(inventory["Million Dollar Mixtape"]||0)+1;winSound();
+    showPanel("THE MIXTAPE","",`He slides you a tape and laughs.<br>Million Dollar Mixtape added.`,`<button onclick="closePanel();startMusic();renderAll()">Continue</button>`,"Rare Card");
+    log("Comedian gave you the Million Dollar Mixtape.","good");
+  }else{
+    showPanel("VANISHED","",`He laughs, then he's gone.`,`<button onclick="closePanel();startMusic();renderAll()">Continue</button>`,"Card Reveal");
+    log("Comedian vanished.","warn");
+  }
+  renderAll();
+}
 function showCake(){clickSound();if(Math.random()<.45){showPerrkeyCake();return}cakeDeal(false)}
-function cakeDeal(hint){if(cakeWinner===null)cakeWinner=rand(1,3);let h=hint&&perrkeyHint?`<br><span class="warn">Perrkey hinted at Deal ${perrkeyHint}.</span>`:"";showPanel("Cake Jaw Jesse",ASSETS.cake,`Cake Jaw is loud, foul-mouthed, and scared behind the grin. “Three big buys. One is real. Don't waste my damn time.”${h}`,`<div class="cardGrid"><div class="pickCard" onclick="cakePick(1)">A</div><div class="pickCard" onclick="cakePick(2)">B</div><div class="pickCard" onclick="cakePick(3)">C</div></div><button onclick="cakeIgnore()">Ignore</button>`,"Untrustworthy Deal")}
-function cakePick(c){let cost=900;if(cash<cost){log("Not enough cash for Cake.","bad");closePanel();renderAll();return}cash-=cost;if(c===cakeWinner){let it=items[rand(0,items.length-1)],q=rand(4,9);inventory[it.name]=(inventory[it.name]||0)+q;winSound();showPanel("GOOD BUY",ASSETS.cake,`Rare deal hit: ${q}x ${it.name}.`,`<button onclick="closePanel();renderAll()">Continue</button>`,"Deal Result");log(`Cake came through: ${q}x ${it.name}`,"good")}else{let l=rand(400,1400);cash=Math.max(0,cash-l);heat+=rand(5,15);lossSound();showPanel("BAD BUY",ASSETS.cake,`Junk in the bag. Lost ${money(l)}.`,`<button onclick="closePanel();renderAll()">Continue</button>`,"Deal Result");log(`Cake burned you for ${money(l)}`,"bad")}cakeWinner=null;perrkeyHint=null;renderAll()}
-function cakeIgnore(){cakeWinner=null;perrkeyHint=null;log("Ignored Cake.","info");closePanel()}
-function showPerrkeyCake(){warnSound();let truth=Math.random()<.62,real=rand(1,3);cakeWinner=real;if(truth)perrkeyHint=real;else{let f=rand(1,3);while(f===real)f=rand(1,3);perrkeyHint=f}showPanel('Perrkey "Two Bricks"',ASSETS.perrkey,`She cuts in. “I know him. Deal ${perrkeyHint} might be the one... but don't bet your life on me.”`,`<button onclick="closePanel();cakeDeal(true)">Listen</button><button onclick="perrkeyHint=null;closePanel();cakeDeal(false)">Ignore</button>`,"Warning Overlay")}
-function showPerrkey(){warnSound();let good=Math.random()<.55;showPanel('Perrkey "Two Bricks"',ASSETS.perrkey,`She watches the block like she already knows the ending. “Not every fast move is money.”`,`<button onclick="perrkeyTip(${good})">Hear Her Out</button><button onclick="closePanel()">Walk Away</button>`,"Street Intel")}
-function perrkeyTip(good){if(good){let gain=rand(300,900);cash+=gain;winSound();log(`Perrkey tip +${money(gain)}`,"good")}else{heat+=rand(8,18);lossSound();log("Perrkey's tip smelled like heat.","warn")}closePanel();renderAll()}
-
+function cakeDeal(hint){
+  if(cakeWinner===null)cakeWinner=rand(1,3);
+  let h=hint&&perrkeyHint?`<br><span class="warn">Perrkey hinted at Deal ${perrkeyHint}.</span>`:"";
+  showPanel("Cake Jaw Jesse",ASSETS.cake,`Cake Jaw is cocky, loud, and scared behind the grin. “Three big buys. One is real. Don't waste my damn time.”${h}`,`<div class="cardGrid"><div class="pickCard" onclick="cakePick(1)">A</div><div class="pickCard" onclick="cakePick(2)">B</div><div class="pickCard" onclick="cakePick(3)">C</div></div><button onclick="cakeIgnore()">Ignore</button>`,"Untrustworthy Deal");
+}
+function cakePick(c){
+  let cost=900;
+  if(cash<cost){log("Not enough cash for Cake.","bad");closePanel();renderAll();return}
+  cash-=cost;
+  if(c===cakeWinner){
+    let it=items[rand(0,items.length-1)],q=rand(4,9);
+    inventory[it.name]=(inventory[it.name]||0)+q;
+    winSound();
+    showPanel("GOOD BUY",ASSETS.cake,`Rare deal hit: ${q}x ${it.name}.`,`<button onclick="closePanel();renderAll()">Continue</button>`,"Deal Result");
+    log(`Cake came through: ${q}x ${it.name}`,"good");
+  }else{
+    let l=rand(400,1400);
+    cash=Math.max(0,cash-l);heat+=rand(5,15);lossSound();
+    showPanel("BAD BUY",ASSETS.cake,`Junk in the bag. Lost ${money(l)}.`,`<button onclick="closePanel();renderAll()">Continue</button>`,"Deal Result");
+    log(`Cake burned you for ${money(l)}`,"bad");
+  }
+  cakeWinner=null;perrkeyHint=null;renderAll();
+}
+function cakeIgnore(){cakeWinner=null;perrkeyHint=null;log("Ignored Cake.","info");closePanel();renderAll()}
+function showPerrkeyCake(){
+  warnSound();
+  let truth=Math.random()<.62,real=rand(1,3);
+  cakeWinner=real;
+  if(truth)perrkeyHint=real;
+  else{let f=rand(1,3);while(f===real)f=rand(1,3);perrkeyHint=f}
+  showPanel('Perrkey "Two Bricks"',ASSETS.perrkey,`She cuts in. “I know him. Deal ${perrkeyHint} might be the one... but don't bet your life on me.”`,`<button onclick="closePanel();cakeDeal(true)">Listen</button><button onclick="perrkeyHint=null;closePanel();cakeDeal(false)">Ignore</button>`,"Warning Overlay");
+}
+function showPerrkey(){
+  warnSound();
+  let good=Math.random()<.55;
+  showPanel('Perrkey "Two Bricks"',ASSETS.perrkey,`She watches the block like she already knows the ending. “Not every fast move is money.”`,`<button onclick="perrkeyTip(${good})">Hear Her Out</button><button onclick="closePanel();renderAll()">Walk Away</button>`,"Street Intel");
+}
+function perrkeyTip(good){
+  if(good){let gain=rand(300,900);cash+=gain;winSound();log(`Perrkey tip +${money(gain)}`,"good")}
+  else{heat+=rand(8,18);lossSound();log("Perrkey's tip smelled like heat.","warn")}
+  closePanel();renderAll();
+}
+function mixtapeLegend(){
+  let hit=Math.random()<.45;
+  if(hit){
+    cash+=1000000;
+    winSound();
+    showPanel("MILLION DOLLAR MIXTAPE","",`The tape blew up overnight.<br>+${money(1000000)}`,`<button onclick="closePanel();renderAll()">Continue</button>`,"Legendary");
+    log("Million Dollar Mixtape hit for $1,000,000.","good");
+  }
+}
+function checkEndgame(){
+  if(gameEnded)return;
+  if(health<=0){
+    gameEnded=true;stopMusic();lossSound();
+    showPanel("YOU DIDN'T MAKE IT",ASSETS.comedian,"The streets caught up before the lifetime run could finish.",`<button onclick="location.reload()">NEW RUN</button>`,"Game Over");
+    return;
+  }
+  if(heat>=130){
+    gameEnded=true;stopMusic();lossSound();
+    showPanel("TOO HOT",ASSETS.comedian,"The heat finally swallowed the run.",`<button onclick="location.reload()">NEW RUN</button>`,"Game Over");
+    return;
+  }
+  if(cash+bank>=100000){
+    gameEnded=true;stopMusic();winSound();
+    showPanel("YOU BECAME THE PU$HER",ASSETS.comedian,"You didn't just survive the game. You became the name everyone whispers about.",`<button onclick="location.reload()">NEW RUN</button>`,"Elite Ending");
+    return;
+  }
+  if(yearNow()>=99){
+    gameEnded=true;stopMusic();
+    let v=voicePlaya;
+    if(v){v.currentTime=0;v.volume=.9;v.play().catch(()=>{})}
+    showPanel("YEAR 99",ASSETS.comedian,"You lived through a lifetime of heat, bad deals, and lucky breaks. The Comedian laughs. Almost nobody sees this ending.",`<button onclick="location.reload()">LEGACY COMPLETE</button>`,"Rare Easter Egg");
+  }
+}
 function startRun(){
   initAudio();
   if(carDoorSound){carDoorSound.volume=.85;carDoorSound.currentTime=0;carDoorSound.play().catch(()=>{})}
@@ -634,33 +558,20 @@ function startRun(){
   startMenu.classList.add("fadeOut");
   cloud.classList.add("fadeOut");
   ver.classList.add("fadeOut");
-  setTimeout(()=>{startScreen.style.transition="opacity .6s ease";startScreen.style.opacity="0";setTimeout(()=>{startScreen.style.display="none";startMusic();log("Run started. Stay sharp.","info")},600)},1200);
+  setTimeout(()=>{
+    startScreen.style.transition="opacity .6s ease";
+    startScreen.style.opacity="0";
+    setTimeout(()=>{
+      startScreen.style.display="none";
+      startMusic();
+      log("Run started. Stay sharp.","info");
+      renderAll();
+    },600);
+  },900);
 }
 
 refreshPrices();
 renderAll();
-function deposit(){
-  if(cash <= 0){
-    log("No cash to deposit.", "bad");
-    return;
-  }
-
-  bank += cash;
-  log("Deposited " + money(cash), "good");
-  cash = 0;
-  renderAll();
-}
-function withdraw(){
-  if(bank <= 0){
-    log("No money in bank.", "bad");
-    return;
-  }
-
-  cash += bank;
-  log("Withdrew " + money(bank), "good");
-  bank = 0;
-  renderAll();
-}
 </script>
 </body>
 </html>
