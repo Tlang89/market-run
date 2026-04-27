@@ -375,6 +375,33 @@ button:active,
     min-height:220px;
   }
 }
+/* DESKTOP HEIGHT FIX — keeps bottom panels visible */
+@media (min-width:700px){
+  .marketWrap{
+    min-height:0;
+    flex:1;
+  }
+
+  .market{
+  min-height:0;
+  max-height:200px;
+  overflow-y:auto;
+}
+
+  .drawer{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+
+  .miniPanel{
+    max-height:82px;
+    min-height:58px;
+  }
+
+  .bottom{
+    flex-shrink:0;
+  }
+}  
 </style>
 </head>
 <body>
