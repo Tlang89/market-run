@@ -644,23 +644,54 @@ function deposit(){
     return;
   }
 
-  bank += cash;
-  log("Deposited " + money(cash), "good");
-  cash = 0;
+  let amount = parseInt(prompt("Deposit how much?", cash));
+
+  if(isNaN(amount) || amount <= 0){
+    log("Invalid amount.", "bad");
+    return;
+  }
+
+  if(amount > cash){
+    log("Not enough cash.", "bad");
+    return;
+  }
+
+  cash -= amount;
+  bank += amount;
+
+  log("Deposited " + money(amount), "good");
   renderAll();
 }
-
 function withdraw(){
   if(bank <= 0){
     log("No money in bank.", "bad");
     return;
   }
 
-  cash += bank;
-  log("Withdrew " + money(bank), "good");
-  bank = 0;
+  function withdraw(){
+  if(bank <= 0){
+    log("No money in bank.", "bad");
+    return;
+  }
+
+  let amount = parseInt(prompt("Withdraw how much?", bank));
+
+  if(isNaN(amount) || amount <= 0){
+    log("Invalid amount.", "bad");
+    return;
+  }
+
+  if(amount > bank){
+    log("Not enough in bank.", "bad");
+    return;
+  }
+
+  bank -= amount;
+  cash += amount;
+
+  log("Withdrew " + money(amount), "good");
   renderAll();
-}  
+}
 
 </script>
 </body>
