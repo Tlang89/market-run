@@ -570,9 +570,9 @@ function renderInv(){
   carrying=Object.values(inventory).reduce((a,b)=>a+b,0);
   cap.textContent=`${carrying}/${carryLimit}`;
   const keys=Object.keys(inventory).filter(k=>inventory[k]>0);
-
+const invBox = document.getElementById("inventory");
   if(keys.length){
-    const invBox = document.getElementById("inventory");
+    
 invBox.innerHTML = keys.map(k=>`
       <div class="line">
         <span>${k}</span>
