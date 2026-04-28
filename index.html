@@ -32,7 +32,7 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
 #startBg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform-origin:70% 62%;transition:transform 1.15s ease,opacity .55s ease;pointer-events:none}
 #startScreen:after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.04),rgba(0,0,0,.28));pointer-events:none}
 #startMenu{position:absolute;left:50%;bottom:8%;transform:translateX(-50%);z-index:99999;width:min(78vw,430px);display:flex;flex-direction:column;gap:14px;transition:opacity .5s ease;pointer-events:auto}
-.startBtn{border:2px solid var(--gold);border-radius:11px;background:rgba(0,0,0,.38);color:var(--gold);padding:14px;text-align:center;font-weight:900;letter-spacing:2px;font-size:18px;cursor:pointer}
+.startBtn{border:2px solid var(--gold);border-radius:11px;background:rgba(0,0,0,.38);color:var(--gold);padding:14px;text-align:center;font-weight:900;letter-spacing:2px;font-size:18px;cursor:pointer;position:relative;z-index:100000;pointer-events:auto}
 .startBtn:active{background:var(--gold);color:#000;transform:scale(.96)}
 .corner{position:absolute;bottom:18px;z-index:3;color:var(--gold);font-size:12px;letter-spacing:.8px;opacity:.9}
 .corner.left{left:18px}.corner.right{right:18px}
@@ -248,7 +248,8 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
     border:2px solid #d4af37;
     padding:18px;
     color:#d4af37;
-    z-index:99999;
+    z-index:100001;
+    pointer-events:auto;
     max-height:70vh;
     overflow-y:auto;
     box-shadow:0 0 28px rgba(0,0,0,.85);
@@ -1391,46 +1392,15 @@ function startRun(){
   }
 }
 
-function wireStartButtons(){
-  const guide=document.getElementById("guideBtn");
-  const cont=document.getElementById("continueBtn");
-  const start=document.getElementById("startRunBtn");
-
-  if(guide) guide.addEventListener("click", toggleGuide);
-  if(cont) cont.addEventListener("click", continueRun);
-  if(start) start.addEventListener("click", startRun);
-}
-
-if(document.readyState==="loading"){
-  document.addEventListener("DOMContentLoaded", wireStartButtons);
-}else{
-  wireStartButtons();
-}
-
-
-function wireEmergencyStart(){
-  const btn=document.getElementById("startRunBtn");
-  if(btn){
-    btn.addEventListener("touchend", function(e){
-      e.preventDefault();
-      startRun();
-    }, {passive:false});
-    btn.addEventListener("click", function(){
-      startRun();
-    });
-  }
-}
-
-if(document.readyState==="loading"){
-  document.addEventListener("DOMContentLoaded", wireEmergencyStart);
-}else{
-  wireEmergencyStart();
-}
-
 function toggleGuide(){
   const g = document.getElementById("guidePanel");
   if(!g) return;
-  g.style.display = g.style.display === "none" ? "block" : "none";
+
+  if(g.style.display === "block"){
+    g.style.display = "none";
+  }else{
+    g.style.display = "block";
+  }
 }
 </script>
 </body>
