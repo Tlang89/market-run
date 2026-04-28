@@ -169,6 +169,61 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
   .title{font-size:42px}
   .market{max-height:210px}
 }
+
+/* GRAFFITI HELP MENU — START SCREEN ONLY */
+#guidePanel{
+  background:
+    radial-gradient(circle at top left, rgba(212,175,55,.16), transparent 32%),
+    linear-gradient(145deg, rgba(0,0,0,.96), rgba(15,10,4,.94)) !important;
+  border:3px solid #d4af37 !important;
+  box-shadow:
+    0 0 32px rgba(0,0,0,.9),
+    0 0 22px rgba(212,175,55,.25),
+    inset 0 0 20px rgba(212,175,55,.08) !important;
+}
+
+.graffitiTitle{
+  font-size:28px;
+  font-weight:900;
+  letter-spacing:2px;
+  color:#f2d97a;
+  text-shadow:
+    2px 2px 0 #000,
+    0 0 12px rgba(212,175,55,.5);
+  transform:skew(-5deg);
+  margin-bottom:8px;
+}
+
+.graffitiTag{
+  color:#c76f6f;
+  font-weight:900;
+  letter-spacing:2px;
+  font-size:12px;
+  margin-bottom:14px;
+  text-transform:uppercase;
+}
+
+.graffitiRule{
+  border-left:4px solid #d4af37;
+  padding:8px 10px;
+  margin:9px 0;
+  background:rgba(212,175,55,.055);
+}
+
+.graffitiRule b{
+  color:#f2d97a;
+  letter-spacing:1px;
+}
+
+.graffitiQuote{
+  color:#ffc76d;
+  font-weight:900;
+  font-size:16px;
+  margin:12px 0;
+  text-align:center;
+  text-shadow:0 0 8px rgba(255,199,109,.35);
+}
+
 </style>
 </head>
 
@@ -198,95 +253,109 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
     overflow-y:auto;
     box-shadow:0 0 28px rgba(0,0,0,.85);
   ">
-    <div style="font-weight:900;font-size:22px;margin-bottom:10px;letter-spacing:2px;">
-      THE PU$HER STREET HANDBOOK
-    </div>
+
+    <div class="graffitiTitle">THE PU$HER STREET HANDBOOK</div>
+    <div class="graffitiTag">Read this before you hit the block</div>
 
     <div style="font-size:14px;line-height:1.45;text-align:left;">
 
-      <b>THE IDEA</b><br>
-      You are running a lifetime hustle. Watch the market, move city to city, survive the streets, and build enough power to become The Pu$her.<br><br>
+      <div class="graffitiQuote">Ain’t nobody holding your hand out here.</div>
 
-      <b>THE MAIN LOOP</b><br>
-      1. Check the Black Market.<br>
-      2. Buy low.<br>
-      3. Travel or stay while prices move.<br>
-      4. Sell high.<br>
-      5. Protect your money, health, and stash.<br><br>
+      <div class="graffitiRule">
+        <b>THE IDEA</b><br>
+        You’re running a lifetime hustle. Flip goods, move city to city, dodge heat, stay alive, and build power until you become <b>The Pu$her</b>.
+      </div>
 
-      <b>MARKET</b><br>
-      Every item has a price, risk, and trend.<br>
-      🔥 HOT means the price may be climbing.<br>
-      📉 Falling / 💀 Crash means be careful.<br>
-      Different cities have different prices, so travel matters.<br><br>
+      <div class="graffitiRule">
+        <b>FIRST MOVE</b><br>
+        Look at the Black Market. Buy something you can afford. Don’t overthink it. Stay or travel, watch prices move, then sell when the price jumps.
+      </div>
 
-      <b>STAY / TRAVEL</b><br>
-      STAY = one day passes in your current city.<br>
-      TRAVEL = move to another city and one day passes.<br>
-      Every day pushes the lifetime forward.<br><br>
+      <div class="graffitiRule">
+        <b>THE MARKET</b><br>
+        Buy low. Sell high. That’s the damn game.<br>
+        🔥 HOT = price may climb.<br>
+        📉 Falling / 💀 Crash = don’t be stupid.<br>
+        Every city hits different.
+      </div>
 
-      <b>YEARS</b><br>
-      Days turn into years. This is a long hustle game.<br>
-      Reaching Year 99 is a rare hidden ending.<br><br>
+      <div class="graffitiRule">
+        <b>STAY / TRAVEL</b><br>
+        STAY = one day passes where you are.<br>
+        TRAVEL = move cities and one day passes.<br>
+        Every move burns time. This is a lifetime hustle.
+      </div>
 
-      <b>CASH / BANK</b><br>
-      Cash is money on hand. You use it to buy goods, hospital visits, and blocks.<br>
-      Bank money is safer, but you must withdraw it before spending it.<br>
-      Deposit and withdraw ask how much you want to move.<br><br>
+      <div class="graffitiRule">
+        <b>CASH / BANK</b><br>
+        Cash buys goods, pays hospital bills, and buys blocks.<br>
+        Bank money is safer, but you gotta withdraw it before you spend it.
+      </div>
 
-      <b>INVENTORY</b><br>
-      Inventory shows what you are carrying and the total value.<br>
-      You have a carry limit. Buying blocks can increase your carry limit.<br><br>
+      <div class="graffitiRule">
+        <b>INVENTORY</b><br>
+        Inventory shows what you carry and what it’s worth.<br>
+        You got a limit, so don’t overload like an idiot.
+      </div>
 
-      <b>STORAGE</b><br>
-      Each city has its own storage.<br>
-      STORE hides your carried goods in the current city.<br>
-      TAKE pulls goods back out from that city storage.<br>
-      Storage is useful when you want to travel lighter or protect a stash.<br><br>
+      <div class="graffitiRule">
+        <b>STORAGE</b><br>
+        Every city has its own stash spot.<br>
+        STORE = hide goods in that city.<br>
+        TAKE = grab them back later.<br>
+        If you forget where you left your shit, that’s on you.
+      </div>
 
-      <b>HEALTH / HOSPITAL</b><br>
-      Robberies, fights, cops, and bad events can hurt you.<br>
-      Hospital heals you, but it costs cash.<br>
-      If your health hits zero, the run ends.<br><br>
+      <div class="graffitiRule">
+        <b>HEALTH / HOSPITAL</b><br>
+        You can get hurt. Hospital fixes you, but it costs cash.<br>
+        If health hits zero, your run is done.
+      </div>
 
-      <b>HEAT / POLICE</b><br>
-      Heat is pressure from cops and the streets.<br>
-      High heat means more danger.<br>
-      Police can fine you, chase you, or bust you and seize cash/items.<br><br>
+      <div class="graffitiRule">
+        <b>HEAT / POLICE</b><br>
+        Heat brings cops. Cops can fine you, chase you, bust you, or clean you out.<br>
+        Move smart when heat gets ugly.
+      </div>
 
-      <b>BLOCKS</b><br>
-      A block costs $10,000 cash on hand.<br>
-      Buy enough blocks and you become The Pu$her.<br>
-      Bank money does not buy blocks until you withdraw it.<br><br>
+      <div class="graffitiRule">
+        <b>BLOCKS</b><br>
+        $10,000 cash buys a block.<br>
+        Own enough blocks and you become The Pu$her.<br>
+        Bank money won’t buy a block until you withdraw it.
+      </div>
 
-      <b>CHARACTERS</b><br>
-      Tonie Two-Toe = pressure.<br>
-      Rico and Eddy = street danger.<br>
-      Cake Jaw Jesse = risky deals. Some are junk, some are gems.<br>
-      Perrkey Two Bricks = warning/intel, but she is not fully trustworthy.<br>
-      The Comedian = chaos, luck, pain, and rare rewards.<br><br>
+      <div class="graffitiRule">
+        <b>THE STREETS</b><br>
+        Tonie = pressure.<br>
+        Rico & Eddy = danger.<br>
+        Cake Jaw = risky deal, maybe junk, maybe gem.<br>
+        Perrkey = warning, but don’t trust her too much.<br>
+        The Comedian = chaos, pain, luck, and rare rewards.
+      </div>
 
-      <b>SCRATCH TICKETS</b><br>
-      Sometimes you find a scratch ticket.<br>
-      Pick 1–5. You might win cash, find an item, get nothing, or raise heat.<br><br>
+      <div class="graffitiRule">
+        <b>SCRATCH TICKETS</b><br>
+        Sometimes you find one on the street. Pick 1–5 and pray.
+      </div>
 
-      <b>SAVE</b><br>
-      The game auto-saves after moves.<br>
-      You can also tap SAVE during the run.<br>
-      Use CONTINUE SAVED RUN when you come back.<br><br>
+      <div class="graffitiRule">
+        <b>SAVE</b><br>
+        The game auto-saves. You can also hit SAVE during a run.<br>
+        Use CONTINUE SAVED RUN when you come back.
+      </div>
 
-      <b>GAME OVER</b><br>
-      If you are broke too long with no cash, no bank, and no inventory, The Comedian ends your run.<br><br>
+      <div class="graffitiRule">
+        <b>GAME OVER</b><br>
+        Broke too long with no cash, no bank, and no inventory?<br>
+        The Comedian ends your run.
+      </div>
 
-      <b>GOAL</b><br>
-      Survive. Stack money. Buy blocks. Own the city.<br>
-      Become The Pu$her.<br><br>
+      <div class="graffitiQuote">RULE #1: Don’t get greedy. That’s how everybody loses.</div>
 
-      <b>RULE #1</b><br>
-      Do not get greedy. Keep cash, use the bank, stash goods, and watch the feed.
     </div>
 
-    <div class="startBtn" onclick="toggleGuide()" style="margin-top:14px;">CLOSE</div>
+    <div class="startBtn" onclick="toggleGuide()" style="margin-top:14px;">CLOSE HANDBOOK</div>
   </div>
   <div class="corner left" id="cloud">☁ CLOUD SAVED</div>
   <div class="corner right" id="ver">v1.0.0</div>
