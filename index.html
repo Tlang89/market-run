@@ -224,52 +224,6 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
   text-shadow:0 0 8px rgba(255,199,109,.35);
 }
 
-
-/* THE COMEDIAN — 3 CARD HAND */
-.comedianCards{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
-  margin:14px 0;
-}
-.comedianCard{
-  border:2px solid var(--gold);
-  background:rgba(0,0,0,.88);
-  border-radius:10px;
-  padding:12px 8px;
-  cursor:pointer;
-  min-height:145px;
-  box-shadow:inset 0 0 14px rgba(212,175,55,.08),0 0 16px rgba(0,0,0,.55);
-}
-.comedianCard:active{
-  transform:scale(.96);
-  background:rgba(212,175,55,.14);
-}
-.comedianCard.gift{border-color:#77e08a;color:#77e08a}
-.comedianCard.trade{border-color:#ffc76d;color:#ffc76d}
-.comedianCard.lesson{border-color:#ff7777;color:#ff7777}
-.cardTitle{
-  font-size:18px;
-  font-weight:900;
-  letter-spacing:1px;
-  margin-bottom:6px;
-}
-.cardCost{
-  color:var(--bright);
-  font-size:13px;
-  line-height:1.35;
-}
-.cardFlavor{
-  color:var(--soft);
-  font-size:12px;
-  font-style:italic;
-  margin-top:8px;
-}
-@media(max-width:560px){
-  .comedianCards{grid-template-columns:1fr;gap:8px}
-  .comedianCard{min-height:auto}
-}
-
 </style>
 </head>
 
@@ -378,7 +332,7 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
         Rico & Eddy = danger.<br>
         Cake Jaw = risky deal, maybe junk, maybe gem.<br>
         Perrkey = warning, but don’t trust her too much.<br>
-        The Comedian = pain or gain. If you play a hand, choose The Gift, The Trade, or The Lesson.
+        The Comedian = chaos, pain, luck, and rare rewards.
       </div>
 
       <div class="graffitiRule">
@@ -461,3 +415,993 @@ const ASSETS={
   tonie:"tonie.png",
   rico:"Rico.png",
   eddy:"eddy_silent.png",
+  comedian:"The Comedian.png",
+  cake:"cake_jaw_jesse.PNG",
+  perrkey:"perrkey_two_bricks.PNG"
+};
+
+let cash=3000, bank=0, day=1, city="New York", health=100, heat=0, blocksOwned=0;
+let inventory={}, storage={}, carrying=0, carryLimit=30;
+let cakeWinner=null, perrkeyHint=null, lastEvent=0, cooldown=6500;
+let brokeTravelCount=0;
+let gameEnded=false;
+
+const cities=["New York","Chicago","Miami","Los Angeles","Atlanta"];
+const cityBg={
+  "New York":"New York Street.png",
+  "Chicago":"chicago_street.png",
+  "Miami":"miami_neon.png",
+  "Los Angeles":"la_sunset.png",
+  "Atlanta":"atlanta_street.png"
+};
+
+const storageBg={
+  "New York":"New York_storage.png",
+  "Chicago":"Chicago_storage.png",
+  "Miami":"Miami_storage.png",
+  "Los Angeles":"Los Angeles_storage.png",
+  "Atlanta":"Atlanta_storage.png"
+};
+
+const sceneBg={
+  travel:"plane_depart.png",
+  police:"police_scene.png",
+  hospital:"hospital_scene.png"
+};
+const cityBias={
+  "New York":{"Pagers":1.18,"Jewelry":1.08},
+  "Chicago":{"Sneakers":1.25,"Bootleg Tapes":1.12},
+  "Miami":{"Luxury Watches":1.30,"Jewelry":1.10},
+  "Los Angeles":{"Electronics":1.26,"Luxury Watches":1.08},
+  "Atlanta":{"Bootleg Tapes":1.25,"Hot Merchandise":1.12}
+};
+const items=[
+  {name:"Pagers",base:120,risk:1,trend:0,last:120,price:120,history:[120,120,120,120]},
+  {name:"Sneakers",base:200,risk:1,trend:0,last:200,price:200,history:[200,200,200,200]},
+  {name:"Jewelry",base:500,risk:2,trend:0,last:500,price:500,history:[500,500,500,500]},
+  {name:"Electronics",base:350,risk:2,trend:0,last:350,price:350,history:[350,350,350,350]},
+  {name:"Bootleg Tapes",base:95,risk:2,trend:0,last:95,price:95,history:[95,95,95,95]},
+  {name:"Luxury Watches",base:900,risk:3,trend:0,last:900,price:900,history:[900,900,900,900]},
+  {name:"Hot Merchandise",base:1300,risk:4,trend:0,last:1300,price:1300,history:[1300,1300,1300,1300]},
+  {name:"Million Dollar Mixtape",base:5000,risk:5,trend:0,last:5000,price:5000,history:[5000,5000,5000,5000]}
+];
+
+function yearNow(){return Math.floor((day-1)/365)+1}
+function dayOfYear(){return ((day-1)%365)+1}
+function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function money(n){return "$"+Math.floor(n).toLocaleString()}
+function heatText(){return heat<25?"Low":heat<55?"Medium":heat<85?"High":"Burning"}
+
+function log(msg,type="info"){
+  const d=document.createElement("div");
+  d.className="line "+type;
+  d.innerHTML=`<span>Y${yearNow()} D${dayOfYear()}</span><span>${msg}</span>`;
+  feed.prepend(d);
+}
+function setIntel(msg){intel.textContent=msg;log("Intel: "+msg,"warn")}
+function setBg(){game.style.background=`linear-gradient(rgba(0,0,0,.62),rgba(0,0,0,.92)),url("${cityBg[city]||"New York Street.png"}") center top / cover no-repeat`}
+
+let audioCtx=null,music=null,step=0;
+function initAudio(){
+  if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  if(audioCtx.state==="suspended") audioCtx.resume().catch(()=>{});
+}
+function beep(f,d=.08,v=.03,t="square"){
+  initAudio();
+  if(!audioCtx)return;
+  let o=audioCtx.createOscillator(),g=audioCtx.createGain();
+  o.type=t;o.frequency.value=f;
+  g.gain.setValueAtTime(.0001,audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(v,audioCtx.currentTime+.012);
+  g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+d);
+  o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+d+.03);
+}
+function clickSound(){initAudio();beep(880,.045,.027);setTimeout(()=>beep(440,.05,.018,"triangle"),45)}
+function warnSound(){initAudio();beep(110,.12,.05,"sawtooth");setTimeout(()=>beep(82,.14,.04,"sawtooth"),90)}
+function winSound(){initAudio();beep(440,.07,.035);setTimeout(()=>beep(660,.07,.035),80);setTimeout(()=>beep(880,.1,.035),160)}
+function lossSound(){initAudio();beep(220,.09,.045,"sawtooth");setTimeout(()=>beep(146,.16,.035,"sawtooth"),110)}
+function startMusic(){
+  initAudio();
+  if(music)return;
+  let seq=[220,0,196,0,185,0,196,0,220,0,246,0,220,196,185,0];
+  music=setInterval(()=>{
+    let n=seq[step%seq.length];
+    if(step%2===0)beep(120,.03,.009);
+    if(n&&step%2===0)beep(n,.08,.016,"triangle");
+    if(step%16===0)beep(330,.09,.013);
+    step++;
+  },340);
+}
+function stopMusic(){if(music){clearInterval(music);music=null}}
+
+function trendLabel(item){
+  if(item.trend>1)return'<span class="up">🔥 HOT</span>';
+  if(item.trend>0)return'<span class="up">📈 Rising</span>';
+  if(item.trend<-1)return'<span class="down">💀 Crash</span>';
+  if(item.trend<0)return'<span class="down">📉 Falling</span>';
+  return'<span class="flat">— Stable</span>';
+}
+function spark(item){
+  const vals=item.history,min=Math.min(...vals),max=Math.max(...vals),range=Math.max(1,max-min);
+  const pts=vals.map((v,i)=>`${8+i*(184/(vals.length-1))},${24-((v-min)/range*18)}`).join(" ");
+  const color=item.trend>0?"#77e08a":item.trend<0?"#ff7777":"#d4af37";
+  return`<svg class="spark" viewBox="0 0 200 28" preserveAspectRatio="none"><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="3"/><line x1="0" y1="24" x2="200" y2="24" stroke="rgba(212,175,55,.16)"/></svg>`;
+}
+function refreshPrices(){
+  items.forEach(item=>{
+    item.last=item.price||item.base;
+    let boost=cityBias[city]?.[item.name]||1;
+    item.trend+=rand(-2,2);
+    item.trend=Math.max(-3,Math.min(3,item.trend));
+    let mult=1+(item.trend*.14);
+    item.price=Math.max(25,Math.floor((item.base*mult+rand(-24,30))*boost));
+    item.history.push(item.price);
+    if(item.history.length>8)item.history.shift();
+  });
+  if(Math.random()<.65)generateIntel();
+}
+function generateIntel(){
+  let item=items[rand(0,items.length-1)],trueIntel=Math.random()<.7,msg;
+  if(trueIntel){
+    if(item.trend>1)msg=`${item.name} heating up in ${city}.`;
+    else if(item.trend<-1)msg=`${item.name} collapsing in ${city}.`;
+    else msg=`${item.name} moving slow in ${city}.`;
+  }else msg=`Rumor on ${item.name} sounds messy. Could be fake.`;
+  setIntel(msg);
+}
+function renderHud(){
+  hud.innerHTML=`
+    <div class="hudCard"><div class="label">City</div><div class="value">${city}</div></div>
+    <div class="hudCard"><div class="label">Cash / Bank</div><div class="value">${money(cash)} / ${money(bank)}</div></div>
+    <div class="hudCard"><div class="label">Health / Heat</div><div class="value">${health} HP • ${heatText()}</div></div>
+    <div class="hudCard"><div class="label">Time / Blocks</div><div class="value">Y${yearNow()} D${dayOfYear()} • ${blocksOwned}/5</div></div>`;
+}
+function renderMarket(){
+  cityLabel.textContent=city;
+  market.innerHTML=items.map((it,i)=>`
+    <div class="itemCard">
+      <div class="itemTop">
+        <div><div class="itemName">${it.name}</div><div class="meta">Risk ${it.risk}/5 • ${trendLabel(it)}</div></div>
+        <div class="price">${money(it.price)}</div>
+      </div>
+      ${spark(it)}
+      <div class="buttons"><button class="btnGold" onclick="buyItem(${i})">Buy</button><button onclick="sellItem(${i})">Sell</button></div>
+    </div>`).join("");
+  marketWrap.classList.add("marketPulse");
+  setTimeout(()=>marketWrap.classList.remove("marketPulse"),320);
+}
+
+function itemPrice(name){
+  const found = items.find(it => it.name === name);
+  return found ? found.price : 0;
+}
+
+function goodsCount(obj){
+  return Object.values(obj || {}).reduce((a,b)=>a+b,0);
+}
+
+function goodsWorth(obj){
+  return Object.keys(obj || {}).reduce((sum,k)=>sum + itemPrice(k) * (obj[k] || 0), 0);
+}
+
+function goodsList(obj){
+  const keys = Object.keys(obj || {}).filter(k => obj[k] > 0);
+  if(!keys.length) return `<div class="meta">Nothing stored here.</div>`;
+  return keys.map(k=>`
+    <div class="line">
+      <span>${k} x${obj[k]}</span>
+      <span>${money(itemPrice(k) * obj[k])}</span>
+    </div>
+  `).join("");
+}
+
+function renderInv(){
+  carrying = goodsCount(inventory);
+  const invWorth = goodsWorth(inventory);
+  const cityStore = storage[city] || {};
+  const storeWorth = goodsWorth(cityStore);
+
+  cap.textContent = `${carrying}/${carryLimit} • ${money(invWorth)}`;
+  const invBox = document.getElementById("inventoryBox");
+  const keys = Object.keys(inventory).filter(k=>inventory[k]>0);
+
+  let html = "";
+
+  if(keys.length){
+    html += keys.map(k=>`
+      <div class="line">
+        <span>${k} x${inventory[k]}</span>
+        <span>${money(itemPrice(k) * inventory[k])}</span>
+      </div>
+    `).join("");
+  }else{
+    html += `<div class="meta">Nothing carried.</div>`;
+  }
+
+  html += `<div class="line warn"><span>${city} Storage</span><span>${money(storeWorth)}</span></div>`;
+  html += goodsList(cityStore);
+
+  invBox.innerHTML = html;
+}
+
+
+const SAVE_KEY="pusher_lifetime_save_v1";
+
+function saveGame(manual=false){
+  if(gameEnded)return;
+  if(startScreen.style.display !== "none" && !manual)return;
+
+  const save={
+    cash,bank,day,city,health,heat,blocksOwned,
+    inventory,storage,carryLimit,brokeTravelCount,
+    items:items.map(it=>({
+      name:it.name,
+      trend:it.trend,
+      last:it.last,
+      price:it.price,
+      history:it.history
+    }))
+  };
+
+  localStorage.setItem(SAVE_KEY,JSON.stringify(save));
+
+  if(manual){
+    log("Game saved.","good");
+  }
+}
+
+function manualSave(){
+  clickSound();
+  saveGame(true);
+  renderAll();
+}
+
+function hasSavedRun(){
+  return !!localStorage.getItem(SAVE_KEY);
+}
+
+function clearSavedGame(){
+  localStorage.removeItem(SAVE_KEY);
+}
+
+function loadGame(){
+  const raw=localStorage.getItem(SAVE_KEY);
+
+  if(!raw){
+    showPanel("NO SAVED RUN","",`No saved hustle found.`,`<button onclick="closePanel()">Close</button>`,"Save");
+    return false;
+  }
+
+  try{
+    const save=JSON.parse(raw);
+
+    cash=save.cash ?? cash;
+    bank=save.bank ?? bank;
+    day=save.day ?? day;
+    city=save.city ?? city;
+    health=save.health ?? health;
+    heat=save.heat ?? heat;
+    blocksOwned=save.blocksOwned ?? blocksOwned;
+    inventory=save.inventory || {};
+    storage=save.storage || {};
+    carryLimit=save.carryLimit ?? carryLimit;
+    brokeTravelCount=save.brokeTravelCount ?? 0;
+
+    if(Array.isArray(save.items)){
+      save.items.forEach(saved=>{
+        const item=items.find(it=>it.name===saved.name);
+        if(item){
+          item.trend=saved.trend ?? item.trend;
+          item.last=saved.last ?? item.last;
+          item.price=saved.price ?? item.price;
+          item.history=saved.history || item.history;
+        }
+      });
+    }
+
+    log("Saved run loaded.","good");
+    return true;
+  }catch(e){
+    clearSavedGame();
+    showPanel("SAVE ERROR","",`The saved run could not load, so it was cleared.`,`<button onclick="closePanel()">Close</button>`,"Save");
+    return false;
+  }
+}
+
+function finishStartAfterLoad(){
+  initAudio();
+  startScreen.style.transition="opacity .45s ease";
+  startScreen.style.opacity="0";
+  setTimeout(()=>{
+    startScreen.style.display="none";
+    startMusic();
+    renderAll();
+  },450);
+}
+
+function continueRun(){
+  try{initAudio();clickSound();}catch(e){}
+
+  let loaded=false;
+  try{loaded=loadGame();}catch(e){loaded=false;}
+
+  if(loaded){
+    finishStartAfterLoad();
+  }else{
+    showPanel(
+      "NO SAVED RUN",
+      "",
+      "No saved hustle found. Start a new run.",
+      `<button onclick="closePanel()">Back</button><button onclick="closePanel();startRun()">Start New Run</button>`,
+      "Save"
+    );
+  }
+}
+
+function renderAll(){
+  if(gameEnded)return;
+  setBg();renderHud();renderMarket();renderInv();checkEndgame();
+  if(!gameEnded && startScreen.style.display==="none"){
+    if(!music) startMusic();
+    saveGame(false);
+  }
+}
+function agePressure(){
+  if(day>365 && Math.random()<.06){health=Math.max(0,health-1);log("The years are wearing on you.","warn")}
+  if(heat>=85 && Math.random()<.12){health=Math.max(0,health-2);log("Burning heat is taking a toll.","bad")}
+}
+
+function hasInventory(){
+  return Object.values(inventory).reduce((a,b)=>a+b,0) > 0;
+}
+
+function isFlatBroke(){
+  return cash <= 0 && bank <= 0 && !hasInventory();
+}
+
+function brokeCheck(reason){
+  if(gameEnded)return;
+
+  if(isFlatBroke()){
+    brokeTravelCount++;
+    log("Flat broke streak: " + brokeTravelCount + "/12.", "bad");
+
+    if(Math.random() < .38){
+      luckyBreak();
+    }
+
+    if(brokeTravelCount >= 12 && isFlatBroke()){
+      gameEnded = true;
+      clearSavedGame();
+      stopMusic();
+      lossSound();
+      showPanel(
+  "YOU LOST",
+  ASSETS.comedian,
+  `You ran out of moves.<br><br>
+  You are now homeless.<br><br>
+  Get off this game and find a job…<br>
+  or play again.`,
+  `<button onclick="location.reload()">PLAY AGAIN</button>`,
+  "The Comedian"
+);
+    }
+  }else{
+    brokeTravelCount = 0;
+  }
+}
+
+function luckyBreak(){
+  let roll = Math.random();
+
+  if(roll < .35){
+    let gain = rand(300, 1200);
+    cash += gain;
+    winSound();
+    log("Lucky break: odd job paid " + money(gain) + ".","good");
+    showPanel("LUCKY BREAK","",`You caught a small job and got back on your feet.<br>+${money(gain)}`,`<button onclick="closePanel();renderAll()">Keep Moving</button>`,"Second Chance");
+  }else if(roll < .62){
+    let item = items[rand(0, items.length-2)];
+    inventory[item.name] = (inventory[item.name] || 0) + 1;
+    winSound();
+    log("Lucky break: found 1x " + item.name + ".","good");
+    showPanel("LUCKY FIND","",`Somebody left something useful behind.<br>Found 1x ${item.name}.`,`<button onclick="closePanel();renderAll()">Keep Moving</button>`,"Second Chance");
+  }else if(roll < .82){
+    let gain = rand(100, 500);
+    cash += gain;
+    health = Math.min(100, health + rand(3, 10));
+    winSound();
+    log("Lucky break: helped a stranger for " + money(gain) + ".","good");
+  }else{
+    heat = Math.max(0, heat - rand(8, 18));
+    health = Math.min(100, health + rand(5, 15));
+    log("Lucky break: laid low and recovered a little.","good");
+  }
+
+  brokeTravelCount = 0;
+}
+
+function buyItem(i){
+  if(gameEnded)return;
+  clickSound();
+  let it=items[i];
+  carrying=goodsCount(inventory);if(carrying>=carryLimit){log("Too much on you.","bad");return}
+  if(cash>=it.price){
+    cash-=it.price;inventory[it.name]=(inventory[it.name]||0)+1;log(`Bought ${it.name}`,"good");
+    if(it.name==="Million Dollar Mixtape" && Math.random()<.08)mixtapeLegend();
+  }else log("Not enough cash.","bad");
+  maybeEvent(.24);renderAll();
+}
+function sellItem(i){
+  if(gameEnded)return;
+  clickSound();
+  let it=items[i];
+  if(inventory[it.name]>0){
+    inventory[it.name]--;if(inventory[it.name]===0)delete inventory[it.name];
+    cash+=it.price;log(`Sold ${it.name}`,"good");
+  }else log(`No ${it.name}.`,"bad");
+  maybeEvent(.24);renderAll();
+}
+function stay(){
+  if(gameEnded)return;
+  clickSound();day++;heat=Math.max(0,heat-rand(0,4));agePressure();refreshPrices();
+  log(`Stayed in ${city}.`,"info");maybeEvent(.36);brokeCheck("stay");renderAll();
+}
+function showTravel(){
+  if(gameEnded)return;
+  clickSound();
+  showPanel("Travel","",`Current city: ${city}`,cities.map(c=>`<button onclick="travel('${c}')">${c}</button>`).join("")+`<br><br><button onclick="closePanel()">Cancel</button>`,"Move");
+}
+function travel(next){
+  if(gameEnded)return;
+  clickSound();
+
+  if(next===city){
+    closePanel();
+    return;
+  }
+
+  let oldCity = city;
+
+  showPanel(
+    "Leaving " + oldCity,
+    sceneBg.travel,
+    "You’re moving. Keep it low.",
+    "",
+    "Travel"
+  );
+
+  setTimeout(()=>{
+    city=next;
+    day++;
+    heat+=rand(3,10);
+    agePressure();
+    refreshPrices();
+
+    showPanel(
+      "Arrived in " + city,
+      cityBg[city],
+      "New streets. New prices.",
+      `<button onclick="closePanel()">Step in</button>`,
+      "Arrival"
+    );
+
+    log(`Traveled to ${city}.`,"info");
+    maybeEvent(.62);
+    brokeCheck("travel");
+    renderAll();
+  },900);
+}
+function deposit(){
+  if(gameEnded)return;
+  clickSound();
+
+  if(cash <= 0){
+    log("No cash to deposit.", "bad");
+    return;
+  }
+
+  let amount = prompt("Deposit how much?");
+  amount = parseInt(amount);
+
+  if(isNaN(amount) || amount <= 0){
+    log("Invalid amount.", "bad");
+    return;
+  }
+
+  if(amount > cash){
+    log("Not enough cash.", "bad");
+    return;
+  }
+
+  cash -= amount;
+  bank += amount;
+
+  log("Deposited " + money(amount), "good");
+  renderAll();
+}
+function withdraw(){
+  if(gameEnded)return;
+  clickSound();
+
+  if(bank <= 0){
+    log("No money in bank.", "bad");
+    return;
+  }
+
+  let amount = prompt("Withdraw how much?");
+  amount = parseInt(amount);
+
+  if(isNaN(amount) || amount <= 0){
+    log("Invalid amount.", "bad");
+    return;
+  }
+
+  if(amount > bank){
+    log("Not enough in bank.", "bad");
+    return;
+  }
+
+  bank -= amount;
+  cash += amount;
+
+  log("Withdrew " + money(amount), "good");
+  renderAll();
+}
+
+
+function storeGoods(){
+  if(gameEnded)return;
+  clickSound();
+
+  if(!hasInventory()){
+    log("Nothing to store.","bad");
+    return;
+  }
+
+  if(!storage[city]) storage[city] = {};
+  const storedNow = goodsCount(inventory);
+  const storedWorth = goodsWorth(inventory);
+
+  Object.keys(inventory).forEach(k=>{
+    storage[city][k] = (storage[city][k] || 0) + inventory[k];
+  });
+
+  inventory = {};
+  winSound();
+  showPanel(city + " Storage", storageBg[city], "Stored " + storedNow + " goods worth " + money(storedWorth) + ".", `<button onclick="closePanel();renderAll()">Back</button>`, "Stash House");
+  log("Stored " + storedNow + " goods in " + city + " worth " + money(storedWorth) + ".","good");
+  renderAll();
+}
+
+function takeGoods(){
+  if(gameEnded)return;
+  clickSound();
+
+  const cityStore = storage[city] || {};
+  const keys = Object.keys(cityStore).filter(k=>cityStore[k]>0);
+
+  if(!keys.length){
+    log("No storage in " + city + ".","bad");
+    return;
+  }
+
+  carrying = goodsCount(inventory);
+  let space = carryLimit - carrying;
+
+  if(space <= 0){
+    log("No room to take storage.","bad");
+    return;
+  }
+
+  let taken = 0;
+  keys.forEach(k=>{
+    while(cityStore[k] > 0 && space > 0){
+      inventory[k] = (inventory[k] || 0) + 1;
+      cityStore[k]--;
+      taken++;
+      space--;
+    }
+    if(cityStore[k] <= 0) delete cityStore[k];
+  });
+
+  if(goodsCount(cityStore) <= 0) delete storage[city];
+
+  winSound();
+  showPanel(city + " Storage", storageBg[city], "Took " + taken + " goods from storage.", `<button onclick="closePanel();renderAll()">Back</button>`, "Stash House");
+  log("Took " + taken + " goods from " + city + " storage.","good");
+  renderAll();
+}
+
+function hospital(){
+  if(gameEnded)return;
+  clickSound();
+
+  if(health >= 100){
+    showPanel("Hospital", sceneBg.hospital, "Hospital said you're already patched up.", `<button onclick="closePanel()">Back</button>`, "Hospital");
+    log("Hospital said you're already patched up.","info");
+    return;
+  }
+
+  let missing = 100 - health;
+  let cost = Math.max(500, missing * 45);
+
+  if(cash < cost){
+    showPanel("Hospital", sceneBg.hospital, "Hospital visit costs " + money(cost) + ". Not enough cash.", `<button onclick="closePanel()">Back</button>`, "Hospital");
+    log("Hospital visit costs " + money(cost) + ". Not enough cash.","bad");
+    return;
+  }
+
+  cash -= cost;
+  health = 100;
+  heat = Math.max(0, heat - 5);
+  winSound();
+  showPanel("Hospital", sceneBg.hospital, "You patched up for " + money(cost) + ".", `<button onclick="closePanel();renderAll()">Back to the streets</button>`, "Hospital");
+  log("Hospital patched you up for " + money(cost) + ".","good");
+  renderAll();
+}
+
+function buyBlock(){
+  if(gameEnded)return;
+  clickSound();
+
+  const cost = 10000;
+
+  if(cash < cost){
+    log("A block costs " + money(cost) + ". You need more cash on hand.","bad");
+    return;
+  }
+
+  cash -= cost;
+  blocksOwned++;
+  heat += 8;
+  carryLimit += 5;
+  winSound();
+
+  showPanel("BLOCK BOUGHT","",`You bought a piece of ${city}.<br>Blocks owned: ${blocksOwned}/5<br>Carry limit increased.`,`<button onclick="closePanel();renderAll()">Continue</button>`,"Empire Move");
+  log("Bought a block in " + city + ".","good");
+  renderAll();
+}
+
+function robberyEvent(){
+  warnSound();
+
+  let cashLoss = Math.min(cash, rand(300, 1800));
+  let hurt = rand(8, 22);
+
+  cash -= cashLoss;
+  health = Math.max(0, health - hurt);
+  heat += rand(3, 9);
+
+  const keys = Object.keys(inventory).filter(k=>inventory[k]>0);
+  if(keys.length && Math.random()<.55){
+    let stolen = keys[rand(0, keys.length-1)];
+    inventory[stolen]--;
+    if(inventory[stolen]===0)delete inventory[stolen];
+    showPanel("ROBBERY","",`You got hit in the street.<br>Lost ${money(cashLoss)}, ${hurt} health, and 1x ${stolen}.`,`<button onclick="closePanel();renderAll()">Keep Moving</button>`,"Street Danger");
+    log("Robbed: " + money(cashLoss) + " and 1x " + stolen + " lost.","bad");
+  }else{
+    showPanel("ROBBERY","",`You got hit in the street.<br>Lost ${money(cashLoss)} and ${hurt} health.`,`<button onclick="closePanel();renderAll()">Keep Moving</button>`,"Street Danger");
+    log("Robbed for " + money(cashLoss) + ".","bad");
+  }
+
+  brokeCheck("robbery");
+  renderAll();
+}
+
+function policeEvent(){
+  warnSound();
+
+  showPanel("POLICE HEAT",sceneBg.police,`Blue lights hit the block. Choose fast.`,`<button onclick="policePay()">Pay Fine</button><button onclick="policeRun()">Run</button><button onclick="policeBust()">Take Bust</button>`,"Police");
+}
+
+function policePay(){
+  const fine = 1500 + heat * 20;
+
+  if(cash >= fine){
+    cash -= fine;
+    heat = Math.max(0, heat - 25);
+    log("Paid police fine: " + money(fine) + ".","warn");
+  }else{
+    log("Not enough cash to pay police.","bad");
+    policeBust();
+    return;
+  }
+
+  closePanel();
+  renderAll();
+}
+
+function policeRun(){
+  let hurt = rand(5, 18);
+  health = Math.max(0, health - hurt);
+  heat += rand(12, 25);
+  cash = Math.max(0, cash - rand(100, 700));
+  lossSound();
+  log("Ran from police. Heat jumped.","bad");
+  closePanel();
+  renderAll();
+}
+
+function policeBust(){
+  let seizedCash = cash;
+  let seizedItems = Object.values(inventory).reduce((a,b)=>a+b,0);
+
+  cash = 0;
+  inventory = {};
+  heat = Math.max(0, heat - 35);
+  health = Math.max(0, health - rand(10, 25));
+
+  lossSound();
+  showPanel("BUSTED",sceneBg.police,`Police cleaned you out.<br>Cash seized: ${money(seizedCash)}<br>Items seized: ${seizedItems}`,`<button onclick="closePanel();renderAll()">Start Over From Here</button>`,"Police");
+  log("Busted. Cash and inventory seized.","bad");
+  brokeCheck("bust");
+  renderAll();
+}
+
+function closePanel(){
+  try{document.querySelector(".overlay")?.remove();}catch(e){}
+  try{
+    const screen=document.getElementById("startScreen");
+    if(!gameEnded && screen && screen.style.display==="none") startMusic();
+  }catch(e){}
+}
+function showPanel(title,img,text,buttons,tag="Comic Event"){
+  closePanel();
+  const d=document.createElement("div");
+  d.className="overlay";
+  d.innerHTML=`<div class="comic"><div class="comicTag">${tag}</div>${img?`<img src="${img}" onerror="this.classList.add('broken')">`:""}<div class="comicTitle">${title}</div><div class="comicText">${text}</div><div>${buttons}</div></div>`;
+  document.body.appendChild(d);
+  document.body.style.animation="shake .2s";
+  setTimeout(()=>document.body.style.animation="",200);
+}
+
+function scratchTicketEvent(){
+  warnSound();
+  showPanel(
+    "SCRATCH TICKET",
+    "",
+    `You found a scratched-up ticket on the ground.<br><br>Pick a spot.`,
+    `
+    <div class="cardGrid">
+      <div class="pickCard" onclick="scratchPick(1)">1</div>
+      <div class="pickCard" onclick="scratchPick(2)">2</div>
+      <div class="pickCard" onclick="scratchPick(3)">3</div>
+      <div class="pickCard" onclick="scratchPick(4)">4</div>
+      <div class="pickCard" onclick="scratchPick(5)">5</div>
+    </div>
+    <button onclick="closePanel()">Ignore</button>
+    `,
+    "Lucky Break"
+  );
+}
+
+function scratchPick(num){
+  let roll = Math.random();
+
+  if(roll < 0.35){
+    let win = rand(200,2000);
+    cash += win;
+    winSound();
+    showPanel("WINNER","",`You hit ${money(win)}!`,`<button onclick="closePanel();renderAll()">Nice</button>`);
+    log("Scratch win: "+money(win),"good");
+
+  } else if(roll < 0.65){
+    showPanel("NOTHING","",`The ticket was dead.`,`<button onclick="closePanel()">Move on</button>`);
+    log("Scratch nothing.","info");
+
+  } else if(roll < 0.85){
+    heat += rand(5,15);
+    lossSound();
+    showPanel("SKETCHY","",`Fake ticket. Heat rises.`,`<button onclick="closePanel();renderAll()">Move</button>`);
+    log("Scratch raised heat.","warn");
+
+  } else {
+    let item = items[rand(0,items.length-1)];
+    inventory[item.name] = (inventory[item.name]||0)+1;
+    winSound();
+    showPanel("LUCKY FIND","",`You got 1x ${item.name}.`,`<button onclick="closePanel();renderAll()">Take it</button>`);
+    log("Scratch item: "+item.name,"good");
+  }
+
+  renderAll();
+}
+
+function maybeEvent(ch){
+  if(gameEnded)return;
+  let now=Date.now();
+  if(now-lastEvent<cooldown)return;
+  if(Math.random()>ch)return;
+  lastEvent=now;
+  let r=Math.random();
+  if(r<.12)policeEvent();
+  else if(r<.24)robberyEvent();
+  else if(r<.36)showTonie();
+  else if(r<.48)showRico();
+  else if(r<.58)showEddy();
+  else if(r<.72)showCake();
+  else if(r<.86)showPerrkey();
+  else if(r<.96)showComedian();
+}
+function showTonie(){warnSound();showPanel("Tonie Two-Toe",ASSETS.tonie,"Tonie rolls up with thugs behind him. Pay, fight, or run.",`<button onclick="toniePay()">Pay $1000</button><button onclick="tonieFight()">Fight</button><button onclick="tonieRun()">Run</button>`,"Pressure")}
+function toniePay(){if(cash>=1000){cash-=1000;heat=Math.max(0,heat-20);log("Paid Tonie.","warn")}else log("Not enough cash.","bad");closePanel();renderAll()}
+function tonieFight(){health=Math.max(0,health-25);cash=Math.max(0,cash-400);heat+=18;lossSound();log("Tonie's thugs worked you over.","bad");closePanel();renderAll()}
+function tonieRun(){cash=Math.max(0,cash-200);heat+=15;log("You ran from Tonie.","warn");closePanel();renderAll()}
+function showRico(){warnSound();showPanel('Rico "The Bat"',ASSETS.rico,"Wrong block. Wrong time.",`<button onclick="ricoFight()">Fight</button><button onclick="ricoRun()">Run</button>`,"Street Threat")}
+function ricoFight(){health=Math.max(0,health-18);cash=Math.max(0,cash-150);heat+=10;lossSound();log("You fought Rico.","bad");closePanel();renderAll()}
+function ricoRun(){heat+=5;log("You slipped away from Rico.","info");closePanel();renderAll()}
+function showEddy(){warnSound();showPanel('Eddy "Silent"',ASSETS.eddy,"He was there before you noticed.",`<button onclick="eddyFight()">Fight</button><button onclick="eddyRun()">Run</button>`,"Silent Danger")}
+function eddyFight(){health=Math.max(0,health-22);cash=Math.max(0,cash-200);heat+=12;lossSound();log("Eddy barely moved. You did.","bad");closePanel();renderAll()}
+function eddyRun(){heat+=4;log("You backed off from Eddy.","warn");closePanel();renderAll()}
+function showComedian(){
+  startMusic();
+  let v=voicePlaya;
+  if(v){v.currentTime=0;v.volume=.85;v.play().catch(()=>{})}
+  showPanel("The Comedian",ASSETS.comedian,"Funny thing about luck... it don't knock twice.",`<button onclick="playHand()">Play a Hand</button><button onclick="closePanel();startMusic();renderAll()">Ignore</button>`,"Luck Can Flip");
+}
+function playHand(){
+  let roll=Math.random();
+  if(roll<.30){
+    let w=rand(2000,12000);cash+=w;winSound();
+    showPanel("POWER","",`You feel momentum.<br>+${money(w)}`,`<button onclick="closePanel();startMusic();renderAll()">Continue</button>`,"Card Reveal");
+    log(`Comedian POWER +${money(w)}`,"good");
+  }else if(roll<.68){
+    let l=rand(1000,7000);cash=Math.max(0,cash-l);heat+=12;lossSound();
+    showPanel("PAIN","",`Luck cut you deep.<br>-${money(l)}`,`<button onclick="closePanel();startMusic();renderAll()">Continue</button>`,"Card Reveal");
+    log(`Comedian PAIN -${money(l)}`,"bad");
+  }else if(roll<.86){
+    inventory["Million Dollar Mixtape"]=(inventory["Million Dollar Mixtape"]||0)+1;winSound();
+    showPanel("THE MIXTAPE","",`He slides you a tape and laughs.<br>Million Dollar Mixtape added.`,`<button onclick="closePanel();startMusic();renderAll()">Continue</button>`,"Rare Card");
+    log("Comedian gave you the Million Dollar Mixtape.","good");
+  }else{
+    showPanel("VANISHED","",`He laughs, then he's gone.`,`<button onclick="closePanel();startMusic();renderAll()">Continue</button>`,"Card Reveal");
+    log("Comedian vanished.","warn");
+  }
+  renderAll();
+}
+function showCake(){clickSound();if(Math.random()<.45){showPerrkeyCake();return}cakeDeal(false)}
+function cakeDeal(hint){
+  if(cakeWinner===null)cakeWinner=rand(1,3);
+  let h=hint&&perrkeyHint?`<br><span class="warn">Perrkey hinted at Deal ${perrkeyHint}.</span>`:"";
+  showPanel("Cake Jaw Jesse",ASSETS.cake,`Cake Jaw is cocky, loud, and scared behind the grin. “Three big buys. One is real. Don't waste my damn time.”${h}`,`<div class="cardGrid"><div class="pickCard" onclick="cakePick(1)">A</div><div class="pickCard" onclick="cakePick(2)">B</div><div class="pickCard" onclick="cakePick(3)">C</div></div><button onclick="cakeIgnore()">Ignore</button>`,"Untrustworthy Deal");
+}
+function cakePick(c){
+  let cost=900;
+  if(cash<cost){log("Not enough cash for Cake.","bad");closePanel();renderAll();return}
+  cash-=cost;
+  if(c===cakeWinner){
+    let it=items[rand(0,items.length-1)],q=rand(4,9);
+    inventory[it.name]=(inventory[it.name]||0)+q;
+    winSound();
+    showPanel("GOOD BUY",ASSETS.cake,`Rare deal hit: ${q}x ${it.name}.`,`<button onclick="closePanel();renderAll()">Continue</button>`,"Deal Result");
+    log(`Cake came through: ${q}x ${it.name}`,"good");
+  }else{
+    let l=rand(400,1400);
+    cash=Math.max(0,cash-l);heat+=rand(5,15);lossSound();
+    showPanel("BAD BUY",ASSETS.cake,`Junk in the bag. Lost ${money(l)}.`,`<button onclick="closePanel();renderAll()">Continue</button>`,"Deal Result");
+    log(`Cake burned you for ${money(l)}`,"bad");
+  }
+  cakeWinner=null;perrkeyHint=null;renderAll();
+}
+function cakeIgnore(){cakeWinner=null;perrkeyHint=null;log("Ignored Cake.","info");closePanel();renderAll()}
+function showPerrkeyCake(){
+  warnSound();
+  let truth=Math.random()<.62,real=rand(1,3);
+  cakeWinner=real;
+  if(truth)perrkeyHint=real;
+  else{let f=rand(1,3);while(f===real)f=rand(1,3);perrkeyHint=f}
+  showPanel('Perrkey "Two Bricks"',ASSETS.perrkey,`She cuts in. “I know him. Deal ${perrkeyHint} might be the one... but don't bet your life on me.”`,`<button onclick="closePanel();cakeDeal(true)">Listen</button><button onclick="perrkeyHint=null;closePanel();cakeDeal(false)">Ignore</button>`,"Warning Overlay");
+}
+function showPerrkey(){
+  warnSound();
+  let good=Math.random()<.55;
+  showPanel('Perrkey "Two Bricks"',ASSETS.perrkey,`She watches the block like she already knows the ending. “Not every fast move is money.”`,`<button onclick="perrkeyTip(${good})">Hear Her Out</button><button onclick="closePanel();renderAll()">Walk Away</button>`,"Street Intel");
+}
+function perrkeyTip(good){
+  if(good){let gain=rand(300,900);cash+=gain;winSound();log(`Perrkey tip +${money(gain)}`,"good")}
+  else{heat+=rand(8,18);lossSound();log("Perrkey's tip smelled like heat.","warn")}
+  closePanel();renderAll();
+}
+function mixtapeLegend(){
+  let hit=Math.random()<.45;
+  if(hit){
+    cash+=1000000;
+    winSound();
+    showPanel("MILLION DOLLAR MIXTAPE","",`The tape blew up overnight.<br>+${money(1000000)}`,`<button onclick="closePanel();renderAll()">Continue</button>`,"Legendary");
+    log("Million Dollar Mixtape hit for $1,000,000.","good");
+  }
+}
+function checkEndgame(){
+  if(gameEnded)return;
+  if(health<=0){
+    gameEnded=true;clearSavedGame();stopMusic();lossSound();
+    showPanel("YOU DIDN'T MAKE IT",ASSETS.comedian,"The streets caught up before the lifetime run could finish.",`<button onclick="location.reload()">NEW RUN</button>`,"Game Over");
+    return;
+  }
+  if(heat>=130){
+    gameEnded=true;clearSavedGame();stopMusic();lossSound();
+    showPanel("TOO HOT",ASSETS.comedian,"The heat finally swallowed the run.",`<button onclick="location.reload()">NEW RUN</button>`,"Game Over");
+    return;
+  }
+  if(blocksOwned>=5 || cash+bank>=100000){
+    gameEnded=true;clearSavedGame();stopMusic();winSound();
+    showPanel("YOU BECAME THE PU$HER",ASSETS.comedian,"You bought the blocks, survived the heat, and became the name everyone whispers about.",`<button onclick="location.reload()">NEW RUN</button>`,"Elite Ending");
+    return;
+  }
+  if(yearNow()>=99){
+    gameEnded=true;clearSavedGame();stopMusic();
+    let v=voicePlaya;
+    if(v){v.currentTime=0;v.volume=.9;v.play().catch(()=>{})}
+    showPanel("YEAR 99",ASSETS.comedian,"You lived through a lifetime of heat, bad deals, and lucky breaks. The Comedian laughs. Almost nobody sees this ending.",`<button onclick="location.reload()">LEGACY COMPLETE</button>`,"Rare Easter Egg");
+  }
+}
+function startRun(){
+  try{
+    clearSavedGame();
+  }catch(e){}
+
+  try{
+    initAudio();
+    clickSound();
+  }catch(e){}
+
+  try{
+    const bg = document.getElementById("startBg");
+    const menu = document.getElementById("startMenu");
+    const screen = document.getElementById("startScreen");
+    const cloudEl = document.getElementById("cloud");
+    const verEl = document.getElementById("ver");
+    const door = document.getElementById("carDoorSound");
+
+    if(door){
+      try{
+        door.volume=.85;
+        door.currentTime=0;
+        door.play().catch(()=>{});
+      }catch(e){}
+    }
+
+    if(bg) bg.classList.add("zooming");
+    if(menu) menu.classList.add("fadeOut");
+    if(cloudEl) cloudEl.classList.add("fadeOut");
+    if(verEl) verEl.classList.add("fadeOut");
+
+    setTimeout(()=>{
+      if(screen){
+        screen.style.transition="opacity .6s ease";
+        screen.style.opacity="0";
+      }
+
+      setTimeout(()=>{
+        if(screen) screen.style.display="none";
+
+        try{startMusic();}catch(e){}
+        try{log("Run started. Stay sharp.","info");}catch(e){}
+        try{renderAll();}catch(e){console.log("Render error:",e);}
+      },600);
+    },700);
+
+  }catch(e){
+    console.log("Start error:",e);
+
+    const screen=document.getElementById("startScreen");
+    if(screen) screen.style.display="none";
+
+    try{startMusic();}catch(err){}
+    try{renderAll();}catch(err){console.log("Force render error:",err);}
+  }
+}
+
+function toggleGuide(){
+  const g = document.getElementById("guidePanel");
+  if(!g) return;
+
+  if(g.style.display === "block"){
+    g.style.display = "none";
+  }else{
+    g.style.display = "block";
+  }
+}
+</script>
+</body>
+</html>
