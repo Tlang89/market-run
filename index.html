@@ -224,6 +224,118 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
   text-shadow:0 0 8px rgba(255,199,109,.35);
 }
 
+
+/* DONNIE WEEKLY SCRATCH TICKETS */
+.donnieTicket{
+  border:3px solid var(--gold);
+  background:
+    radial-gradient(circle at top left, rgba(255,0,120,.16), transparent 30%),
+    linear-gradient(145deg, rgba(0,0,0,.96), rgba(28,13,28,.94));
+  padding:12px;
+  box-shadow:inset 0 0 22px rgba(212,175,55,.12),0 0 26px rgba(0,0,0,.8);
+}
+.donnieTop{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  color:var(--bright);
+  font-weight:900;
+  letter-spacing:1px;
+  border-bottom:1px solid var(--line);
+  padding-bottom:8px;
+  margin-bottom:8px;
+}
+.donnieTitle{
+  font-size:26px;
+  font-weight:900;
+  color:#ff4fa3;
+  text-shadow:2px 2px 0 #000,0 0 10px rgba(255,79,163,.35);
+  transform:skew(-6deg);
+}
+.donnieSays{
+  color:var(--warn);
+  font-size:14px;
+  line-height:1.35;
+  margin:8px 0 12px;
+  border-left:4px solid #ff4fa3;
+  padding-left:10px;
+}
+.donnieGrid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:8px;
+  margin-top:10px;
+}
+.donnieSpot{
+  border:2px dashed rgba(242,217,122,.75);
+  background:linear-gradient(180deg, rgba(160,160,160,.32), rgba(80,80,80,.28));
+  min-height:82px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  cursor:pointer;
+  color:var(--bright);
+  font-weight:900;
+  font-size:24px;
+}
+.donnieSpot span{
+  font-size:11px;
+  color:var(--soft);
+  margin-top:5px;
+  letter-spacing:.8px;
+}
+.donnieFooter{
+  margin-top:12px;
+  color:var(--soft);
+  font-weight:900;
+  font-size:12px;
+  letter-spacing:1px;
+}
+@media(max-width:560px){
+  .donnieGrid{grid-template-columns:repeat(5,1fr);gap:5px}
+  .donnieSpot{min-height:66px;font-size:20px}
+  .donnieTitle{font-size:22px}
+}
+
+
+/* THE COMEDIAN / JOKER — 3 CARD HAND */
+.comedianCards{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin:14px 0;
+}
+.comedianCard{
+  border:2px solid var(--gold);
+  background:rgba(0,0,0,.88);
+  color:var(--gold);
+  padding:14px 8px;
+  font-weight:900;
+  cursor:pointer;
+  border-radius:8px;
+  min-height:118px;
+  box-shadow:inset 0 0 14px rgba(212,175,55,.08),0 0 16px rgba(0,0,0,.55);
+}
+.comedianCard:active{
+  transform:scale(.96);
+  background:rgba(212,175,55,.14);
+}
+.comedianCard.gift{border-color:#77e08a;color:#77e08a}
+.comedianCard.trade{border-color:#ffc76d;color:#ffc76d}
+.comedianCard.lesson{border-color:#ff7777;color:#ff7777}
+.comedianCard small{
+  display:block;
+  margin-top:6px;
+  color:var(--soft);
+  font-size:12px;
+  line-height:1.25;
+}
+@media(max-width:560px){
+  .comedianCards{grid-template-columns:1fr;gap:8px}
+  .comedianCard{min-height:auto}
+}
+
 </style>
 </head>
 
@@ -332,12 +444,12 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
         Rico & Eddy = danger.<br>
         Cake Jaw = risky deal, maybe junk, maybe gem.<br>
         Perrkey = warning, but don’t trust her too much.<br>
-        The Comedian = chaos, pain, luck, and rare rewards.
+        The Comedian = the Joker wearing your face. Pain or gain. Play a hand: The Gift, The Trade, or The Lesson.
       </div>
 
       <div class="graffitiRule">
         <b>SCRATCH TICKETS</b><br>
-        Sometimes you find one on the street. Pick 1–5 and pray.
+        Donnie brings a new Street Luck ticket about once every in-game week. Pick 1–5 and pray.
       </div>
 
       <div class="graffitiRule">
@@ -425,6 +537,7 @@ let inventory={}, storage={}, carrying=0, carryLimit=30;
 let cakeWinner=null, perrkeyHint=null, lastEvent=0, cooldown=6500;
 let brokeTravelCount=0;
 let gameEnded=false;
+let lastDonnieWeek=0;
 
 const cities=["New York","Chicago","Miami","Los Angeles","Atlanta"];
 const cityBg={
@@ -633,7 +746,7 @@ function saveGame(manual=false){
 
   const save={
     cash,bank,day,city,health,heat,blocksOwned,
-    inventory,storage,carryLimit,brokeTravelCount,
+    inventory,storage,carryLimit,brokeTravelCount,lastDonnieWeek,
     items:items.map(it=>({
       name:it.name,
       trend:it.trend,
@@ -686,6 +799,7 @@ function loadGame(){
     storage=save.storage || {};
     carryLimit=save.carryLimit ?? carryLimit;
     brokeTravelCount=save.brokeTravelCount ?? 0;
+    lastDonnieWeek=save.lastDonnieWeek ?? 0;
 
     if(Array.isArray(save.items)){
       save.items.forEach(saved=>{
@@ -845,7 +959,7 @@ function sellItem(i){
 function stay(){
   if(gameEnded)return;
   clickSound();day++;heat=Math.max(0,heat-rand(0,4));agePressure();refreshPrices();
-  log(`Stayed in ${city}.`,"info");maybeEvent(.36);brokeCheck("stay");renderAll();
+  log(`Stayed in ${city}.`,"info");maybeDonnieWeekly();maybeEvent(.36);brokeCheck("stay");renderAll();
 }
 function showTravel(){
   if(gameEnded)return;
@@ -887,6 +1001,7 @@ function travel(next){
     );
 
     log(`Traveled to ${city}.`,"info");
+    maybeDonnieWeekly();
     maybeEvent(.62);
     brokeCheck("travel");
     renderAll();
@@ -1156,52 +1271,195 @@ function showPanel(title,img,text,buttons,tag="Comic Event"){
   setTimeout(()=>document.body.style.animation="",200);
 }
 
+const donnieTickets=[
+  {
+    week:1,
+    saying:"Mo money, more problems on the block.",
+    spots:[
+      {label:"$500", type:"cash", amount:500},
+      {label:"HEAT -20", type:"heat", amount:-20},
+      {label:"$2,000", type:"cash", amount:2000},
+      {label:"NOTHIN'", type:"nothing"},
+      {label:"HEAT +30", type:"heat", amount:30}
+    ]
+  },
+  {
+    week:2,
+    saying:"Cash rules, but heat remembers.",
+    spots:[
+      {label:"$1,000", type:"cash", amount:1000},
+      {label:"FREE RIDE", type:"freeRide"},
+      {label:"$3,000", type:"cash", amount:3000},
+      {label:"HEAT -25", type:"heat", amount:-25},
+      {label:"HEAT +40", type:"heat", amount:40}
+    ]
+  },
+  {
+    week:3,
+    saying:"Don't sweat the technique — sweat the sirens.",
+    spots:[
+      {label:"HEAT -30", type:"heat", amount:-30},
+      {label:"$750", type:"cash", amount:750},
+      {label:"RARE ITEM", type:"item"},
+      {label:"NOTHIN'", type:"nothing"},
+      {label:"HEAT +35", type:"heat", amount:35}
+    ]
+  },
+  {
+    week:4,
+    saying:"Ain't no halfway hustle.",
+    spots:[
+      {label:"$2,000", type:"cash", amount:2000},
+      {label:"HEAT -20", type:"heat", amount:-20},
+      {label:"$5,000", type:"cash", amount:5000},
+      {label:"STORAGE", type:"storage"},
+      {label:"HEAT +50", type:"heat", amount:50}
+    ]
+  },
+  {
+    week:5,
+    saying:"Protect ya neck when the streets get loud.",
+    spots:[
+      {label:"BODYGUARD", type:"bodyguard"},
+      {label:"$1,500", type:"cash", amount:1500},
+      {label:"HEAT -30", type:"heat", amount:-30},
+      {label:"NOTHIN'", type:"nothing"},
+      {label:"HEAT +45", type:"heat", amount:45}
+    ]
+  },
+  {
+    week:6,
+    saying:"If the block is quiet, listen harder.",
+    spots:[
+      {label:"$1,000", type:"cash", amount:1000},
+      {label:"INFO TIP", type:"tip"},
+      {label:"$4,000", type:"cash", amount:4000},
+      {label:"HEAT -25", type:"heat", amount:-25},
+      {label:"HEAT +40", type:"heat", amount:40}
+    ]
+  },
+  {
+    week:7,
+    saying:"Fast money got slow consequences.",
+    spots:[
+      {label:"$3,000", type:"cash", amount:3000},
+      {label:"HEAT -30", type:"heat", amount:-30},
+      {label:"FREE RIDE", type:"freeRide"},
+      {label:"NOTHIN'", type:"nothing"},
+      {label:"HEAT +60", type:"heat", amount:60}
+    ]
+  }
+];
+
+function currentDonnieTicket(){
+  let week=Math.floor((day-1)/7)%donnieTickets.length;
+  return donnieTickets[week];
+}
+
+function maybeDonnieWeekly(){
+  if(gameEnded)return;
+  let week=Math.floor((day-1)/7)+1;
+
+  // Donnie can show once per in-game week, usually on/after each 7th day.
+  if(week>lastDonnieWeek && day>1 && day%7===0){
+    lastDonnieWeek=week;
+    if(Math.random()<.85){
+      scratchTicketEvent();
+    }else{
+      log("Donnie passed through, but no ticket this week.","warn");
+    }
+  }
+}
+
 function scratchTicketEvent(){
   warnSound();
+  let ticket=currentDonnieTicket();
+
   showPanel(
-    "SCRATCH TICKET",
+    "DONNIE'S WEEKLY SCRATCH",
     "",
-    `You found a scratched-up ticket on the ground.<br><br>Pick a spot.`,
     `
-    <div class="cardGrid">
-      <div class="pickCard" onclick="scratchPick(1)">1</div>
-      <div class="pickCard" onclick="scratchPick(2)">2</div>
-      <div class="pickCard" onclick="scratchPick(3)">3</div>
-      <div class="pickCard" onclick="scratchPick(4)">4</div>
-      <div class="pickCard" onclick="scratchPick(5)">5</div>
+    <div class="donnieTicket">
+      <div class="donnieTop">
+        <span>$2 STREET LUCK</span>
+        <span>WEEK ${ticket.week}</span>
+      </div>
+      <div class="donnieTitle">STREET LUCK</div>
+      <div class="donnieSays"><b>DONNIE SAYS:</b><br>"${ticket.saying}"</div>
+      <div>Scratch one spot. Donnie don't miss.</div>
+      <div class="donnieGrid">
+        ${ticket.spots.map((s,i)=>`<div class="donnieSpot" onclick="scratchPick(${i})">${i+1}<span>${s.label}</span></div>`).join("")}
+      </div>
+      <div class="donnieFooter">THE MORE YOU PUSH, THE HOTTER IT GETS. KNOW WHEN TO STACK... KNOW WHEN TO LEAVE.</div>
     </div>
-    <button onclick="closePanel()">Ignore</button>
     `,
-    "Lucky Break"
+    `<button onclick="closePanel()">Save it for later</button>`,
+    "Street Luck"
   );
 }
 
 function scratchPick(num){
-  let roll = Math.random();
+  let ticket=currentDonnieTicket();
+  let spot=ticket.spots[num];
+  if(!spot){
+    closePanel();
+    return;
+  }
 
-  if(roll < 0.35){
-    let win = rand(200,2000);
-    cash += win;
+  if(spot.type==="cash"){
+    cash += spot.amount;
     winSound();
-    showPanel("WINNER","",`You hit ${money(win)}!`,`<button onclick="closePanel();renderAll()">Nice</button>`);
-    log("Scratch win: "+money(win),"good");
+    showPanel("DONNIE PAID", "", `Street Luck hit for ${money(spot.amount)}.`, `<button onclick="closePanel();renderAll()">Take It</button>`, "Scratch Result");
+    log("Donnie scratch hit: "+money(spot.amount)+".","good");
 
-  } else if(roll < 0.65){
-    showPanel("NOTHING","",`The ticket was dead.`,`<button onclick="closePanel()">Move on</button>`);
-    log("Scratch nothing.","info");
+  }else if(spot.type==="heat"){
+    heat = Math.max(0, heat + spot.amount);
+    if(spot.amount<0){
+      winSound();
+      showPanel("HEAT BREAK", "", `Donnie cooled the block by ${Math.abs(spot.amount)}.`, `<button onclick="closePanel();renderAll()">Move Quiet</button>`, "Scratch Result");
+      log("Donnie scratch cooled heat by "+Math.abs(spot.amount)+".","good");
+    }else{
+      lossSound();
+      showPanel("HOT TICKET", "", `Wrong move. Heat jumped by ${spot.amount}.`, `<button onclick="closePanel();renderAll()">Keep Moving</button>`, "Scratch Result");
+      log("Donnie scratch raised heat by "+spot.amount+".","warn");
+    }
 
-  } else if(roll < 0.85){
-    heat += rand(5,15);
-    lossSound();
-    showPanel("SKETCHY","",`Fake ticket. Heat rises.`,`<button onclick="closePanel();renderAll()">Move</button>`);
-    log("Scratch raised heat.","warn");
-
-  } else {
+  }else if(spot.type==="item"){
     let item = items[rand(0,items.length-1)];
     inventory[item.name] = (inventory[item.name]||0)+1;
     winSound();
-    showPanel("LUCKY FIND","",`You got 1x ${item.name}.`,`<button onclick="closePanel();renderAll()">Take it</button>`);
-    log("Scratch item: "+item.name,"good");
+    showPanel("RARE ITEM", "", `Donnie found you 1x ${item.name}.`, `<button onclick="closePanel();renderAll()">Take It</button>`, "Scratch Result");
+    log("Donnie scratch item: "+item.name+".","good");
+
+  }else if(spot.type==="freeRide"){
+    heat = Math.max(0, heat - 15);
+    winSound();
+    showPanel("FREE RIDE", sceneBg.travel, `Donnie got you moving quiet.<br>Heat cooled by 15.`, `<button onclick="closePanel();renderAll()">Ride Out</button>`, "Scratch Result");
+    log("Donnie free ride cooled heat.","good");
+
+  }else if(spot.type==="storage"){
+    carryLimit += 2;
+    winSound();
+    showPanel("STORAGE SLOT", "", `You found extra room. Carry limit +2.`, `<button onclick="closePanel();renderAll()">Use It</button>`, "Scratch Result");
+    log("Donnie scratch added storage room.","good");
+
+  }else if(spot.type==="bodyguard"){
+    health = Math.min(100, health + 20);
+    heat = Math.max(0, heat - 10);
+    winSound();
+    showPanel("BODYGUARD", "", `Donnie sent protection for the day.<br>Health +20. Heat -10.`, `<button onclick="closePanel();renderAll()">Respect</button>`, "Scratch Result");
+    log("Donnie bodyguard helped you recover.","good");
+
+  }else if(spot.type==="tip"){
+    generateIntel();
+    heat = Math.max(0, heat - 8);
+    winSound();
+    showPanel("INFO TIP", "", `Donnie gave you market intel and cooled your heat a little.`, `<button onclick="closePanel();renderAll()">Listen</button>`, "Scratch Result");
+    log("Donnie gave a street tip.","good");
+
+  }else{
+    showPanel("NOTHIN'", "", `Dead ticket. Donnie shrugs.`, `<button onclick="closePanel();renderAll()">Move On</button>`, "Scratch Result");
+    log("Donnie scratch: nothing this time.","info");
   }
 
   renderAll();
@@ -1235,30 +1493,161 @@ function eddyFight(){health=Math.max(0,health-22);cash=Math.max(0,cash-200);heat
 function eddyRun(){heat+=4;log("You backed off from Eddy.","warn");closePanel();renderAll()}
 function showComedian(){
   startMusic();
+
   let v=voicePlaya;
-  if(v){v.currentTime=0;v.volume=.85;v.play().catch(()=>{})}
-  showPanel("The Comedian",ASSETS.comedian,"Funny thing about luck... it don't knock twice.",`<button onclick="playHand()">Play a Hand</button><button onclick="closePanel();startMusic();renderAll()">Ignore</button>`,"Luck Can Flip");
-}
-function playHand(){
-  let roll=Math.random();
-  if(roll<.30){
-    let w=rand(2000,12000);cash+=w;winSound();
-    showPanel("POWER","",`You feel momentum.<br>+${money(w)}`,`<button onclick="closePanel();startMusic();renderAll()">Continue</button>`,"Card Reveal");
-    log(`Comedian POWER +${money(w)}`,"good");
-  }else if(roll<.68){
-    let l=rand(1000,7000);cash=Math.max(0,cash-l);heat+=12;lossSound();
-    showPanel("PAIN","",`Luck cut you deep.<br>-${money(l)}`,`<button onclick="closePanel();startMusic();renderAll()">Continue</button>`,"Card Reveal");
-    log(`Comedian PAIN -${money(l)}`,"bad");
-  }else if(roll<.86){
-    inventory["Million Dollar Mixtape"]=(inventory["Million Dollar Mixtape"]||0)+1;winSound();
-    showPanel("THE MIXTAPE","",`He slides you a tape and laughs.<br>Million Dollar Mixtape added.`,`<button onclick="closePanel();startMusic();renderAll()">Continue</button>`,"Rare Card");
-    log("Comedian gave you the Million Dollar Mixtape.","good");
-  }else{
-    showPanel("VANISHED","",`He laughs, then he's gone.`,`<button onclick="closePanel();startMusic();renderAll()">Continue</button>`,"Card Reveal");
-    log("Comedian vanished.","warn");
+  if(v){
+    v.currentTime=0;
+    v.volume=.85;
+    v.play().catch(()=>{});
   }
+
+  showPanel(
+    "The Comedian",
+    ASSETS.comedian,
+    `"Can I get a holla?"<br><br>
+    The Joker steps out wearing your face.<br>
+    He ain't here to save you. He's here to test you.<br><br>
+    Play a hand or walk away.`,
+    `<button onclick="showComedianHand()">Play a Hand</button><button onclick="closePanel();startMusic();renderAll()">Ignore</button>`,
+    "Pain or Gain"
+  );
+}
+
+function showComedianHand(){
+  showPanel(
+    "PICK YOUR HAND",
+    ASSETS.comedian,
+    `Three cards. One choice. No crying after.`,
+    `
+    <div class="comedianCards">
+      <div class="comedianCard gift" onclick="comedianGift()">
+        THE GIFT
+        <small>Gain cash<br>Lower heat<br>Chance bonus item</small>
+      </div>
+
+      <div class="comedianCard trade" onclick="comedianTrade()">
+        THE TRADE
+        <small>Pay $1,000<br>Gain goods<br>Heat rises</small>
+      </div>
+
+      <div class="comedianCard lesson" onclick="comedianLesson()">
+        THE LESSON
+        <small>Lose cash<br>Heat spikes<br>Item at risk</small>
+      </div>
+    </div>
+
+    <button onclick="closePanel();startMusic();renderAll()">Walk Away</button>
+    `,
+    "Joker Hand"
+  );
+}
+
+function comedianGift(){
+  let gain=rand(1500,7500);
+  cash+=gain;
+  heat=Math.max(0,heat-rand(8,22));
+
+  let bonus="";
+  carrying=goodsCount(inventory);
+
+  if(Math.random()<.22 && carrying<carryLimit){
+    let item=items[rand(0,items.length-1)];
+    inventory[item.name]=(inventory[item.name]||0)+1;
+    bonus=`<br>Bonus: 1x ${item.name}`;
+    log("The Comedian gifted 1x "+item.name+".","good");
+  }
+
+  winSound();
+  showPanel(
+    "THE GIFT",
+    ASSETS.comedian,
+    `The Comedian smiles.<br><br>+${money(gain)}<br>Heat cooled.${bonus}<br><br>"We both eat today."`,
+    `<button onclick="closePanel();startMusic();renderAll()">Take It</button>`,
+    "Gain"
+  );
+
+  log("The Comedian gifted you "+money(gain)+" and cooled the heat.","good");
   renderAll();
 }
+
+function comedianTrade(){
+  let cost=1000;
+
+  if(cash<cost){
+    lossSound();
+    showPanel(
+      "NO TRADE",
+      ASSETS.comedian,
+      `You reached without enough cash.<br><br>The Comedian laughs.`,
+      `<button onclick="closePanel();startMusic();renderAll()">Back Off</button>`,
+      "No Deal"
+    );
+    log("Not enough cash for The Comedian's trade.","bad");
+    return;
+  }
+
+  cash-=cost;
+  heat+=rand(8,18);
+
+  let high=items.filter(it=>it.base>=350);
+  let item=high[rand(0,high.length-1)];
+  let qty=rand(1,3);
+
+  if(Math.random()<.10){
+    item={name:"Million Dollar Mixtape"};
+    qty=1;
+  }
+
+  inventory[item.name]=(inventory[item.name]||0)+qty;
+
+  winSound();
+  showPanel(
+    "THE TRADE",
+    ASSETS.comedian,
+    `Paid ${money(cost)}.<br>Gained ${qty}x ${item.name}.<br>Heat increased.<br><br>"No pain, no play."`,
+    `<button onclick="closePanel();startMusic();renderAll()">Take the Trade</button>`,
+    "Risk"
+  );
+
+  log("The Comedian trade: paid "+money(cost)+" for "+qty+"x "+item.name+".","warn");
+  renderAll();
+}
+
+function comedianLesson(){
+  let loss=rand(1000,5000);
+  loss=Math.min(cash,loss);
+
+  cash-=loss;
+  heat+=rand(15,35);
+
+  let itemHit="";
+  const keys=Object.keys(inventory).filter(k=>inventory[k]>0);
+
+  if(keys.length && Math.random()<.30){
+    let k=keys[rand(0,keys.length-1)];
+    inventory[k]--;
+    if(inventory[k]<=0)delete inventory[k];
+    itemHit=`<br>Lost 1x ${k}.`;
+    log("The Comedian took 1x "+k+".","bad");
+  }
+
+  lossSound();
+  showPanel(
+    "THE LESSON",
+    ASSETS.comedian,
+    `Pain keeps you humble.<br><br>Lost ${money(loss)}.<br>Heat spiked.${itemHit}`,
+    `<button onclick="closePanel();startMusic();renderAll()">Keep Moving</button>`,
+    "Pain"
+  );
+
+  log("The Comedian's lesson cost you "+money(loss)+".","bad");
+  renderAll();
+}
+
+function playHand(){
+  showComedianHand();
+}
+
 function showCake(){clickSound();if(Math.random()<.45){showPerrkeyCake();return}cakeDeal(false)}
 function cakeDeal(hint){
   if(cakeWinner===null)cakeWinner=rand(1,3);
