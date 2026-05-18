@@ -529,7 +529,34 @@ const ASSETS={
   eddy:"eddy_silent.png",
   comedian:"The Comedian.png",
   cake:"cake_jaw_jesse.PNG",
-  perrkey:"perrkey_two_bricks.PNG"
+  perrkey:"perrkey_two_bricks.PNG",
+  donnie:`data:image/svg+xml;utf8,
+<svg xmlns='http://www.w3.org/2000/svg' width='900' height='520'>
+<defs>
+<linearGradient id='g' x1='0' x2='1'>
+<stop offset='0%' stop-color='%23080808'/>
+<stop offset='100%' stop-color='%232a1a00'/>
+</linearGradient>
+</defs>
+<rect width='100%' height='100%' fill='url(%23g)'/>
+<rect x='20' y='20' width='860' height='480' rx='20' fill='none' stroke='%23d4af37' stroke-width='6'/>
+<text x='450' y='95' font-size='58' text-anchor='middle' fill='%23f2d97a' font-family='Arial' font-weight='900'>
+DONNIE'S 90s SCRATCH
+</text>
+<text x='450' y='150' font-size='28' text-anchor='middle' fill='%23ffc76d' font-family='Arial'>
+THE PU$HER STREET LOTTERY
+</text>
+<circle cx='450' cy='285' r='110' fill='%23111111' stroke='%23d4af37' stroke-width='6'/>
+<text x='450' y='275' font-size='42' text-anchor='middle' fill='white' font-family='Arial' font-weight='900'>
+DONNIE
+</text>
+<text x='450' y='320' font-size='22' text-anchor='middle' fill='%23cccccc' font-family='Arial'>
+'Stack paper. Stay dangerous.'
+</text>
+<text x='450' y='430' font-size='34' text-anchor='middle' fill='%2377e08a' font-family='Arial' font-weight='900'>
+PICK A NUMBER 1-5
+</text>
+</svg>`
 };
 
 let cash=3000, bank=0, day=1, city="New York", health=100, heat=0, blocksOwned=0;
@@ -537,6 +564,7 @@ let inventory={}, storage={}, carrying=0, carryLimit=30;
 let cakeWinner=null, perrkeyHint=null, lastEvent=0, cooldown=6500;
 let brokeTravelCount=0;
 let gameEnded=false;
+let lastCrowDay=-99;
 let lastDonnieWeek=0;
 
 const cities=["New York","Chicago","Miami","Los Angeles","Atlanta"];
@@ -852,9 +880,19 @@ function continueRun(){
   }
 }
 
+
+function dangerAudioCheck(){
+  if(gameEnded)return;
+  if(heat>=70 && day!==lastCrowDay){
+    lastCrowDay=day;
+    crowSound();
+    log("A crow cuts through the noise. The streets feel hot.","warn");
+  }
+}
+
 function renderAll(){
   if(gameEnded)return;
-  setBg();renderHud();renderMarket();renderInv();checkEndgame();
+  setBg();renderHud();renderMarket();renderInv();dangerAudioCheck();checkEndgame();
   if(!gameEnded && startScreen.style.display==="none"){
     if(!music) startMusic();
     saveGame(false);
@@ -908,6 +946,19 @@ function brokeCheck(reason){
 function luckyBreak(){
   let roll = Math.random();
 
+  const sayings=[
+    "Real recognize real.",
+    "A hustler’s luck changes overnight.",
+    "Stack paper. Stay dangerous.",
+    "Only the streets keep score.",
+    "No love. Just survival.",
+    "Everybody eats or nobody eats.",
+    "Money talks louder after midnight."
+  ];
+
+  const line=sayings[rand(0,sayings.length-1)];
+
+
   if(roll < .35){
     let gain = rand(300, 1200);
     cash += gain;
@@ -952,7 +1003,7 @@ function sellItem(i){
   let it=items[i];
   if(inventory[it.name]>0){
     inventory[it.name]--;if(inventory[it.name]===0)delete inventory[it.name];
-    cash+=it.price;log(`Sold ${it.name}`,"good");
+    cash+=it.price;cashSound();log(`Sold ${it.name}`,"good");
   }else log(`No ${it.name}.`,"bad");
   maybeEvent(.24);renderAll();
 }
@@ -969,6 +1020,7 @@ function showTravel(){
 function travel(next){
   if(gameEnded)return;
   clickSound();
+  travelSound();
 
   if(next===city){
     closePanel();
@@ -1068,6 +1120,7 @@ function withdraw(){
 function storeGoods(){
   if(gameEnded)return;
   clickSound();
+  storeSound();
 
   if(!hasInventory()){
     log("Nothing to store.","bad");
@@ -1092,6 +1145,7 @@ function storeGoods(){
 function takeGoods(){
   if(gameEnded)return;
   clickSound();
+  storeSound();
 
   const cityStore = storage[city] || {};
   const keys = Object.keys(cityStore).filter(k=>cityStore[k]>0);
@@ -1131,6 +1185,7 @@ function takeGoods(){
 function hospital(){
   if(gameEnded)return;
   clickSound();
+  hospitalSound();
 
   if(health >= 100){
     showPanel("Hospital", sceneBg.hospital, "Hospital said you're already patched up.", `<button onclick="closePanel()">Back</button>`, "Hospital");
@@ -1180,6 +1235,7 @@ function buyBlock(){
 
 function robberyEvent(){
   warnSound();
+  crowSound();
 
   let cashLoss = Math.min(cash, rand(300, 1800));
   let hurt = rand(8, 22);
@@ -1205,6 +1261,7 @@ function robberyEvent(){
 }
 
 function policeEvent(){
+  sirenSound();
   warnSound();
 
   showPanel("POLICE HEAT",sceneBg.police,`Blue lights hit the block. Choose fast.`,`<button onclick="policePay()">Pay Fine</button><button onclick="policeRun()">Run</button><button onclick="policeBust()">Take Bust</button>`,"Police");
@@ -1372,6 +1429,7 @@ function maybeDonnieWeekly(){
 }
 
 function scratchTicketEvent(){
+  scratchSound();
   warnSound();
   let ticket=currentDonnieTicket();
 
@@ -1399,6 +1457,7 @@ function scratchTicketEvent(){
 }
 
 function scratchPick(num){
+  scratchSound();
   let ticket=currentDonnieTicket();
   let spot=ticket.spots[num];
   if(!spot){
@@ -1492,6 +1551,7 @@ function showEddy(){warnSound();showPanel('Eddy "Silent"',ASSETS.eddy,"He was th
 function eddyFight(){health=Math.max(0,health-22);cash=Math.max(0,cash-200);heat+=12;lossSound();log("Eddy barely moved. You did.","bad");closePanel();renderAll()}
 function eddyRun(){heat+=4;log("You backed off from Eddy.","warn");closePanel();renderAll()}
 function showComedian(){
+  jokerSound();
   startMusic();
 
   let v=voicePlaya;
@@ -1791,6 +1851,75 @@ function toggleGuide(){
     g.style.display = "block";
   }
 }
+
+// ===== PUSHER SOUND UPGRADE — SAFE ADD =====
+function sweepSound(start=900,end=220,d=.22,v=.035,t="sawtooth"){
+  initAudio();
+  if(!audioCtx)return;
+  let o=audioCtx.createOscillator(),g=audioCtx.createGain();
+  o.type=t;
+  o.frequency.setValueAtTime(start,audioCtx.currentTime);
+  o.frequency.exponentialRampToValueAtTime(end,audioCtx.currentTime+d);
+  g.gain.setValueAtTime(.0001,audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(v,audioCtx.currentTime+.02);
+  g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+d);
+  o.connect(g);g.connect(audioCtx.destination);
+  o.start();o.stop(audioCtx.currentTime+d+.04);
+}
+
+function cashSound(){
+  initAudio();
+  beep(880,.05,.03,"triangle");
+  setTimeout(()=>beep(1175,.06,.025,"triangle"),55);
+  setTimeout(()=>beep(1568,.08,.022,"triangle"),115);
+}
+
+function scratchSound(){
+  initAudio();
+  for(let i=0;i<7;i++){
+    setTimeout(()=>sweepSound(rand(900,1500),rand(140,260),.045,.018,"sawtooth"),i*35);
+  }
+}
+
+function crowSound(){
+  initAudio();
+  sweepSound(760,330,.24,.035,"sawtooth");
+  setTimeout(()=>sweepSound(620,260,.28,.03,"sawtooth"),260);
+}
+
+function sirenSound(){
+  initAudio();
+  beep(620,.18,.035,"sawtooth");
+  setTimeout(()=>beep(420,.18,.035,"sawtooth"),180);
+  setTimeout(()=>beep(620,.18,.035,"sawtooth"),360);
+}
+
+function hospitalSound(){
+  initAudio();
+  beep(523,.08,.025,"sine");
+  setTimeout(()=>beep(659,.08,.025,"sine"),120);
+  setTimeout(()=>beep(784,.12,.025,"sine"),240);
+}
+
+function travelSound(){
+  initAudio();
+  sweepSound(180,760,.38,.03,"triangle");
+  setTimeout(()=>beep(120,.09,.02,"square"),120);
+}
+
+function storeSound(){
+  initAudio();
+  beep(300,.06,.025,"square");
+  setTimeout(()=>beep(220,.08,.022,"square"),80);
+}
+
+function jokerSound(){
+  initAudio();
+  beep(392,.07,.035,"triangle");
+  setTimeout(()=>beep(740,.05,.03,"square"),90);
+  setTimeout(()=>beep(311,.12,.03,"sawtooth"),165);
+}
+
 </script>
 </body>
 </html>
