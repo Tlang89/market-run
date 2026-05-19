@@ -481,7 +481,7 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
 
       <div class="graffitiRule">
         <b>SCRATCH TICKETS</b><br>
-        Donnie brings weekly Street Luck. Sometimes he asks for money. If you help him, he may reciprocate.
+        Donnie brings weekly Street Luck once each in-game week. Sometimes he asks for money. If you help him, he may reciprocate.
       </div>
 
       <div class="graffitiRule">
@@ -921,8 +921,11 @@ function continueRun(){
 
 
 function dangerAudioCheck(){
-  if(gameEnded)return;
-  if(heat>=70 && day!==lastCrowDay){
+  if(typeof day==="undefined" || typeof heat==="undefined")return;
+  setAudioMode();
+
+  // Calm warning: crow only occasionally, not every turn.
+  if(heat>=85 && day-lastCrowDay>=14){
     lastCrowDay=day;
     crowSound();
     log("A crow cuts through the noise. The streets feel hot.","warn");
@@ -1506,12 +1509,19 @@ function donnieDecline(){
 
 function maybeDonnieWeekly(){
   if(gameEnded)return;
+
   let week=Math.floor((day-1)/7)+1;
 
-  // Donnie can show once per in-game week, usually on/after each 7th day.
-  if(week>lastDonnieWeek && day>1 && day%7===0){
+  // Donnie can appear once each in-game week once that week begins.
+  if(week>lastDonnieWeek && day>3){
     lastDonnieWeek=week;
-    if(Math.random()<.35){donnieAsk();}else if(Math.random()<.92){scratchTicketEvent();}else{log("Donnie passed through smiling, but no ticket this week.","warn");}
+
+    // Mostly tickets, sometimes Donnie asks for $200 and reciprocates.
+    if(Math.random()<.25){
+      donnieAsk();
+    }else{
+      scratchTicketEvent();
+    }
   }
 }
 
@@ -1621,17 +1631,27 @@ function maybeEvent(ch){
   if(gameEnded)return;
   let now=Date.now();
   if(now-lastEvent<cooldown)return;
+
+  // If heat is very high, the Comedian may step in as a pressure choice.
+  if(heat>=90 && Math.random()<.35){
+    lastEvent=now;
+    showComedian();
+    return;
+  }
+
   if(Math.random()>ch)return;
   lastEvent=now;
   let r=Math.random();
-  if(r<.12)policeEvent();
-  else if(r<.24)robberyEvent();
-  else if(r<.36)showTonie();
-  else if(r<.48)showRico();
-  else if(r<.58)showEddy();
-  else if(r<.72)showCake();
-  else if(r<.86)showPerrkey();
-  else if(r<.96)showComedian();
+
+  if(r<.10)policeEvent();
+  else if(r<.20)robberyEvent();
+  else if(r<.30)scratchTicketEvent();
+  else if(r<.42)showComedian();
+  else if(r<.54)showTonie();
+  else if(r<.64)showRico();
+  else if(r<.72)showEddy();
+  else if(r<.84)showCake();
+  else showPerrkey();
 }
 function showTonie(){warnSound();showPanel("Tonie Two-Toe",ASSETS.tonie,"Tonie rolls up with thugs behind him. Pay, fight, or run.",`<button onclick="toniePay()">Pay $1000</button><button onclick="tonieFight()">Fight</button><button onclick="tonieRun()">Run</button>`,"Pressure")}
 function toniePay(){if(cash>=1000){cash-=1000;heat=Math.max(0,heat-20);log("Paid Tonie.","warn")}else log("Not enough cash.","bad");closePanel();renderAll()}
@@ -2168,8 +2188,8 @@ function startStreetBeat(){
   },340);
   ambienceTimer=setInterval(()=>{
     if(audioMode==="low")noiseBurst(.18,.006,900);
-    else if(audioMode==="mid"){noiseBurst(.22,.012,1300);if(Math.random()<.25)crowSound()}
-    else{noiseBurst(.26,.018,1600);if(Math.random()<.42)crowSound();if(Math.random()<.18)sirenSound()}
+    else if(audioMode==="mid"){noiseBurst(.22,.012,1300);if(false)crowSound()}
+    else{noiseBurst(.26,.018,1600);if(Math.random()<.08)crowSound();if(Math.random()<.04)sirenSound()}
   },4200);
 }
 function stopStreetBeat(){
