@@ -933,6 +933,98 @@ function doorThump(){
 document.addEventListener("touchstart", unlockGameAudio, {once:true, passive:true});
 document.addEventListener("mousedown", unlockGameAudio, {once:true});
 
+/* PATCH — 90s STREET ARCADE SOUND PACK */
+function tone(freq=220,dur=.08,gain=.045,type="square",delay=0){
+  try{
+    initAudio();
+    const t=audioCtx.currentTime+delay;
+    const o=audioCtx.createOscillator();
+    const g=audioCtx.createGain();
+    o.type=type;
+    o.frequency.setValueAtTime(freq,t);
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(gain,t+.008);
+    g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(t); o.stop(t+dur+.02);
+  }catch(e){}
+}
+function sweep(from=600,to=120,dur=.18,gain=.05,type="sawtooth"){
+  try{
+    initAudio();
+    const t=audioCtx.currentTime;
+    const o=audioCtx.createOscillator();
+    const g=audioCtx.createGain();
+    o.type=type;
+    o.frequency.setValueAtTime(from,t);
+    o.frequency.exponentialRampToValueAtTime(Math.max(1,to),t+dur);
+    g.gain.setValueAtTime(gain,t);
+    g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(t); o.stop(t+dur+.03);
+  }catch(e){}
+}
+function scratch90(){
+  try{
+    initAudio();
+    for(let i=0;i<7;i++){
+      tone(900-(i*85),.025,.035,(i%2?"square":"sawtooth"),i*.025);
+    }
+    setTimeout(()=>noiseBurst(.12,.055,1600),40);
+  }catch(e){}
+}
+function cash90(){
+  tone(880,.055,.045,"square",0);
+  tone(1320,.055,.04,"square",.06);
+  tone(1760,.09,.035,"triangle",.12);
+}
+function buy90(){
+  tone(180,.06,.045,"square",0);
+  tone(240,.06,.04,"square",.055);
+  tone(320,.08,.035,"square",.11);
+}
+function sell90(){
+  cash90();
+  setTimeout(()=>tone(740,.08,.04,"triangle"),165);
+}
+function bad90(){
+  sweep(700,95,.22,.07,"sawtooth");
+  setTimeout(()=>tone(55,.14,.06,"square"),80);
+}
+function warn90(){
+  scratch90();
+  setTimeout(()=>tone(440,.09,.04,"square"),180);
+  setTimeout(()=>tone(330,.11,.04,"square"),285);
+}
+function travel90(){
+  tone(70,.10,.055,"triangle",0);
+  sweep(180,70,.24,.045,"sawtooth");
+  setTimeout(()=>noiseBurst(.18,.035,500),45);
+}
+function start90(){
+  tone(196,.08,.05,"square",0);
+  tone(247,.08,.05,"square",.09);
+  tone(294,.08,.05,"square",.18);
+  tone(392,.16,.055,"square",.29);
+}
+function card90(){
+  scratch90();
+  setTimeout(()=>tone(220,.07,.04,"square"),150);
+  setTimeout(()=>tone(440,.09,.035,"square"),230);
+}
+function win90(){
+  tone(523,.07,.045,"square",0);
+  tone(659,.07,.045,"square",.08);
+  tone(784,.07,.045,"square",.16);
+  tone(1046,.13,.04,"triangle",.25);
+}
+function lose90(){
+  tone(220,.08,.045,"sawtooth",0);
+  tone(165,.08,.045,"sawtooth",.09);
+  tone(110,.18,.055,"sawtooth",.18);
+}
+
+
 function beep(f,d=.08,v=.03,t="square"){
   initAudio();
   if(!audioCtx)return;
@@ -943,23 +1035,7 @@ function beep(f,d=.08,v=.03,t="square"){
   g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+d);
   o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+d+.03);
 }
-function clickSound(){initAudio();beep(880,.045,.027);setTimeout(()=>beep(440,.05,.018,"triangle"),45)}
-function warnSound(){initAudio();beep(110,.12,.05,"sawtooth");setTimeout(()=>beep(82,.14,.04,"sawtooth"),90)}
-function winSound(){initAudio();beep(440,.07,.035);setTimeout(()=>beep(660,.07,.035),80);setTimeout(()=>beep(880,.1,.035),160)}
-function lossSound(){initAudio();beep(220,.09,.045,"sawtooth");setTimeout(()=>beep(146,.16,.035,"sawtooth"),110)}
-function startMusic(){
-  initAudio();
-  if(music)return;
-  let seq=[220,0,196,0,185,0,196,0,220,0,246,0,220,196,185,0];
-  music=setInterval(()=>{
-    let n=seq[step%seq.length];
-    if(step%2===0)beep(120,.03,.009);
-    if(n&&step%2===0)beep(n,.08,.016,"triangle");
-    if(step%16===0)beep(330,.09,.013);
-    step++;
-  },340);
-  try{startStreetBeat();}catch(e){}
-}
+function clickSound(){ tone(520,.035,.035,"square"); tone(780,.03,.025,"square",.035); }
 function stopMusic(){if(music){clearInterval(music);music=null} try{stopStreetBeat();}catch(e){}}
 
 function trendLabel(item){
@@ -1173,7 +1249,7 @@ function finishStartAfterLoad(){
 }
 
 function continueRun(){
-  try{unlockGameAudio();clickSound();startMusic();}catch(e){}
+  try{unlockGameAudio();clickSound();start90();startMusic();}catch(e){}
 
   let loaded=false;
   try{loaded=loadGame();}catch(e){loaded=false;}
@@ -1321,12 +1397,12 @@ function sellItem(i){
   }else log(`No ${it.name}.`,"bad");
   maybeEvent(.24);renderAll();
 }
-function stay(){
+function stay(){ try{tone(260,.04,.03,"square");}catch(e){} 
   if(gameEnded)return;
   clickSound();day++;heat=Math.max(0,heat-rand(0,4));agePressure();refreshPrices();
   log(`Stayed in ${city}.`,"info");maybeDonnieWeekly();maybeEvent(.36);brokeCheck("stay");renderAll();
 }
-function showTravel(){
+function showTravel(){ try{travel90();}catch(e){} 
   if(gameEnded)return;
   clickSound();
   showPanel("Travel","",`Current city: ${city}`,cities.map(c=>`<button onclick="travel('${c}')">${c}</button>`).join("")+`<br><br><button onclick="closePanel()">Cancel</button>`,"Move");
@@ -1431,7 +1507,7 @@ function withdraw(){
 }
 
 
-function storeGoods(){
+function storeGoods(){ try{tone(160,.06,.035,"square");tone(210,.06,.03,"square",.07);}catch(e){} 
   if(gameEnded)return;
   clickSound();
   storeSound();
@@ -1456,7 +1532,7 @@ function storeGoods(){
   renderAll();
 }
 
-function takeGoods(){
+function takeGoods(){ try{tone(210,.06,.035,"square");tone(280,.06,.03,"square",.07);}catch(e){} 
   if(gameEnded)return;
   clickSound();
   storeSound();
@@ -1496,7 +1572,7 @@ function takeGoods(){
   renderAll();
 }
 
-function hospital(){
+function hospital(){ try{warn90();}catch(e){} 
   if(gameEnded)return;
   clickSound();
   hospitalSound();
@@ -1525,7 +1601,7 @@ function hospital(){
   renderAll();
 }
 
-function buyBlock(){
+function buyBlock(){ try{cash90();}catch(e){} 
   if(gameEnded)return;
   clickSound();
 
@@ -1995,7 +2071,7 @@ function comedianCardHTML(card){
   `;
 }
 
-function showComedianHand(){
+function showComedianHand(){ try{card90();}catch(e){} 
   const hand=[
     {key:"gift", name:"THE GIFT", fn:"comedianGift()"},
     {key:"trade", name:"THE TRADE", fn:"comedianTrade()"},
@@ -2045,7 +2121,7 @@ function showComedianResult(title, body, tag, cardKey){
   );
 }
 
-function comedianGift(){
+function comedianGift(){ try{win90();}catch(e){} 
   let gain=rand(1500,7500);
   cash+=gain;
   heat=Math.max(0,heat-rand(8,22));
@@ -2073,7 +2149,7 @@ function comedianGift(){
   renderAll();
 }
 
-function comedianTrade(){
+function comedianTrade(){ try{scratch90();}catch(e){} 
   let cost=1000;
 
   if(cash<cost){
@@ -2109,7 +2185,7 @@ function comedianTrade(){
   renderAll();
 }
 
-function comedianLesson(){
+function comedianLesson(){ try{lose90();}catch(e){} 
   let loss=rand(1000,5000);
   loss=Math.min(cash,loss);
 
@@ -2313,6 +2389,7 @@ function startRun(){
   try{
     unlockGameAudio();
     clickSound();
+    start90();
     doorThump();
     startMusic();
   }catch(e){}
