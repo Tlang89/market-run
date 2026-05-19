@@ -677,6 +677,66 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
   .pusherCardLogo{font-size:30px}
 }
 
+
+/* PATCH — DONNIE HOLD MONEY / TOMMY PRESSURE */
+.donnieHoldPanel{
+  border:2px solid rgba(212,175,55,.58);
+  background:
+    radial-gradient(circle at top, rgba(212,175,55,.13), transparent 42%),
+    linear-gradient(180deg,rgba(0,0,0,.97),rgba(12,8,4,.95));
+  padding:18px;
+  box-shadow:inset 0 0 22px rgba(212,175,55,.08),0 0 26px rgba(0,0,0,.82);
+}
+.donnieHoldName{
+  color:var(--bright);
+  font-size:30px;
+  font-weight:900;
+  letter-spacing:2px;
+  margin-bottom:10px;
+}
+.donnieHoldQuote{
+  color:var(--warn);
+  font-size:20px;
+  line-height:1.35;
+  font-weight:900;
+  margin:10px 0 14px;
+}
+.donnieHoldSub{
+  color:var(--soft);
+  font-size:14px;
+  line-height:1.35;
+  font-weight:800;
+}
+.tommyPressurePanel{
+  border:2px solid rgba(255,119,119,.55);
+  background:
+    radial-gradient(circle at top, rgba(255,119,119,.12), transparent 42%),
+    linear-gradient(180deg,rgba(0,0,0,.98),rgba(18,4,4,.95));
+  padding:16px;
+  box-shadow:inset 0 0 24px rgba(255,119,119,.08),0 0 28px rgba(0,0,0,.86);
+}
+.tommyPressureTitle{
+  color:#ff7777;
+  font-size:28px;
+  font-weight:900;
+  letter-spacing:2px;
+  margin-bottom:10px;
+  text-shadow:2px 2px 0 #000,0 0 12px rgba(255,119,119,.35);
+}
+.tommyPressureText{
+  color:var(--warn);
+  font-size:18px;
+  line-height:1.35;
+  font-weight:900;
+}
+.tommyPressureSmall{
+  color:var(--soft);
+  font-size:13px;
+  line-height:1.35;
+  margin-top:12px;
+  font-weight:800;
+}
+
 </style>
 </head>
 
@@ -782,7 +842,7 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
 
       <div class="graffitiRule">
         <b>THE STREETS</b><br>
-        Tonie = pressure.<br>
+        Tommy Two-Toes = 25% street pressure. Pay respect or the block gets hotter.<br>Donnie and The Comedian are rare enough to feel special when they appear.<br>
         Rico & Eddy = danger.<br>
         Cake Jaw = risky deal, maybe junk, maybe gem.<br>
         Perrkey = warning, but don’t trust her too much.<br>
@@ -791,7 +851,7 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
 
       <div class="graffitiRule">
         <b>SCRATCH TICKETS</b><br>
-        Donnie brings weekly Street Luck once each in-game week. Sometimes he asks for money. If you help him, he may reciprocate.
+        Donnie brings weekly Street Luck once each in-game week. His weekly scratch tickets stay separate from the times he asks, “Can you let me hold some money?” If you help him, he may reciprocate.
       </div>
 
       <div class="graffitiRule">
@@ -813,7 +873,7 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
     <div class="startBtn" onclick="toggleGuide()" style="margin-top:14px;">CLOSE HANDBOOK</div>
   </div>
   <div class="corner left" id="cloud">☁ CLOUD SAVED</div>
-  <div class="corner right" id="ver">v1.0.4 FINAL STREET</div>
+  <div class="corner right" id="ver">v1.0.6 FINAL RARE ENCOUNTERS</div>
 </div>
 
 <div class="game" id="game">
@@ -1769,29 +1829,30 @@ function currentDonnieTicket(){
 
 function donnieAsk(){
   scratchSound();
+  const ask = 200;
   showPanel(
     "DONNIE PASSED THROUGH",
     "",
     `
-    <div class="donnieOGPanel">
-      <img src="${ASSETS.donnieOG}" alt="Donnie Street Luck">
-      <div class="donnieOGQuote">
-        Donnie brings a lighter mood to the block.<br><br>
-        "Luck ain't random... people just don't listen."
+    <div class="donnieHoldPanel">
+      <div class="donnieHoldName">DONNIE</div>
+      <div class="donnieHoldQuote">
+        "Can you let me hold ${money(ask)} real quick?"
       </div>
-      <div class="donnieOGAsk">
-        He asks for $200.
+      <div class="donnieHoldSub">
+        Donnie is not selling you a scratch ticket this time.<br>
+        This is street karma. Help him out, and he might remember when luck gets ugly.
       </div>
     </div>
     `,
-    `<button onclick="donnieGive()">Give $200</button><button onclick="donnieDecline()">Not Today</button>`,
+    `<button onclick="donnieGive()">Let Him Hold ${money(ask)}</button><button onclick="donnieDecline()">Not Today</button>`,
     "Street Karma"
   );
 }
 
 function donnieGive(){
   if(cash<200){
-    log("Donnie asked for $200, but you were short.","warn");
+    log("Donnie asked to hold $200, but you were short.","warn");
     closePanel();
     renderAll();
     return;
@@ -1958,8 +2019,9 @@ function maybeEvent(ch){
   let now=Date.now();
   if(now-lastEvent<cooldown)return;
 
-  // The Comedian should be visible. High heat pulls him closer.
-  if(heat>=75 && Math.random()<.45){
+  // Rare heat-based Comedian appearance.
+  // He should feel like fate, not a normal menu.
+  if(heat>=82 && Math.random()<.18){
     lastEvent=now;
     showComedian();
     return;
@@ -1969,20 +2031,71 @@ function maybeEvent(ch){
   lastEvent=now;
   let r=Math.random();
 
-  if(r<.24)showComedian();
-  else if(r<.26)scratchTicketEvent();
-  else if(r<.36)policeEvent();
-  else if(r<.46)robberyEvent();
-  else if(r<.56)showTonie();
-  else if(r<.66)showRico();
-  else if(r<.74)showEddy();
-  else if(r<.88)showCake();
+  // Final rare-encounter balance:
+  // Tommy = 25% pressure.
+  // Comedian + Donnie = special rare popups, not constant distractions.
+  if(r<.25)showTonie();
+  else if(r<.34)showComedian();
+  else if(r<.40)scratchTicketEvent();
+  else if(r<.52)policeEvent();
+  else if(r<.64)robberyEvent();
+  else if(r<.74)showRico();
+  else if(r<.83)showEddy();
+  else if(r<.93)showCake();
   else showPerrkey();
 }
-function showTonie(){warnSound();showPanel("Tonie Two-Toe",ASSETS.tonie,"Tonie rolls up with thugs behind him. Pay, fight, or run.",`<button onclick="toniePay()">Pay $1000</button><button onclick="tonieFight()">Fight</button><button onclick="tonieRun()">Run</button>`,"Pressure")}
-function toniePay(){if(cash>=1000){cash-=1000;heat=Math.max(0,heat-20);log("Paid Tonie.","warn")}else log("Not enough cash.","bad");closePanel();renderAll()}
-function tonieFight(){health=Math.max(0,health-25);cash=Math.max(0,cash-400);heat+=18;lossSound();log("Tonie's thugs worked you over.","bad");closePanel();renderAll()}
-function tonieRun(){cash=Math.max(0,cash-200);heat+=15;log("You ran from Tonie.","warn");closePanel();renderAll()}
+function showTonie(){
+  warnSound();
+  const tax = blocksOwned > 0 ? 1500 : 1000;
+  showPanel(
+    "TOMMY TWO-TOES",
+    ASSETS.tonie,
+    `
+    <div class="tommyPressurePanel">
+      <div class="tommyPressureTitle">BLOCK PRESSURE</div>
+      <div class="tommyPressureText">
+        Tommy Two-Toes has people watching your corners.<br><br>
+        "You moving money on this block, you pay respect."
+      </div>
+      <div class="tommyPressureSmall">
+        This pressure shows up enough to feel dangerous, but not enough to steal the market loop.
+      </div>
+    </div>
+    `,
+    `<button onclick="toniePay()">Pay Respect ${money(tax)}</button><button onclick="tonieFight()">Stand Ground</button><button onclick="tonieRun()">Slip Away</button>`,
+    "Street Pressure"
+  );
+}
+function toniePay(){
+  const tax = blocksOwned > 0 ? 1500 : 1000;
+  if(cash>=tax){
+    cash-=tax;
+    heat=Math.max(0,heat-22);
+    log("Paid Tommy Two-Toes respect: " + money(tax) + ".","warn");
+  }else{
+    log("Tommy wanted " + money(tax) + ", but you were short.","bad");
+    heat += 8;
+  }
+  closePanel();
+  renderAll();
+}
+function tonieFight(){
+  health=Math.max(0,health-25);
+  cash=Math.max(0,cash-400);
+  heat+=18;
+  lossSound();
+  log("You stood up to Tommy Two-Toes. The block got hotter.","bad");
+  closePanel();
+  renderAll();
+}
+function tonieRun(){
+  cash=Math.max(0,cash-200);
+  heat+=15;
+  log("You slipped away from Tommy Two-Toes, but word spread.","warn");
+  closePanel();
+  renderAll();
+}
+
 function showRico(){warnSound();showPanel('Rico "The Bat"',ASSETS.rico,"Wrong block. Wrong time.",`<button onclick="ricoFight()">Fight</button><button onclick="ricoRun()">Run</button>`,"Street Threat")}
 function ricoFight(){health=Math.max(0,health-18);cash=Math.max(0,cash-150);heat+=10;lossSound();log("You fought Rico.","bad");closePanel();renderAll()}
 function ricoRun(){heat+=5;log("You slipped away from Rico.","info");closePanel();renderAll()}
