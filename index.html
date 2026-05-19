@@ -432,6 +432,48 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
   font-size:18px;
 }
 
+
+/* COMEDIAN FULL HAND */
+.comedianFullGrid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+  margin-top:10px;
+}
+.comedianChoice{
+  border:2px solid rgba(212,175,55,.45);
+  border-radius:12px;
+  overflow:hidden;
+  background:linear-gradient(180deg,rgba(0,0,0,.96),rgba(18,10,10,.92));
+  box-shadow:0 0 18px rgba(0,0,0,.55);
+}
+.comedianChoice img{
+  width:100%;
+  max-height:26vh;
+  object-fit:cover;
+  display:block;
+}
+.comedianInfo{
+  padding:12px;
+}
+.comedianInfo h3{
+  margin:0 0 6px 0;
+  color:var(--bright);
+  font-size:26px;
+}
+.comedianDanger{
+  color:#ff7777;
+  font-weight:900;
+}
+.comedianGift{
+  color:#77e08a;
+  font-weight:900;
+}
+.comedianTrade{
+  color:#ffc76d;
+  font-weight:900;
+}
+
 </style>
 </head>
 
@@ -1147,7 +1189,7 @@ function travel(next){
   setTimeout(()=>{
     city=next;
     day++;
-    heat+=rand(3,10);
+    heat+=rand(6,16);
     agePressure();
     refreshPrices();
 
@@ -1735,167 +1777,183 @@ function maybeEvent(ch){
 }
 function showTonie(){warnSound();showPanel("Tonie Two-Toe",ASSETS.tonie,"Tonie rolls up with thugs behind him. Pay, fight, or run.",`<button onclick="toniePay()">Pay $1000</button><button onclick="tonieFight()">Fight</button><button onclick="tonieRun()">Run</button>`,"Pressure")}
 function toniePay(){if(cash>=1000){cash-=1000;heat=Math.max(0,heat-20);log("Paid Tonie.","warn")}else log("Not enough cash.","bad");closePanel();renderAll()}
-function tonieFight(){health=Math.max(0,health-25);cash=Math.max(0,cash-400);heat+=18;lossSound();log("Tonie's thugs worked you over.","bad");closePanel();renderAll()}
+function tonieFight(){health=Math.max(0,health-32);cash=Math.max(0,cash-400);heat+=18;lossSound();log("Tonie's thugs worked you over.","bad");closePanel();renderAll()}
 function tonieRun(){cash=Math.max(0,cash-200);heat+=15;log("You ran from Tonie.","warn");closePanel();renderAll()}
 function showRico(){warnSound();showPanel('Rico "The Bat"',ASSETS.rico,"Wrong block. Wrong time.",`<button onclick="ricoFight()">Fight</button><button onclick="ricoRun()">Run</button>`,"Street Threat")}
 function ricoFight(){health=Math.max(0,health-18);cash=Math.max(0,cash-150);heat+=10;lossSound();log("You fought Rico.","bad");closePanel();renderAll()}
 function ricoRun(){heat+=5;log("You slipped away from Rico.","info");closePanel();renderAll()}
 function showEddy(){warnSound();showPanel('Eddy "Silent"',ASSETS.eddy,"He was there before you noticed.",`<button onclick="eddyFight()">Fight</button><button onclick="eddyRun()">Run</button>`,"Silent Danger")}
-function eddyFight(){health=Math.max(0,health-22);cash=Math.max(0,cash-200);heat+=12;lossSound();log("Eddy barely moved. You did.","bad");closePanel();renderAll()}
+function eddyFight(){health=Math.max(0,health-30);cash=Math.max(0,cash-200);heat+=12;lossSound();log("Eddy barely moved. You did.","bad");closePanel();renderAll()}
 function eddyRun(){heat+=4;log("You backed off from Eddy.","warn");closePanel();renderAll()}
 function showComedian(){
-  jokerSound();
-  startMusic();
+  stopMusic();
 
   let v=voicePlaya;
   if(v){
     v.currentTime=0;
-    v.volume=.85;
+    v.volume=.92;
     v.play().catch(()=>{});
   }
 
-  showPanel(
-    "The Comedian",
-    ASSETS.comedian,
-    `"Can I get a holla?"<br><br>
-    The Joker steps out wearing your face.<br>
-    He is not good. He is not bad.<br>
-    He is the choice.<br><br>
-    Play a hand or walk away.`,
-    `<button onclick="showComedianHand()">Play a Hand</button><button onclick="closePanel();startMusic();renderAll()">Ignore</button>`,
-    "Pain or Gain"
-  );
-}
+  heat += rand(2,8);
 
-function showComedianHand(){
   showPanel(
-    "PICK YOUR HAND",
-    ASSETS.comedian,
-    `Three cards. One choice. No crying after.`,
+    "THE COMEDIAN",
+    "",
     `
-    <div class="comedianCards">
-      <div class="comedianCard gift" onclick="comedianGift()">
-        THE GIFT
-        <small>Gain cash<br>Lower heat<br>Chance bonus item</small>
-      </div>
-
-      <div class="comedianCard trade" onclick="comedianTrade()">
-        THE TRADE
-        <small>Pay $1,000<br>Gain goods<br>Heat rises</small>
-      </div>
-
-      <div class="comedianCard lesson" onclick="comedianLesson()">
-        THE LESSON
-        <small>Lose cash<br>Heat spikes<br>Item at risk</small>
-      </div>
+    <div style="color:var(--warn);font-size:18px;margin-bottom:12px;">
+      He's holding every card. Pick carefully.
     </div>
 
-    <button onclick="closePanel();startMusic();renderAll()">Walk Away</button>
+    <div class="comedianFullGrid">
+
+      <div class="comedianChoice">
+        <img src="The Comedian.png">
+        <div class="comedianInfo">
+          <h3 class="comedianGift">THE GIFT</h3>
+          <div>
+            Cash reward • Heat reduction • Rare item chance
+          </div>
+          <br>
+          <button onclick="comedianGift()">TAKE THE GIFT</button>
+        </div>
+      </div>
+
+      <div class="comedianChoice">
+        <img src="The Comedian.png">
+        <div class="comedianInfo">
+          <h3 class="comedianTrade">THE TRADE</h3>
+          <div>
+            Risk for a huge payout.<br>
+            Could change the whole run.
+          </div>
+          <br>
+          <button onclick="comedianTrade()">MAKE THE TRADE</button>
+        </div>
+      </div>
+
+      <div class="comedianChoice">
+        <img src="The Comedian.png">
+        <div class="comedianInfo">
+          <h3 class="comedianDanger">THE LESSON</h3>
+          <div>
+            Permanent pressure.<br>
+            The streets bite back.
+          </div>
+          <br>
+          <button onclick="comedianLesson()">FACE THE LESSON</button>
+        </div>
+      </div>
+
+    </div>
     `,
-    "Joker Hand"
+    `<button onclick="closePanel();startMusic();renderAll()">WALK AWAY</button>`,
+    "Luck Can Flip"
   );
 }
 
 function comedianGift(){
-  let gain=rand(1500,7500);
-  cash+=gain;
-  heat=Math.max(0,heat-rand(8,22));
+  let gain = rand(2500,12000);
+  cash += gain;
+  heat = Math.max(0, heat-rand(10,25));
 
-  let bonus="";
-  carrying=goodsCount(inventory);
-  if(Math.random()<.22 && carrying<carryLimit){
-    let item=items[rand(0,items.length-1)];
-    inventory[item.name]=(inventory[item.name]||0)+1;
-    bonus=`<br>Bonus: 1x ${item.name}`;
-    log("The Comedian gifted 1x "+item.name+".","good");
+  if(Math.random()<.35){
+    let it=items[rand(0,items.length-1)];
+    inventory[it.name]=(inventory[it.name]||0)+rand(1,3);
+    log("Comedian gifted rare goods.","good");
   }
 
-  cashSound();
   winSound();
 
   showPanel(
     "THE GIFT",
-    ASSETS.comedian,
-    `The Comedian smiles.<br><br>+${money(gain)}<br>Heat cooled.${bonus}<br><br>"We both eat today."`,
-    `<button onclick="closePanel();startMusic();renderAll()">Take It</button>`,
-    "Gain"
+    "The Comedian.png",
+    `The Comedian smiles.<br><br>
+    +${money(gain)}<br>
+    Heat cooled down.`,
+    `<button onclick="closePanel();startMusic();renderAll()">KEEP MOVING</button>`,
+    "Gift"
   );
 
-  log("The Comedian gifted you "+money(gain)+" and cooled the heat.","good");
   renderAll();
 }
 
 function comedianTrade(){
-  let cost=1000;
+  let roll=Math.random();
 
-  if(cash<cost){
-    lossSound();
+  if(roll<.5){
+    let win=rand(8000,30000);
+    cash += win;
+    heat += rand(8,18);
+
+    if(Math.random()<.5){
+      inventory["Million Dollar Mixtape"]=(inventory["Million Dollar Mixtape"]||0)+1;
+    }
+
+    winSound();
+
     showPanel(
-      "NO TRADE",
-      ASSETS.comedian,
-      `You reached without enough cash.<br><br>The Comedian laughs.`,
-      `<button onclick="closePanel();startMusic();renderAll()">Back Off</button>`,
-      "No Deal"
+      "THE TRADE HIT",
+      "The Comedian.png",
+      `You gambled with him.<br><br>
+      +${money(win)}<br>
+      But the streets noticed.`,
+      `<button onclick="closePanel();startMusic();renderAll()">CONTINUE</button>`,
+      "Trade"
     );
-    log("Not enough cash for The Comedian's trade.","bad");
-    return;
+
+  }else{
+    let loss=rand(3000,15000);
+    cash=Math.max(0,cash-loss);
+    health=Math.max(0,health-rand(10,35));
+    heat += rand(15,30);
+
+    lossSound();
+
+    showPanel(
+      "BAD TRADE",
+      "The Comedian.png",
+      `He laughs while everything falls apart.<br><br>
+      -${money(loss)}<br>
+      Health damaged.`,
+      `<button onclick="closePanel();startMusic();renderAll()">SURVIVE</button>`,
+      "Trade"
+    );
   }
 
-  cash-=cost;
-  heat+=rand(8,18);
-
-  let high=items.filter(it=>it.base>=350);
-  let item=high[rand(0,high.length-1)];
-  let qty=rand(1,3);
-
-  if(Math.random()<.10){
-    item={name:"Million Dollar Mixtape"};
-    qty=1;
-  }
-
-  inventory[item.name]=(inventory[item.name]||0)+qty;
-
-  winSound();
-  showPanel(
-    "THE TRADE",
-    ASSETS.comedian,
-    `Paid ${money(cost)}.<br>Gained ${qty}x ${item.name}.<br>Heat increased.<br><br>"No pain, no play."`,
-    `<button onclick="closePanel();startMusic();renderAll()">Take the Trade</button>`,
-    "Risk"
-  );
-
-  log("The Comedian trade: paid "+money(cost)+" for "+qty+"x "+item.name+".","warn");
   renderAll();
 }
 
 function comedianLesson(){
-  let loss=rand(1000,5000);
-  loss=Math.min(cash,loss);
+  let hurt=rand(15,40);
+  let loss=rand(2000,10000);
 
-  cash-=loss;
-  heat+=rand(15,35);
+  health=Math.max(0,health-hurt);
+  cash=Math.max(0,cash-loss);
+  heat += rand(20,40);
 
-  let itemHit="";
-  const keys=Object.keys(inventory).filter(k=>inventory[k]>0);
-
-  if(keys.length && Math.random()<.30){
-    let k=keys[rand(0,keys.length-1)];
-    inventory[k]--;
-    if(inventory[k]<=0)delete inventory[k];
-    itemHit=`<br>Lost 1x ${k}.`;
-    log("The Comedian took 1x "+k+".","bad");
+  if(Math.random()<.45 && hasInventory()){
+    let keys=Object.keys(inventory).filter(k=>inventory[k]>0);
+    if(keys.length){
+      let stolen=keys[rand(0,keys.length-1)];
+      inventory[stolen]--;
+      if(inventory[stolen]<=0)delete inventory[stolen];
+    }
   }
 
   lossSound();
+
   showPanel(
     "THE LESSON",
-    ASSETS.comedian,
-    `Pain keeps you humble.<br><br>Lost ${money(loss)}.<br>Heat spiked.${itemHit}`,
-    `<button onclick="closePanel();startMusic();renderAll()">Keep Moving</button>`,
-    "Pain"
+    "The Comedian.png",
+    `Pain keeps you sharp.<br><br>
+    -${money(loss)}<br>
+    -${hurt} health<br>
+    Heat exploded.`,
+    `<button onclick="closePanel();startMusic();renderAll()">ENDURE</button>`,
+    "Lesson"
   );
 
-  log("The Comedian's lesson cost you "+money(loss)+".","bad");
   renderAll();
 }
 
