@@ -598,6 +598,85 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
   .comedianBackCard{min-height:145px}
 }
 
+
+/* PATCH — SMOKY PU$HER LOGO COMEDIAN CARD BACKS */
+.comedianBackCard{
+  min-height:210px;
+  border:3px solid var(--gold);
+  border-radius:14px;
+  background:
+    radial-gradient(circle at 50% 25%, rgba(242,217,122,.20), transparent 28%),
+    radial-gradient(circle at 15% 15%, rgba(255,255,255,.09), transparent 18%),
+    radial-gradient(circle at 80% 78%, rgba(212,175,55,.12), transparent 22%),
+    repeating-linear-gradient(125deg, rgba(212,175,55,.13) 0 2px, transparent 2px 10px),
+    linear-gradient(180deg, #111 0%, #050505 45%, #000 100%);
+  box-shadow:
+    0 0 28px rgba(0,0,0,.92),
+    0 0 18px rgba(212,175,55,.18),
+    inset 0 0 28px rgba(212,175,55,.10);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  cursor:pointer;
+  overflow:hidden;
+  position:relative;
+}
+.comedianBackCard:before{
+  content:"";
+  position:absolute;
+  inset:10px;
+  border:1px solid rgba(212,175,55,.42);
+  border-radius:10px;
+  pointer-events:none;
+}
+.comedianBackCard:after{
+  content:"";
+  position:absolute;
+  inset:-35%;
+  background:
+    radial-gradient(circle at 35% 40%, rgba(255,255,255,.11), transparent 13%),
+    radial-gradient(circle at 60% 55%, rgba(212,175,55,.10), transparent 17%),
+    radial-gradient(circle at 45% 65%, rgba(255,255,255,.07), transparent 15%);
+  filter:blur(13px);
+  opacity:.58;
+  animation:smokeDrift 5s ease-in-out infinite alternate;
+  pointer-events:none;
+}
+.pusherCardLogo{
+  position:relative;
+  z-index:2;
+  color:var(--bright);
+  font-size:clamp(24px,7vw,38px);
+  font-weight:900;
+  letter-spacing:2px;
+  line-height:.95;
+  text-shadow:
+    2px 2px 0 #000,
+    0 0 12px rgba(242,217,122,.65),
+    0 0 28px rgba(212,175,55,.35);
+  transform:skew(-5deg);
+}
+.pusherCardSub{
+  position:relative;
+  z-index:2;
+  margin-top:12px;
+  color:var(--soft);
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:2px;
+}
+.cardBackSymbol{display:none}
+.cardBackText{display:none}
+@keyframes smokeDrift{
+  0%{transform:translate(-8px,6px) rotate(0deg);opacity:.45}
+  100%{transform:translate(9px,-7px) rotate(3deg);opacity:.72}
+}
+@media(max-width:560px){
+  .comedianBackCard{min-height:155px}
+  .pusherCardLogo{font-size:30px}
+}
+
 </style>
 </head>
 
@@ -734,7 +813,7 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
     <div class="startBtn" onclick="toggleGuide()" style="margin-top:14px;">CLOSE HANDBOOK</div>
   </div>
   <div class="corner left" id="cloud">☁ CLOUD SAVED</div>
-  <div class="corner right" id="ver">v1.0.2 FINAL LIFETIME</div>
+  <div class="corner right" id="ver">v1.0.4 FINAL STREET</div>
 </div>
 
 <div class="game" id="game">
@@ -1965,16 +2044,16 @@ function showComedianHand(){
 
     <div class="comedianMysteryTable">
       <div class="comedianBackCard" onclick="playHiddenComedianCard(0)">
-        <div class="cardBackSymbol">?</div>
-        <div class="cardBackText">FACE DOWN</div>
+        <div class="pusherCardLogo">THE<br>PU$HER</div>
+        <div class="pusherCardSub">MYSTERY CARD</div>
       </div>
       <div class="comedianBackCard" onclick="playHiddenComedianCard(1)">
-        <div class="cardBackSymbol">?</div>
-        <div class="cardBackText">FACE DOWN</div>
+        <div class="pusherCardLogo">THE<br>PU$HER</div>
+        <div class="pusherCardSub">MYSTERY CARD</div>
       </div>
       <div class="comedianBackCard" onclick="playHiddenComedianCard(2)">
-        <div class="cardBackSymbol">?</div>
-        <div class="cardBackText">FACE DOWN</div>
+        <div class="pusherCardLogo">THE<br>PU$HER</div>
+        <div class="pusherCardSub">MYSTERY CARD</div>
       </div>
     </div>
 
