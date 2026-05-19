@@ -2,121 +2,30 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>The Pu$her — Master Build</title>
+<title>The Pu$her — Full Master</title>
 
 <style>
-
-body{
-margin:0;
-background:#050505;
-color:#f5d76e;
-font-family:Arial,sans-serif;
-}
-
-.wrap{
-max-width:950px;
-margin:auto;
-padding:12px;
-}
-
-h1{
-text-align:center;
-font-size:38px;
-margin:10px 0;
-color:#ffd966;
-}
-
-.panel{
-background:#101010;
-border:2px solid #b8942f;
-border-radius:12px;
-padding:12px;
-margin:10px 0;
-}
-
-.row{
-display:flex;
-gap:8px;
-flex-wrap:wrap;
-}
-
-button{
-background:#171717;
-color:#ffd966;
-border:1px solid #b8942f;
-border-radius:8px;
-padding:11px;
-font-weight:900;
-}
-
-.stat{
-display:inline-block;
-margin:4px 7px;
-}
-
-.item{
-display:flex;
-justify-content:space-between;
-gap:8px;
-border-bottom:1px solid #333;
-padding:8px 0;
-}
-
-.log{
-max-height:180px;
-overflow:auto;
-color:#ddd;
-font-size:14px;
-}
-
-.overlay{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.92);
-z-index:99999;
-display:none;
-align-items:center;
-justify-content:center;
-padding:16px;
-}
-
-.card{
-width:min(92vw,430px);
-background:#080808;
-border:3px solid #d6ad3a;
-color:#f5d76e;
-text-align:center;
-padding:18px;
-box-shadow:0 0 30px rgba(214,173,58,.35);
-}
-
-.ticket{
-border:2px dashed #d6ad3a;
-padding:15px;
-background:linear-gradient(180deg,#181818,#050505);
-}
-
-.card h2{
-font-size:32px;
-margin:6px 0;
-}
-
-.card img{
-width:100%;
-height:260px;
-object-fit:cover;
-border:1px solid #d6ad3a;
-margin:8px 0;
-}
-
-.result{
-display:none;
-font-size:21px;
-font-weight:900;
-color:#fff1a8;
-margin:14px 0;
-}
-
+body{margin:0;background:#050505;color:#f5d76e;font-family:Arial,sans-serif}
+.wrap{max-width:950px;margin:auto;padding:12px}
+h1{text-align:center;font-size:38px;margin:10px 0;color:#ffd966;letter-spacing:2px}
+.panel{background:#101010;border:2px solid #b8942f;border-radius:12px;padding:12px;margin:10px 0}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+button{background:#171717;color:#ffd966;border:1px solid #b8942f;border-radius:8px;padding:11px;font-weight:900}
+.stat{display:inline-block;margin:4px 7px}
+.item{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid #333;padding:8px 0}
+.log{max-height:180px;overflow:auto;color:#ddd;font-size:14px}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:99999;display:none;align-items:center;justify-content:center;padding:16px}
+.card{width:min(92vw,430px);background:#080808;border:3px solid #d6ad3a;color:#f5d76e;text-align:center;padding:18px;box-shadow:0 0 30px rgba(214,173,58,.35)}
+.ticket{border:2px dashed #d6ad3a;padding:15px;background:linear-gradient(180deg,#181818,#050505)}
+.card h2{font-size:30px;margin:6px 0;letter-spacing:2px}
+.art{height:240px;border:1px solid #d6ad3a;margin:8px 0;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;background:radial-gradient(circle,#333,#050505);color:#fff1a8;text-shadow:0 0 10px #000;padding:10px}
+.gift{background:radial-gradient(circle,#174d20,#050505)}
+.trade{background:radial-gradient(circle,#614200,#050505)}
+.lesson{background:radial-gradient(circle,#631515,#050505)}
+.joke{background:radial-gradient(circle,#402070,#050505)}
+.gamble{background:radial-gradient(circle,#0b4863,#050505)}
+.changer{background:radial-gradient(circle,#6b5b00,#050505)}
+.result{display:none;font-size:21px;font-weight:900;color:#fff1a8;margin:14px 0}
 </style>
 </head>
 
@@ -127,107 +36,44 @@ margin:14px 0;
 <h1>THE PU$HER</h1>
 
 <div class="panel">
-
-<div class="stat">
-City:
-<b id="city"></b>
-</div>
-
-<div class="stat">
-Day:
-<b id="day"></b>
-</div>
-
-<div class="stat">
-Cash:
-$
-<b id="cash"></b>
-</div>
-
-<div class="stat">
-Heat:
-<b id="heat"></b>
-</div>
-
-<div class="stat">
-Health:
-<b id="health"></b>
-</div>
-
-<div class="stat">
-Block:
-<b id="block"></b>
-</div>
-
-<div class="stat">
-Marked:
-<b id="marked"></b>
-</div>
-
+<div class="stat">City: <b id="city"></b></div>
+<div class="stat">Day: <b id="day"></b></div>
+<div class="stat">Cash: $<b id="cash"></b></div>
+<div class="stat">Heat: <b id="heat"></b></div>
+<div class="stat">Health: <b id="health"></b></div>
+<div class="stat">Block: <b id="block"></b></div>
+<div class="stat">Marked: <b id="marked"></b></div>
 </div>
 
 <div class="panel">
 <h2>Travel Iowa</h2>
-
 <div class="row" id="travel"></div>
-
 </div>
 
 <div class="panel">
-
 <h2>Market</h2>
-
 <div id="market"></div>
-
 </div>
 
 <div class="panel">
-
 <h2>Street Actions</h2>
 
 <div class="row">
-
-<button onclick="stay()">
-Stay Low
-</button>
-
-<button onclick="work()">
-Side Work
-</button>
-
-<button onclick="donnie()">
-Donnie Scratch Ticket
-</button>
-
-<button onclick="buyBlock()">
-Buy Block
-</button>
-
-<button onclick="forceEncounter()">
-Find Trouble
-</button>
-
-<button onclick="saveGame()">
-Save
-</button>
-
-<button onclick="loadGame()">
-Load
-</button>
-
-<button onclick="resetGame()">
-Reset
-</button>
-
+<button onclick="stay()">Stay Low</button>
+<button onclick="work()">Side Work</button>
+<button onclick="donnie()">Donnie Scratch Ticket</button>
+<button onclick="buyBlock()">Buy Block</button>
+<button onclick="forceEncounter()">Find Trouble</button>
+<button onclick="saveGame()">Save</button>
+<button onclick="loadGame()">Load</button>
+<button onclick="resetGame()">Reset</button>
 </div>
+
 </div>
 
 <div class="panel">
-
 <h2>Street Intel</h2>
-
 <div id="log" class="log"></div>
-
 </div>
 
 </div>
@@ -238,11 +84,11 @@ Reset
 
 <div class="ticket">
 
-<h2 id="popTitle">
-EVENT
-</h2>
+<h2 id="popTitle">EVENT</h2>
 
-<img id="popImg" src="comedian-gift.jpg">
+<div id="popArt" class="art">
+CARD
+</div>
 
 <h3 id="popName"></h3>
 
@@ -253,7 +99,7 @@ EVENT
 <div class="row" style="justify-content:center">
 
 <button id="popMain" onclick="popAction()">
-PLAY THIS CARD
+PLAY
 </button>
 
 <button onclick="closePop()">
@@ -398,6 +244,14 @@ if(chance(10))police();
 if(chance(8))robbery();
 if(chance(marked?18:10))comedian();
 
+if(heat>100){
+
+health-=rand(8,20);
+
+log("Heat exploded.");
+
+}
+
 if(health<=0){
 
 alert("Game Over");
@@ -530,15 +384,20 @@ render();
 
 }
 
-function show(title,name,text,img,button,action){
+function show(title,name,text,artClass,artText,button,action){
 
 current={action};
 
 document.getElementById("popTitle").innerText=title;
 document.getElementById("popName").innerText=name;
 document.getElementById("popText").innerText=text;
-document.getElementById("popImg").src=img;
 document.getElementById("popMain").innerText=button;
+
+let art=document.getElementById("popArt");
+
+art.className="art "+artClass;
+
+art.innerText=artText;
 
 document.getElementById("popResult").style.display="none";
 
@@ -583,8 +442,9 @@ function donnie(){
 show(
 "DONNIE",
 "SCRATCH TICKET",
-"Donnie slides you a dirty scratch ticket.",
-"donnie.jpg",
+"Donnie slides you a dirty ticket.",
+"gamble",
+"DONNIE SCRATCH",
 "SCRATCH",
 function(){
 
@@ -645,7 +505,8 @@ const cards=[
 {
 title:"THE GIFT",
 text:"Looks lucky. Smells dangerous.",
-img:"comedian-gift.jpg",
+cls:"gift",
+art:"THE GIFT",
 play:function(){
 
 cash+=150;
@@ -660,7 +521,8 @@ result("The Comedian gifted you cash.");
 {
 title:"THE TRADE",
 text:"Nothing free. Nothing clean.",
-img:"comedian-trade.jpg",
+cls:"trade",
+art:"THE TRADE",
 play:function(){
 
 if(chance(50)){
@@ -683,7 +545,8 @@ result("The trade took from you.");
 {
 title:"THE LESSON",
 text:"Pain leaves marks.",
-img:"comedian-lesson.jpg",
+cls:"lesson",
+art:"THE LESSON",
 play:function(){
 
 health=Math.max(0,health-15);
@@ -698,7 +561,8 @@ result("The lesson hurt.");
 {
 title:"THE JOKE",
 text:"Everybody laughs eventually.",
-img:"comedian-joke.jpg",
+cls:"joke",
+art:"THE JOKE",
 play:function(){
 
 if(chance(50)){
@@ -721,7 +585,8 @@ result("The joke landed on you.");
 {
 title:"THE GAMBLE",
 text:"Luck loves desperation.",
-img:"comedian-gamble.jpg",
+cls:"gamble",
+art:"THE GAMBLE",
 play:function(){
 
 if(chance(50)){
@@ -744,7 +609,8 @@ result("Half your cash vanished.");
 {
 title:"THE GAME CHANGER",
 text:"This card changes everything.",
-img:"comedian-gamechanger.jpg",
+cls:"changer",
+art:"GAME CHANGER",
 play:function(){
 
 marked=true;
@@ -772,7 +638,8 @@ show(
 "THE COMEDIAN",
 card.title,
 card.text,
-card.img,
+card.cls,
+card.art,
 "PLAY THIS CARD",
 card.play
 );
@@ -785,7 +652,8 @@ show(
 "CROW WARNING",
 "THE STREET GETS QUIET",
 "A crow lands nearby.",
-"crow.jpg",
+"changer",
+"CROW WARNING",
 "LISTEN",
 function(){
 
@@ -826,7 +694,8 @@ show(
 "CAKE JAW JESSE",
 "UNDERCOVER ENERGY",
 "He offers goods.",
-"cakejaw.jpg",
+"trade",
+"CAKE JAW",
 "TAKE DEAL",
 function(){
 
@@ -855,7 +724,8 @@ show(
 "PERRKEY TWO BRICKS",
 "WARNING OVERLAY",
 "She says the block is hot.",
-"perrkey.jpg",
+"lesson",
+"PERRKEY",
 "LISTEN",
 function(){
 
@@ -884,7 +754,8 @@ show(
 "STREET CRAPS",
 "DOMINO PLAYER",
 "Dice hit the concrete.",
-"craps.jpg",
+"gamble",
+"STREET CRAPS",
 "ROLL",
 function(){
 
@@ -1001,7 +872,7 @@ newPrices();
 
 render();
 
-log("Welcome to The Pu$her.");
+log("Welcome to The Pu$her — Full Master.");
 
 </script>
 
