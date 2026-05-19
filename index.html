@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>The Pu$her — Final Game Build</title>
+<title>The Pu$her — Final Lifetime Build</title>
 
 <style>
 :root{
@@ -519,6 +519,85 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
   .comedianMiniCard img{height:auto;max-height:28vh;object-fit:contain}
 }
 
+
+/* PATCH — FINAL COMEDIAN FACE-DOWN MYSTERY CARDS */
+.comedianMysteryTable{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin:14px 0;
+}
+.comedianBackCard{
+  min-height:210px;
+  border:3px solid var(--gold);
+  border-radius:14px;
+  background:
+    radial-gradient(circle at 50% 35%, rgba(242,217,122,.16), transparent 35%),
+    repeating-linear-gradient(45deg, rgba(212,175,55,.16) 0 2px, transparent 2px 9px),
+    linear-gradient(180deg, #0c0c0c, #000);
+  box-shadow:0 0 24px rgba(0,0,0,.9), inset 0 0 22px rgba(212,175,55,.12);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  cursor:pointer;
+  overflow:hidden;
+  position:relative;
+}
+.comedianBackCard:before{
+  content:"";
+  position:absolute;
+  inset:10px;
+  border:1px solid rgba(212,175,55,.38);
+  border-radius:10px;
+  pointer-events:none;
+}
+.comedianBackCard:active{
+  transform:scale(.96);
+  background:#1a1405;
+}
+.cardBackSymbol{
+  font-size:58px;
+  color:var(--bright);
+  text-shadow:0 0 16px rgba(212,175,55,.65), 2px 2px 0 #000;
+  line-height:1;
+  font-weight:900;
+}
+.cardBackText{
+  margin-top:14px;
+  color:var(--soft);
+  font-weight:900;
+  letter-spacing:2px;
+  font-size:12px;
+}
+.comedianRevealCard{
+  border:3px solid var(--gold);
+  border-radius:14px;
+  padding:14px;
+  background:
+    radial-gradient(circle at top, rgba(212,175,55,.13), transparent 42%),
+    linear-gradient(180deg,rgba(0,0,0,.96),rgba(12,8,4,.96));
+  box-shadow:0 0 28px rgba(0,0,0,.88), inset 0 0 20px rgba(212,175,55,.08);
+  margin-bottom:12px;
+}
+.comedianRevealTitle{
+  font-size:34px;
+  color:var(--bright);
+  font-weight:900;
+  letter-spacing:2px;
+  margin-bottom:10px;
+}
+.comedianRevealText{
+  color:var(--warn);
+  font-size:19px;
+  line-height:1.35;
+  font-weight:900;
+}
+@media(max-width:560px){
+  .comedianMysteryTable{grid-template-columns:1fr;gap:10px}
+  .comedianBackCard{min-height:145px}
+}
+
 </style>
 </head>
 
@@ -530,7 +609,7 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
     <div class="startBtn" id="guideBtn" onclick="toggleGuide()">HOW TO PLAY</div>
     <div class="startBtn" id="continueBtn" onclick="continueRun()">CONTINUE SAVED RUN</div>
     <div class="startBtn" id="startRunBtn" onclick="startRun()">START NEW RUN</div>
-    <div class="startBtn" onclick="localStorage.removeItem('pusher_lifetime_save_v1');localStorage.removeItem('pusher_lifetime_save_v2_fresh');alert('Old saved run cleared. Tap START NEW RUN.')" style="font-size:13px;padding:10px;">CLEAR OLD SAVE</div>
+    <div class="startBtn" onclick="localStorage.removeItem('pusher_lifetime_save_v1');localStorage.removeItem('pusher_lifetime_save_v2_fresh');localStorage.removeItem('pusher_lifetime_save_v3_final_lifetime');alert('Old saved run cleared. Tap START NEW RUN.')" style="font-size:13px;padding:10px;">CLEAR OLD SAVE</div>
   </div>
 
   <div id="guidePanel" style="
@@ -628,7 +707,7 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
         Rico & Eddy = danger.<br>
         Cake Jaw = risky deal, maybe junk, maybe gem.<br>
         Perrkey = warning, but don’t trust her too much.<br>
-        The Comedian = the Joker wearing your face. Pain or gain. Play a hand: The Gift, The Trade, or The Lesson.
+        The Comedian = the Joker wearing your face. He lays three cards face-down. You choose one before the fate is revealed.
       </div>
 
       <div class="graffitiRule">
@@ -655,7 +734,7 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
     <div class="startBtn" onclick="toggleGuide()" style="margin-top:14px;">CLOSE HANDBOOK</div>
   </div>
   <div class="corner left" id="cloud">☁ CLOUD SAVED</div>
-  <div class="corner right" id="ver">v1.0.1 CLEAN</div>
+  <div class="corner right" id="ver">v1.0.2 FINAL LIFETIME</div>
 </div>
 
 <div class="game" id="game">
@@ -954,7 +1033,7 @@ function renderInv(){
 }
 
 
-const SAVE_KEY="pusher_lifetime_save_v2_fresh";
+const SAVE_KEY="pusher_lifetime_save_v3_final_lifetime";
 
 function saveGame(manual=false){
   if(gameEnded)return;
@@ -1866,41 +1945,53 @@ function showComedian(){
 }
 
 function showComedianHand(){
-  const hand=[
-    {key:"gift", fn:"comedianGift()", img:COMEDIAN_CARDS.gift},
-    {key:"trade", fn:"comedianTrade()", img:COMEDIAN_CARDS.trade},
-    {key:"lesson", fn:"comedianLesson()", img:COMEDIAN_CARDS.lesson}
+  const deck=[
+    {key:"gift", title:"THE GIFT"},
+    {key:"trade", title:"THE TRADE"},
+    {key:"lesson", title:"THE LESSON"}
   ];
 
-  // Scatter the cards: order changes every encounter.
-  hand.sort(()=>Math.random()-.5);
+  // The Comedian lays three face-down cards. The result is hidden until the player chooses.
+  deck.sort(()=>Math.random()-.5);
+  window.__comedianHiddenDeck = deck;
 
   showPanel(
-    "CHOOSE A CARD",
+    "THE COMEDIAN",
     "",
     `
-    <div style="color:var(--warn);font-weight:900;margin-bottom:10px;">
-      Three cards hit the table. The pictures are real — the outcome stays hidden.
+    <div style="color:var(--warn);font-size:18px;font-weight:900;line-height:1.35;margin-bottom:12px;">
+      The Comedian says nothing. He lays three cards face-down in front of you.
     </div>
 
-    <div class="comedianMiniCards">
-      <div class="comedianMiniCard" onclick="${hand[0].fn}">
-        <img src="${hand[0].img}" alt="Comedian Card">
-        <div class="comedianHiddenLabel">PLAY THIS CARD</div>
+    <div class="comedianMysteryTable">
+      <div class="comedianBackCard" onclick="playHiddenComedianCard(0)">
+        <div class="cardBackSymbol">?</div>
+        <div class="cardBackText">FACE DOWN</div>
       </div>
-      <div class="comedianMiniCard" onclick="${hand[1].fn}">
-        <img src="${hand[1].img}" alt="Comedian Card">
-        <div class="comedianHiddenLabel">PLAY THIS CARD</div>
+      <div class="comedianBackCard" onclick="playHiddenComedianCard(1)">
+        <div class="cardBackSymbol">?</div>
+        <div class="cardBackText">FACE DOWN</div>
       </div>
-      <div class="comedianMiniCard" onclick="${hand[2].fn}">
-        <img src="${hand[2].img}" alt="Comedian Card">
-        <div class="comedianHiddenLabel">PLAY THIS CARD</div>
+      <div class="comedianBackCard" onclick="playHiddenComedianCard(2)">
+        <div class="cardBackSymbol">?</div>
+        <div class="cardBackText">FACE DOWN</div>
       </div>
+    </div>
+
+    <div style="color:var(--soft);font-size:13px;font-weight:900;letter-spacing:1px;">
+      You do not know what you picked until the card turns over.
     </div>
     `,
     `<button onclick="closePanel();startMusic();renderAll()">Walk Away</button>`,
-    "Cards Scattered"
+    "Three Cards"
   );
+}
+
+function playHiddenComedianCard(i){
+  const card=(window.__comedianHiddenDeck||[])[i] || {key:"lesson", title:"THE LESSON"};
+  if(card.key==="gift") comedianGift();
+  else if(card.key==="trade") comedianTrade();
+  else comedianLesson();
 }
 
 function showComedianResult(title, body, tag, cardImg){
@@ -1908,13 +1999,13 @@ function showComedianResult(title, body, tag, cardImg){
     title,
     "",
     `
-    <div class="comedianPlayed">
-      <img src="${cardImg || COMEDIAN_CARDS.main}" alt="The Comedian Card">
+    <div class="comedianRevealCard">
+      <div class="comedianRevealTitle">${title}</div>
+      <div class="comedianRevealText">${body}</div>
     </div>
-    <div class="comedianOutcome">${body}</div>
     `,
     `<button onclick="closePanel();startMusic();renderAll()">Continue</button>`,
-    tag
+    tag || "Card Revealed"
   );
 }
 
