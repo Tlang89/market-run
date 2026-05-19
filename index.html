@@ -519,6 +519,91 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
   .comedianMiniCard img{height:auto;max-height:28vh;object-fit:contain}
 }
 
+
+/* PATCH — SEPARATED COMEDIAN PORTRAIT CARDS */
+.comedianPortraitCard{
+  position:relative;
+  min-height:230px;
+  border:3px solid var(--gold);
+  border-radius:14px;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(242,217,122,.18), transparent 32%),
+    linear-gradient(180deg, rgba(15,10,4,.96), rgba(0,0,0,.98));
+  overflow:hidden;
+  cursor:pointer;
+  box-shadow:0 0 24px rgba(0,0,0,.88), inset 0 0 22px rgba(212,175,55,.09);
+}
+.comedianPortraitCard:active{transform:scale(.96);background:rgba(212,175,55,.14)}
+.comedianPortraitImg{
+  width:100%;
+  height:170px;
+  object-fit:cover;
+  display:block;
+  filter:contrast(1.18) saturate(.9) brightness(.88);
+  opacity:.92;
+}
+.comedianPortraitCard.gift{border-color:#77e08a}
+.comedianPortraitCard.trade{border-color:#ffc76d}
+.comedianPortraitCard.lesson{border-color:#ff7777}
+.comedianPortraitCard.gift .comedianPortraitImg{
+  filter:contrast(1.15) saturate(1.05) brightness(.95) sepia(.18) hue-rotate(35deg);
+}
+.comedianPortraitCard.trade .comedianPortraitImg{
+  filter:contrast(1.25) saturate(1.15) brightness(.9) sepia(.28);
+}
+.comedianPortraitCard.lesson .comedianPortraitImg{
+  filter:contrast(1.35) saturate(.75) brightness(.72) grayscale(.22);
+}
+.comedianCardFace{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(180deg, transparent 35%, rgba(0,0,0,.92) 78%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,.035) 0 2px, transparent 2px 7px);
+}
+.comedianCardName{
+  position:absolute;
+  left:8px;
+  right:8px;
+  bottom:34px;
+  color:var(--bright);
+  font-size:22px;
+  font-weight:900;
+  letter-spacing:2px;
+  text-shadow:2px 2px 0 #000,0 0 12px rgba(212,175,55,.5);
+}
+.comedianCardSecret{
+  position:absolute;
+  left:8px;
+  right:8px;
+  bottom:10px;
+  color:var(--soft);
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:1.2px;
+}
+.comedianPortraitCard.gift .comedianCardName{color:#77e08a}
+.comedianPortraitCard.trade .comedianCardName{color:#ffc76d}
+.comedianPortraitCard.lesson .comedianCardName{color:#ff7777}
+.comedianPlayedCard{
+  border:3px solid var(--gold);
+  border-radius:14px;
+  overflow:hidden;
+  background:#050505;
+  margin-bottom:12px;
+}
+.comedianPlayedCard img{
+  width:100%;
+  max-height:42vh;
+  object-fit:contain;
+  background:#000;
+}
+@media(max-width:560px){
+  .comedianPortraitCard{min-height:205px}
+  .comedianPortraitImg{height:145px}
+}
+
 </style>
 </head>
 
@@ -1864,11 +1949,22 @@ function showComedian(){
   );
 }
 
+function comedianCardHTML(card){
+  return `
+    <div class="comedianPortraitCard ${card.key}" onclick="${card.fn}">
+      <img class="comedianPortraitImg" src="${COMEDIAN_CARDS.main}" alt="${card.name}">
+      <div class="comedianCardFace"></div>
+      <div class="comedianCardName">${card.name}</div>
+      <div class="comedianCardSecret">OUTCOME HIDDEN — PLAY THIS CARD</div>
+    </div>
+  `;
+}
+
 function showComedianHand(){
   const hand=[
-    {key:"gift", fn:"comedianGift()", img:COMEDIAN_CARDS.gift},
-    {key:"trade", fn:"comedianTrade()", img:COMEDIAN_CARDS.trade},
-    {key:"lesson", fn:"comedianLesson()", img:COMEDIAN_CARDS.lesson}
+    {key:"gift", name:"THE GIFT", fn:"comedianGift()"},
+    {key:"trade", name:"THE TRADE", fn:"comedianTrade()"},
+    {key:"lesson", name:"THE LESSON", fn:"comedianLesson()"}
   ];
 
   // Scatter the cards: order changes every encounter.
@@ -1879,22 +1975,13 @@ function showComedianHand(){
     "",
     `
     <div style="color:var(--warn);font-weight:900;margin-bottom:10px;">
-      Three cards hit the table. The pictures are real — the outcome stays hidden.
+      Three separate Comedian cards hit the table. Same face. Different fate. The outcome stays hidden.
     </div>
 
     <div class="comedianMiniCards">
-      <div class="comedianMiniCard" onclick="${hand[0].fn}">
-        <img src="${hand[0].img}" alt="Comedian Card">
-        <div class="comedianHiddenLabel">PLAY THIS CARD</div>
-      </div>
-      <div class="comedianMiniCard" onclick="${hand[1].fn}">
-        <img src="${hand[1].img}" alt="Comedian Card">
-        <div class="comedianHiddenLabel">PLAY THIS CARD</div>
-      </div>
-      <div class="comedianMiniCard" onclick="${hand[2].fn}">
-        <img src="${hand[2].img}" alt="Comedian Card">
-        <div class="comedianHiddenLabel">PLAY THIS CARD</div>
-      </div>
+      ${comedianCardHTML(hand[0])}
+      ${comedianCardHTML(hand[1])}
+      ${comedianCardHTML(hand[2])}
     </div>
     `,
     `<button onclick="closePanel();startMusic();renderAll()">Walk Away</button>`,
@@ -1902,13 +1989,19 @@ function showComedianHand(){
   );
 }
 
-function showComedianResult(title, body, tag, cardImg){
+function showComedianResult(title, body, tag, cardKey){
+  const key=(cardKey||"").toLowerCase().replace("the ","");
   showPanel(
     title,
     "",
     `
-    <div class="comedianPlayed">
-      <img src="${cardImg || COMEDIAN_CARDS.main}" alt="The Comedian Card">
+    <div class="comedianPlayedCard">
+      <div class="comedianPortraitCard ${key}" style="cursor:default;min-height:260px;">
+        <img class="comedianPortraitImg" src="${COMEDIAN_CARDS.main}" alt="${title}" style="height:210px;">
+        <div class="comedianCardFace"></div>
+        <div class="comedianCardName">${title}</div>
+        <div class="comedianCardSecret">CARD PLAYED</div>
+      </div>
     </div>
     <div class="comedianOutcome">${body}</div>
     `,
@@ -1938,7 +2031,7 @@ function comedianGift(){
   showComedianResult(
     "THE GIFT",
     `The Comedian smiles.<br><br>+${money(gain)}<br>Heat cooled.${bonus}<br><br>"We both eat today."`,
-    "Card Played", COMEDIAN_CARDS.gift
+    "Card Played", "gift"
   );
 
   log("The Comedian played THE GIFT: "+money(gain)+" and heat relief.","good");
@@ -1950,7 +2043,7 @@ function comedianTrade(){
 
   if(cash<cost){
     lossSound();
-    showComedianResult("NO TRADE",`You reached without enough cash.<br><br>The Comedian laughs.`,"Card Failed");
+    showComedianResult("NO TRADE",`You reached without enough cash.<br><br>The Comedian laughs.`,"Card Failed","trade");
     log("Not enough cash for The Comedian's trade.","bad");
     return;
   }
@@ -1974,7 +2067,7 @@ function comedianTrade(){
   showComedianResult(
     "THE TRADE",
     `Paid ${money(cost)}.<br>Gained ${qty}x ${item.name}.<br>Heat increased.<br><br>"No pain, no play."`,
-    "Card Played", COMEDIAN_CARDS.trade
+    "Card Played", "trade"
   );
 
   log("The Comedian played THE TRADE: paid "+money(cost)+" for "+qty+"x "+item.name+".","warn");
@@ -2004,7 +2097,7 @@ function comedianLesson(){
   showComedianResult(
     "THE LESSON",
     `Pain keeps you humble.<br><br>Lost ${money(loss)}.<br>Heat spiked.${itemHit}`,
-    "Card Played", COMEDIAN_CARDS.lesson
+    "Card Played", "lesson"
   );
 
   log("The Comedian played THE LESSON: lost "+money(loss)+".","bad");
