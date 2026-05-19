@@ -519,91 +519,6 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
   .comedianMiniCard img{height:auto;max-height:28vh;object-fit:contain}
 }
 
-
-/* PATCH — SEPARATED COMEDIAN PORTRAIT CARDS */
-.comedianPortraitCard{
-  position:relative;
-  min-height:230px;
-  border:3px solid var(--gold);
-  border-radius:14px;
-  background:
-    radial-gradient(circle at 50% 18%, rgba(242,217,122,.18), transparent 32%),
-    linear-gradient(180deg, rgba(15,10,4,.96), rgba(0,0,0,.98));
-  overflow:hidden;
-  cursor:pointer;
-  box-shadow:0 0 24px rgba(0,0,0,.88), inset 0 0 22px rgba(212,175,55,.09);
-}
-.comedianPortraitCard:active{transform:scale(.96);background:rgba(212,175,55,.14)}
-.comedianPortraitImg{
-  width:100%;
-  height:170px;
-  object-fit:cover;
-  display:block;
-  filter:contrast(1.18) saturate(.9) brightness(.88);
-  opacity:.92;
-}
-.comedianPortraitCard.gift{border-color:#77e08a}
-.comedianPortraitCard.trade{border-color:#ffc76d}
-.comedianPortraitCard.lesson{border-color:#ff7777}
-.comedianPortraitCard.gift .comedianPortraitImg{
-  filter:contrast(1.15) saturate(1.05) brightness(.95) sepia(.18) hue-rotate(35deg);
-}
-.comedianPortraitCard.trade .comedianPortraitImg{
-  filter:contrast(1.25) saturate(1.15) brightness(.9) sepia(.28);
-}
-.comedianPortraitCard.lesson .comedianPortraitImg{
-  filter:contrast(1.35) saturate(.75) brightness(.72) grayscale(.22);
-}
-.comedianCardFace{
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  background:
-    linear-gradient(180deg, transparent 35%, rgba(0,0,0,.92) 78%),
-    repeating-linear-gradient(45deg, rgba(255,255,255,.035) 0 2px, transparent 2px 7px);
-}
-.comedianCardName{
-  position:absolute;
-  left:8px;
-  right:8px;
-  bottom:34px;
-  color:var(--bright);
-  font-size:22px;
-  font-weight:900;
-  letter-spacing:2px;
-  text-shadow:2px 2px 0 #000,0 0 12px rgba(212,175,55,.5);
-}
-.comedianCardSecret{
-  position:absolute;
-  left:8px;
-  right:8px;
-  bottom:10px;
-  color:var(--soft);
-  font-size:11px;
-  font-weight:900;
-  letter-spacing:1.2px;
-}
-.comedianPortraitCard.gift .comedianCardName{color:#77e08a}
-.comedianPortraitCard.trade .comedianCardName{color:#ffc76d}
-.comedianPortraitCard.lesson .comedianCardName{color:#ff7777}
-.comedianPlayedCard{
-  border:3px solid var(--gold);
-  border-radius:14px;
-  overflow:hidden;
-  background:#050505;
-  margin-bottom:12px;
-}
-.comedianPlayedCard img{
-  width:100%;
-  max-height:42vh;
-  object-fit:contain;
-  background:#000;
-}
-@media(max-width:560px){
-  .comedianPortraitCard{min-height:205px}
-  .comedianPortraitImg{height:145px}
-}
-
 </style>
 </head>
 
@@ -615,6 +530,7 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
     <div class="startBtn" id="guideBtn" onclick="toggleGuide()">HOW TO PLAY</div>
     <div class="startBtn" id="continueBtn" onclick="continueRun()">CONTINUE SAVED RUN</div>
     <div class="startBtn" id="startRunBtn" onclick="startRun()">START NEW RUN</div>
+    <div class="startBtn" onclick="localStorage.removeItem('pusher_lifetime_save_v1');localStorage.removeItem('pusher_lifetime_save_v2_fresh');alert('Old saved run cleared. Tap START NEW RUN.')" style="font-size:13px;padding:10px;">CLEAR OLD SAVE</div>
   </div>
 
   <div id="guidePanel" style="
@@ -739,7 +655,7 @@ button:active{background:var(--gold);color:#000;transform:scale(.96)}
     <div class="startBtn" onclick="toggleGuide()" style="margin-top:14px;">CLOSE HANDBOOK</div>
   </div>
   <div class="corner left" id="cloud">☁ CLOUD SAVED</div>
-  <div class="corner right" id="ver">v1.0.0</div>
+  <div class="corner right" id="ver">v1.0.1 CLEAN</div>
 </div>
 
 <div class="game" id="game">
@@ -898,133 +814,6 @@ function initAudio(){
   if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
   if(audioCtx.state==="suspended") audioCtx.resume().catch(()=>{});
 }
-
-/* PATCH — IPHONE SAFE AUDIO UNLOCK */
-let audioUnlocked=false;
-function unlockGameAudio(){
-  try{
-    initAudio();
-    if(audioCtx && audioCtx.state==="suspended"){
-      audioCtx.resume().catch(()=>{});
-    }
-    // Silent micro-beep unlocks WebAudio on iPhone during the user's tap.
-    if(audioCtx){
-      let o=audioCtx.createOscillator(), g=audioCtx.createGain();
-      o.type="sine";
-      o.frequency.value=1;
-      g.gain.setValueAtTime(.00001,audioCtx.currentTime);
-      o.connect(g); g.connect(audioCtx.destination);
-      o.start();
-      o.stop(audioCtx.currentTime+.02);
-    }
-    audioUnlocked=true;
-  }catch(e){}
-}
-
-function doorThump(){
-  try{
-    unlockGameAudio();
-    beep(80,.08,.05,"sine");
-    setTimeout(()=>beep(45,.12,.045,"triangle"),75);
-    setTimeout(()=>noiseBurst(.12,.035,700),115);
-  }catch(e){}
-}
-
-document.addEventListener("touchstart", unlockGameAudio, {once:true, passive:true});
-document.addEventListener("mousedown", unlockGameAudio, {once:true});
-
-/* PATCH — 90s STREET ARCADE SOUND PACK */
-function tone(freq=220,dur=.08,gain=.045,type="square",delay=0){
-  try{
-    initAudio();
-    const t=audioCtx.currentTime+delay;
-    const o=audioCtx.createOscillator();
-    const g=audioCtx.createGain();
-    o.type=type;
-    o.frequency.setValueAtTime(freq,t);
-    g.gain.setValueAtTime(0,t);
-    g.gain.linearRampToValueAtTime(gain,t+.008);
-    g.gain.exponentialRampToValueAtTime(.0001,t+dur);
-    o.connect(g); g.connect(audioCtx.destination);
-    o.start(t); o.stop(t+dur+.02);
-  }catch(e){}
-}
-function sweep(from=600,to=120,dur=.18,gain=.05,type="sawtooth"){
-  try{
-    initAudio();
-    const t=audioCtx.currentTime;
-    const o=audioCtx.createOscillator();
-    const g=audioCtx.createGain();
-    o.type=type;
-    o.frequency.setValueAtTime(from,t);
-    o.frequency.exponentialRampToValueAtTime(Math.max(1,to),t+dur);
-    g.gain.setValueAtTime(gain,t);
-    g.gain.exponentialRampToValueAtTime(.0001,t+dur);
-    o.connect(g); g.connect(audioCtx.destination);
-    o.start(t); o.stop(t+dur+.03);
-  }catch(e){}
-}
-function scratch90(){
-  try{
-    initAudio();
-    for(let i=0;i<7;i++){
-      tone(900-(i*85),.025,.035,(i%2?"square":"sawtooth"),i*.025);
-    }
-    setTimeout(()=>noiseBurst(.12,.055,1600),40);
-  }catch(e){}
-}
-function cash90(){
-  tone(880,.055,.045,"square",0);
-  tone(1320,.055,.04,"square",.06);
-  tone(1760,.09,.035,"triangle",.12);
-}
-function buy90(){
-  tone(180,.06,.045,"square",0);
-  tone(240,.06,.04,"square",.055);
-  tone(320,.08,.035,"square",.11);
-}
-function sell90(){
-  cash90();
-  setTimeout(()=>tone(740,.08,.04,"triangle"),165);
-}
-function bad90(){
-  sweep(700,95,.22,.07,"sawtooth");
-  setTimeout(()=>tone(55,.14,.06,"square"),80);
-}
-function warn90(){
-  scratch90();
-  setTimeout(()=>tone(440,.09,.04,"square"),180);
-  setTimeout(()=>tone(330,.11,.04,"square"),285);
-}
-function travel90(){
-  tone(70,.10,.055,"triangle",0);
-  sweep(180,70,.24,.045,"sawtooth");
-  setTimeout(()=>noiseBurst(.18,.035,500),45);
-}
-function start90(){
-  tone(196,.08,.05,"square",0);
-  tone(247,.08,.05,"square",.09);
-  tone(294,.08,.05,"square",.18);
-  tone(392,.16,.055,"square",.29);
-}
-function card90(){
-  scratch90();
-  setTimeout(()=>tone(220,.07,.04,"square"),150);
-  setTimeout(()=>tone(440,.09,.035,"square"),230);
-}
-function win90(){
-  tone(523,.07,.045,"square",0);
-  tone(659,.07,.045,"square",.08);
-  tone(784,.07,.045,"square",.16);
-  tone(1046,.13,.04,"triangle",.25);
-}
-function lose90(){
-  tone(220,.08,.045,"sawtooth",0);
-  tone(165,.08,.045,"sawtooth",.09);
-  tone(110,.18,.055,"sawtooth",.18);
-}
-
-
 function beep(f,d=.08,v=.03,t="square"){
   initAudio();
   if(!audioCtx)return;
@@ -1035,7 +824,23 @@ function beep(f,d=.08,v=.03,t="square"){
   g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+d);
   o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+d+.03);
 }
-function clickSound(){ tone(520,.035,.035,"square"); tone(780,.03,.025,"square",.035); }
+function clickSound(){initAudio();beep(880,.045,.027);setTimeout(()=>beep(440,.05,.018,"triangle"),45)}
+function warnSound(){initAudio();beep(110,.12,.05,"sawtooth");setTimeout(()=>beep(82,.14,.04,"sawtooth"),90)}
+function winSound(){initAudio();beep(440,.07,.035);setTimeout(()=>beep(660,.07,.035),80);setTimeout(()=>beep(880,.1,.035),160)}
+function lossSound(){initAudio();beep(220,.09,.045,"sawtooth");setTimeout(()=>beep(146,.16,.035,"sawtooth"),110)}
+function startMusic(){
+  initAudio();
+  if(music)return;
+  let seq=[220,0,196,0,185,0,196,0,220,0,246,0,220,196,185,0];
+  music=setInterval(()=>{
+    let n=seq[step%seq.length];
+    if(step%2===0)beep(120,.03,.009);
+    if(n&&step%2===0)beep(n,.08,.016,"triangle");
+    if(step%16===0)beep(330,.09,.013);
+    step++;
+  },340);
+  try{startStreetBeat();}catch(e){}
+}
 function stopMusic(){if(music){clearInterval(music);music=null} try{stopStreetBeat();}catch(e){}}
 
 function trendLabel(item){
@@ -1149,7 +954,7 @@ function renderInv(){
 }
 
 
-const SAVE_KEY="pusher_lifetime_save_v1";
+const SAVE_KEY="pusher_lifetime_save_v2_fresh";
 
 function saveGame(manual=false){
   if(gameEnded)return;
@@ -1238,7 +1043,7 @@ function loadGame(){
 }
 
 function finishStartAfterLoad(){
-  try{unlockGameAudio();startMusic();}catch(e){}
+  initAudio();
   startScreen.style.transition="opacity .45s ease";
   startScreen.style.opacity="0";
   setTimeout(()=>{
@@ -1249,7 +1054,7 @@ function finishStartAfterLoad(){
 }
 
 function continueRun(){
-  try{unlockGameAudio();clickSound();start90();startMusic();}catch(e){}
+  try{initAudio();clickSound();}catch(e){}
 
   let loaded=false;
   try{loaded=loadGame();}catch(e){loaded=false;}
@@ -1397,12 +1202,12 @@ function sellItem(i){
   }else log(`No ${it.name}.`,"bad");
   maybeEvent(.24);renderAll();
 }
-function stay(){ try{tone(260,.04,.03,"square");}catch(e){} 
+function stay(){
   if(gameEnded)return;
   clickSound();day++;heat=Math.max(0,heat-rand(0,4));agePressure();refreshPrices();
   log(`Stayed in ${city}.`,"info");maybeDonnieWeekly();maybeEvent(.36);brokeCheck("stay");renderAll();
 }
-function showTravel(){ try{travel90();}catch(e){} 
+function showTravel(){
   if(gameEnded)return;
   clickSound();
   showPanel("Travel","",`Current city: ${city}`,cities.map(c=>`<button onclick="travel('${c}')">${c}</button>`).join("")+`<br><br><button onclick="closePanel()">Cancel</button>`,"Move");
@@ -1507,7 +1312,7 @@ function withdraw(){
 }
 
 
-function storeGoods(){ try{tone(160,.06,.035,"square");tone(210,.06,.03,"square",.07);}catch(e){} 
+function storeGoods(){
   if(gameEnded)return;
   clickSound();
   storeSound();
@@ -1532,7 +1337,7 @@ function storeGoods(){ try{tone(160,.06,.035,"square");tone(210,.06,.03,"square"
   renderAll();
 }
 
-function takeGoods(){ try{tone(210,.06,.035,"square");tone(280,.06,.03,"square",.07);}catch(e){} 
+function takeGoods(){
   if(gameEnded)return;
   clickSound();
   storeSound();
@@ -1572,7 +1377,7 @@ function takeGoods(){ try{tone(210,.06,.035,"square");tone(280,.06,.03,"square",
   renderAll();
 }
 
-function hospital(){ try{warn90();}catch(e){} 
+function hospital(){
   if(gameEnded)return;
   clickSound();
   hospitalSound();
@@ -1601,7 +1406,7 @@ function hospital(){ try{warn90();}catch(e){}
   renderAll();
 }
 
-function buyBlock(){ try{cash90();}catch(e){} 
+function buyBlock(){
   if(gameEnded)return;
   clickSound();
 
@@ -2060,22 +1865,11 @@ function showComedian(){
   );
 }
 
-function comedianCardHTML(card){
-  return `
-    <div class="comedianPortraitCard ${card.key}" onclick="${card.fn}">
-      <img class="comedianPortraitImg" src="${COMEDIAN_CARDS.main}" alt="${card.name}">
-      <div class="comedianCardFace"></div>
-      <div class="comedianCardName">${card.name}</div>
-      <div class="comedianCardSecret">OUTCOME HIDDEN — PLAY THIS CARD</div>
-    </div>
-  `;
-}
-
-function showComedianHand(){ try{card90();}catch(e){} 
+function showComedianHand(){
   const hand=[
-    {key:"gift", name:"THE GIFT", fn:"comedianGift()"},
-    {key:"trade", name:"THE TRADE", fn:"comedianTrade()"},
-    {key:"lesson", name:"THE LESSON", fn:"comedianLesson()"}
+    {key:"gift", fn:"comedianGift()", img:COMEDIAN_CARDS.gift},
+    {key:"trade", fn:"comedianTrade()", img:COMEDIAN_CARDS.trade},
+    {key:"lesson", fn:"comedianLesson()", img:COMEDIAN_CARDS.lesson}
   ];
 
   // Scatter the cards: order changes every encounter.
@@ -2086,13 +1880,22 @@ function showComedianHand(){ try{card90();}catch(e){}
     "",
     `
     <div style="color:var(--warn);font-weight:900;margin-bottom:10px;">
-      Three separate Comedian cards hit the table. Same face. Different fate. The outcome stays hidden.
+      Three cards hit the table. The pictures are real — the outcome stays hidden.
     </div>
 
     <div class="comedianMiniCards">
-      ${comedianCardHTML(hand[0])}
-      ${comedianCardHTML(hand[1])}
-      ${comedianCardHTML(hand[2])}
+      <div class="comedianMiniCard" onclick="${hand[0].fn}">
+        <img src="${hand[0].img}" alt="Comedian Card">
+        <div class="comedianHiddenLabel">PLAY THIS CARD</div>
+      </div>
+      <div class="comedianMiniCard" onclick="${hand[1].fn}">
+        <img src="${hand[1].img}" alt="Comedian Card">
+        <div class="comedianHiddenLabel">PLAY THIS CARD</div>
+      </div>
+      <div class="comedianMiniCard" onclick="${hand[2].fn}">
+        <img src="${hand[2].img}" alt="Comedian Card">
+        <div class="comedianHiddenLabel">PLAY THIS CARD</div>
+      </div>
     </div>
     `,
     `<button onclick="closePanel();startMusic();renderAll()">Walk Away</button>`,
@@ -2100,19 +1903,13 @@ function showComedianHand(){ try{card90();}catch(e){}
   );
 }
 
-function showComedianResult(title, body, tag, cardKey){
-  const key=(cardKey||"").toLowerCase().replace("the ","");
+function showComedianResult(title, body, tag, cardImg){
   showPanel(
     title,
     "",
     `
-    <div class="comedianPlayedCard">
-      <div class="comedianPortraitCard ${key}" style="cursor:default;min-height:260px;">
-        <img class="comedianPortraitImg" src="${COMEDIAN_CARDS.main}" alt="${title}" style="height:210px;">
-        <div class="comedianCardFace"></div>
-        <div class="comedianCardName">${title}</div>
-        <div class="comedianCardSecret">CARD PLAYED</div>
-      </div>
+    <div class="comedianPlayed">
+      <img src="${cardImg || COMEDIAN_CARDS.main}" alt="The Comedian Card">
     </div>
     <div class="comedianOutcome">${body}</div>
     `,
@@ -2121,7 +1918,7 @@ function showComedianResult(title, body, tag, cardKey){
   );
 }
 
-function comedianGift(){ try{win90();}catch(e){} 
+function comedianGift(){
   let gain=rand(1500,7500);
   cash+=gain;
   heat=Math.max(0,heat-rand(8,22));
@@ -2142,19 +1939,19 @@ function comedianGift(){ try{win90();}catch(e){}
   showComedianResult(
     "THE GIFT",
     `The Comedian smiles.<br><br>+${money(gain)}<br>Heat cooled.${bonus}<br><br>"We both eat today."`,
-    "Card Played", "gift"
+    "Card Played", COMEDIAN_CARDS.gift
   );
 
   log("The Comedian played THE GIFT: "+money(gain)+" and heat relief.","good");
   renderAll();
 }
 
-function comedianTrade(){ try{scratch90();}catch(e){} 
+function comedianTrade(){
   let cost=1000;
 
   if(cash<cost){
     lossSound();
-    showComedianResult("NO TRADE",`You reached without enough cash.<br><br>The Comedian laughs.`,"Card Failed","trade");
+    showComedianResult("NO TRADE",`You reached without enough cash.<br><br>The Comedian laughs.`,"Card Failed");
     log("Not enough cash for The Comedian's trade.","bad");
     return;
   }
@@ -2178,14 +1975,14 @@ function comedianTrade(){ try{scratch90();}catch(e){}
   showComedianResult(
     "THE TRADE",
     `Paid ${money(cost)}.<br>Gained ${qty}x ${item.name}.<br>Heat increased.<br><br>"No pain, no play."`,
-    "Card Played", "trade"
+    "Card Played", COMEDIAN_CARDS.trade
   );
 
   log("The Comedian played THE TRADE: paid "+money(cost)+" for "+qty+"x "+item.name+".","warn");
   renderAll();
 }
 
-function comedianLesson(){ try{lose90();}catch(e){} 
+function comedianLesson(){
   let loss=rand(1000,5000);
   loss=Math.min(cash,loss);
 
@@ -2208,7 +2005,7 @@ function comedianLesson(){ try{lose90();}catch(e){}
   showComedianResult(
     "THE LESSON",
     `Pain keeps you humble.<br><br>Lost ${money(loss)}.<br>Heat spiked.${itemHit}`,
-    "Card Played", "lesson"
+    "Card Played", COMEDIAN_CARDS.lesson
   );
 
   log("The Comedian played THE LESSON: lost "+money(loss)+".","bad");
@@ -2387,11 +2184,8 @@ function startRun(){
   }catch(e){}
 
   try{
-    unlockGameAudio();
+    initAudio();
     clickSound();
-    start90();
-    doorThump();
-    startMusic();
   }catch(e){}
 
   try{
@@ -2406,7 +2200,7 @@ function startRun(){
       try{
         door.volume=.85;
         door.currentTime=0;
-        door.play().catch(()=>{doorThump();});
+        door.play().catch(()=>{});
       }catch(e){}
     }
 
