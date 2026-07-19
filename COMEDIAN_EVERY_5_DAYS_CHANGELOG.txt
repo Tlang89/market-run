@@ -1,0 +1,13 @@
+MARKET RUN v2.2 — THE COMEDIAN EVERY 5 DAYS
+
+CHANGES
+- The Comedian is guaranteed on in-game Days 5, 10, 15, 20, and every fifth day after that.
+- He no longer appears randomly between scheduled appearances.
+- The Comedian takes priority over Market Man, Donnie, and random street events on scheduled days.
+- Staying, traveling, and taking a recovery day all count toward the five-day schedule.
+- Normal street events still keep their existing cooldown.
+- Added cache-busting to index.html so GitHub Pages loads the new rebuild.js.
+- Added test URL support: append ?comedian=1 to trigger him immediately after starting or continuing.
+
+VERSION LABEL
+v2.2 COMEDIAN EVERY 5 DAYS

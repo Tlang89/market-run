@@ -452,6 +452,22 @@
     // Condition now represents actual injury. Time passing by itself does not cause random damage.
   };
 
+  function isComedianDay() {
+    return day > 0 && day % 5 === 0;
+  }
+
+  function runDayEvents(chance) {
+    // The Comedian owns every fifth in-game day. Other scheduled characters wait.
+    if (isComedianDay()) {
+      maybeEvent(chance);
+      return;
+    }
+
+    const previousDonnieWeek = lastDonnieWeek;
+    maybeDonnieWeekly();
+    if (lastDonnieWeek === previousDonnieWeek) maybeEvent(chance);
+  }
+
   stay = function rebuiltStay() {
     if (gameEnded) return;
     clickSound();
@@ -459,9 +475,7 @@
     heat = Math.max(0, heat - rand(0, 3));
     refreshPrices();
     log(`Stayed in ${city}. Markets moved one day.`, "info");
-    const previousDonnieWeek = lastDonnieWeek;
-    maybeDonnieWeekly();
-    if (lastDonnieWeek === previousDonnieWeek) maybeEvent(0.13);
+    runDayEvents(0.13);
     brokeCheck("stay");
     renderAll();
   };
@@ -529,9 +543,7 @@
 
   function finishTravelArrival() {
     closePanel();
-    const previousDonnieWeek = lastDonnieWeek;
-    maybeDonnieWeekly();
-    if (lastDonnieWeek === previousDonnieWeek) maybeEvent(0.2);
+    runDayEvents(0.2);
     brokeCheck("travel");
     renderAll();
   }
@@ -626,7 +638,7 @@
     refreshPrices();
     log(message, "good");
     renderAll();
-    maybeDonnieWeekly();
+    runDayEvents(0.1);
   }
 
   function recoverLayLow() {
@@ -1010,6 +1022,17 @@
     lastEventRollDay = day;
 
     const now = Date.now();
+
+    // Guaranteed schedule: The Comedian appears on days 5, 10, 15, 20, and so on.
+    // This intentionally bypasses the normal event cooldown and takes priority over
+    // Market Man, Donnie, and random street events for that day.
+    if (isComedianDay()) {
+      lastEvent = now;
+      lastEventDay = day;
+      showComedian();
+      return;
+    }
+
     if (maybeMarketManEvent()) return;
     if (day - lastEventDay < 3 || now - lastEvent < 12000) return;
 
@@ -1023,7 +1046,6 @@
     const roll = Math.random();
 
     if (roll < 0.21) showTonie();
-    else if (roll < 0.27) showComedian();
     else if (roll < 0.44) policeEvent();
     else if (roll < 0.6) robberyEvent();
     else if (roll < 0.71) showRico();
@@ -1181,7 +1203,7 @@
   function updateHandbook() {
     const version = document.getElementById("ver");
     const cloud = document.getElementById("cloud");
-    if (version) version.textContent = "v2.1 MARKET MAN";
+    if (version) version.textContent = "v2.2 COMEDIAN EVERY 5 DAYS";
     if (cloud) cloud.textContent = "● DEVICE SAVE READY";
 
     document.querySelectorAll(".graffitiRule").forEach((rule) => {
@@ -1193,9 +1215,29 @@
       } else if (text.includes("HEALTH / HOSPITAL")) {
         rule.innerHTML = `<b>CONDITION / RECOVERY</b><br>Condition drops only when something actually hurts you—fights, robberies, chases, and bad encounters. Low condition reduces carrying capacity. Lay low for free, use a clinic, or pay for a full hospital recovery.`;
       } else if (text.includes("THE STREETS")) {
-        rule.innerHTML = `<b>THE STREETS</b><br>Street events now roll only when a day passes, never on every buy or sell. Events have at least a three-day gap, so the market stays in control of the game. High heat still raises danger.<br><br><b>MARKET MAN</b> is a rare helpful wild card who returns about every 6–10 day advances. His Hot Tip is usually right, his Backroom Deal is discounted, and his Safe Play protects a route for two moves—but chaos is always possible.`;
+        rule.innerHTML = `<b>THE STREETS</b><br>Street events roll only when a day passes, never on every buy or sell. Normal events have at least a three-day gap, while <b>THE COMEDIAN</b> is guaranteed on every fifth in-game day: Day 5, 10, 15, 20, and so on. He no longer appears randomly between those days. High heat still raises danger.<br><br><b>MARKET MAN</b> remains a rare helpful wild card who returns about every 6–10 day advances. His Hot Tip is usually right, his Backroom Deal is discounted, and his Safe Play protects a route for two moves—but chaos is always possible.`;
       }
     });
+  }
+
+  function installComedianTestMode() {
+    try {
+      if (new URLSearchParams(window.location.search).get("comedian") !== "1") return;
+      const originalStartRun = window.startRun;
+      const originalContinueRun = window.continueRun;
+      if (typeof originalStartRun === "function") {
+        window.startRun = function comedianTestStart() {
+          originalStartRun();
+          setTimeout(() => showComedian(), 1650);
+        };
+      }
+      if (typeof originalContinueRun === "function") {
+        window.continueRun = function comedianTestContinue() {
+          originalContinueRun();
+          setTimeout(() => showComedian(), 1200);
+        };
+      }
+    } catch {}
   }
 
   function installMarketManTestMode() {
@@ -1247,6 +1289,7 @@
   addGameBar();
   updateActionDeck();
   updateHandbook();
+  installComedianTestMode();
   installMarketManTestMode();
   installKeyboardSupport();
 })();
