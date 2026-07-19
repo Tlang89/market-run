@@ -1,0 +1,40 @@
+MARKET MAN — v2.1 CHANGELOG
+===========================
+
+NEW CHARACTER
+- Added Market Man character artwork: market_man.png
+- Rare appearance about every 6–10 day advances
+- Minimum five-day cooldown between appearances
+- Saved appearance schedule survives browser reloads
+
+CHOICES
+1. HOT TIP
+   - Calls an item and city for the next market move
+   - 70%: 20–45% favorable spike
+   - 20%: nearly flat result
+   - 10%: 15–30% reversal/crash
+   - Pending tips are saved
+
+2. BACKROOM DEAL
+   - Offers 3–5 units
+   - 15–25% below the current local market
+   - Buys only what cash and carrying space allow
+   - 70% clean deal
+   - 20% slight heat increase
+   - 10% immediate 15–30% local market crash
+
+3. SAFE PLAY
+   - Finds the best current city-to-city spread
+   - Protects the buy ceiling and sell floor
+   - Protection lasts for two market moves
+   - Protected routes are saved
+
+RARE CHAOS CALL
+- Optional "Plans Changed" encounter
+- 70% creates a 25–50% local price spike
+- 20% scrambles every local market
+- 10% creates a 20–35% crash and adds heat
+
+TESTING
+Add ?marketman=1 to the live game URL. Start or continue a run and Market Man
+will appear immediately. Remove the query afterward for normal gameplay.

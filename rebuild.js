@@ -35,6 +35,13 @@
   let lastEventDay = -99;
   let lastEventRollDay = -99;
 
+  const MARKET_MAN_ASSET = "market_man.png";
+  let lastMarketManDay = -99;
+  let nextMarketManDay = day + rand(6, 10);
+  let marketManPendingTip = null;
+  let marketManRouteLock = null;
+  let marketManDealOffer = null;
+
   function marketAnchor(cityName, itemName) {
     const entry = catalog.find((item) => item.name === itemName);
     const bias = cityBias[cityName]?.[itemName] || 1;
@@ -216,6 +223,7 @@
         if (state.history.length > 10) state.history.shift();
       });
     });
+    applyMarketManMarketEffects();
     syncCurrentMarket();
   }
 
@@ -657,11 +665,352 @@
     finishRecovery(`Hospital fully restored condition for ${money(cost)}.`);
   }
 
+
+  function setStatePrice(state, nextPrice, momentum = 0) {
+    if (!state) return;
+    state.last = state.price;
+    state.price = Math.max(25, Math.round(nextPrice));
+    if (!Array.isArray(state.history)) state.history = [state.last || state.price];
+    state.history.push(state.price);
+    if (state.history.length > 10) state.history.shift();
+    state.momentum = clampValue(momentum, -0.12, 0.12);
+  }
+
+  function marketManPanel(title, text, buttons, tag = "Rare Street Contact") {
+    showPanel(title, MARKET_MAN_ASSET, text, buttons, tag);
+    const overlay = document.querySelector(".overlay");
+    if (overlay) overlay.classList.add("marketManOverlay");
+  }
+
+  function randomMarketManItem() {
+    const pool = catalog.filter((entry) => entry.name !== "Million Dollar Mixtape");
+    return pool[rand(0, pool.length - 1)];
+  }
+
+  function bestMarketRoute() {
+    let best = null;
+    catalog
+      .filter((entry) => entry.name !== "Million Dollar Mixtape")
+      .forEach((entry) => {
+        const values = cities.map((cityName) => ({
+          city: cityName,
+          price: marketLedger[cityName][entry.name].price,
+        }));
+        const low = values.reduce((choice, value) => (value.price < choice.price ? value : choice));
+        const high = values.reduce((choice, value) => (value.price > choice.price ? value : choice));
+        const profit = high.price - low.price;
+        const spread = (profit / Math.max(1, low.price)) * 100;
+        if (!best || spread > best.spread) {
+          best = { entry, low, high, profit, spread };
+        }
+      });
+    return best;
+  }
+
+  function applyMarketManMarketEffects() {
+    if (marketManPendingTip && day >= marketManPendingTip.triggerDay) {
+      const tip = marketManPendingTip;
+      const state = marketLedger[tip.city]?.[tip.itemName];
+      if (state) {
+        const modifier =
+          tip.outcome === "hit"
+            ? 1 + tip.percent / 100
+            : tip.outcome === "flat"
+              ? 1 + tip.percent / 100
+              : 1 - tip.percent / 100;
+        setStatePrice(
+          state,
+          state.price * modifier,
+          tip.outcome === "hit" ? 0.07 : tip.outcome === "miss" ? -0.07 : 0,
+        );
+        if (tip.outcome === "hit") {
+          winSound();
+          log(`Market Man called it: ${tip.itemName} jumped ${tip.percent}% in ${tip.city}.`, "good");
+          setIntel(`Market Man hit: ${tip.itemName} is surging in ${tip.city}.`);
+        } else if (tip.outcome === "flat") {
+          log(`Market Man's ${tip.itemName} tip in ${tip.city} barely moved.`, "warn");
+          setIntel(`Market Man update: ${tip.itemName} stayed nearly flat in ${tip.city}.`);
+        } else {
+          lossSound();
+          log(`Chaos: ${tip.itemName} fell ${tip.percent}% in ${tip.city}.`, "bad");
+          setIntel(`Market Man chaos: ${tip.itemName} reversed hard in ${tip.city}.`);
+        }
+      }
+      marketManPendingTip = null;
+    }
+
+    if (marketManRouteLock && marketManRouteLock.movesRemaining > 0) {
+      const lock = marketManRouteLock;
+      const buyState = marketLedger[lock.buyCity]?.[lock.itemName];
+      const sellState = marketLedger[lock.sellCity]?.[lock.itemName];
+      if (buyState && buyState.price > lock.buyCeiling) {
+        buyState.price = Math.round(lock.buyCeiling);
+        buyState.history[buyState.history.length - 1] = buyState.price;
+        buyState.momentum = Math.min(buyState.momentum, 0);
+      }
+      if (sellState && sellState.price < lock.sellFloor) {
+        sellState.price = Math.round(lock.sellFloor);
+        sellState.history[sellState.history.length - 1] = sellState.price;
+        sellState.momentum = Math.max(sellState.momentum, 0);
+      }
+      lock.movesRemaining -= 1;
+      if (lock.movesRemaining <= 0) {
+        log(`Market Man's protected ${lock.itemName} route expired.`, "info");
+        marketManRouteLock = null;
+      }
+    }
+  }
+
+  function scheduleNextMarketMan() {
+    lastMarketManDay = day;
+    nextMarketManDay = day + rand(6, 10);
+  }
+
+  function maybeMarketManEvent() {
+    if (day < nextMarketManDay || day - lastMarketManDay < 5) return false;
+    if (day - lastEventDay < 2) return false;
+    scheduleNextMarketMan();
+    lastEvent = Date.now();
+    lastEventDay = day;
+    showMarketMan();
+    return true;
+  }
+
+  function showMarketMan() {
+    clickSound();
+    if (Math.random() < 0.1) {
+      marketManChaosOffer();
+      return;
+    }
+    marketManPanel(
+      "MARKET MAN",
+      `<div class="marketManQuote">“I don't sell certainty. I sell timing.”</div>
+       <div class="marketManIntro">Pick your play. The safer the move, the smaller the upside. The exciting one might make you rich—or make the market laugh at you.</div>`,
+      `<div class="marketManChoices">
+         <button onclick="marketManOfferTip()"><strong>HOT TIP</strong><small>A next-day price call. Usually right. Sometimes chaos.</small></button>
+         <button onclick="marketManOfferDeal()"><strong>BACKROOM DEAL</strong><small>Discounted goods with a small chance the market collapses.</small></button>
+         <button onclick="marketManSafePlay()"><strong>SAFE PLAY</strong><small>Reliable route intel with two protected market moves.</small></button>
+       </div>
+       <button onclick="closePanel();renderAll()">Walk Away</button>`,
+      "Helpful Wild Card",
+    );
+  }
+
+  function marketManOfferTip() {
+    const entry = randomMarketManItem();
+    const targetCity = cities[rand(0, cities.length - 1)];
+    marketManPendingTip = {
+      itemName: entry.name,
+      city: targetCity,
+      triggerDay: day + 1,
+      outcome: null,
+      percent: 0,
+    };
+    marketManPanel(
+      "HOT TIP",
+      `<div class="marketManQuote">“${entry.name}. ${targetCity}. Next move.”</div>
+       <div class="marketManIntro">The call triggers when the next day advances. You can buy now, travel, stay, or ignore it—but once the market moves, the result is locked in.</div>`,
+      `<button class="btnGold" onclick="marketManAcceptTip()">Trust the Tip</button>
+       <button onclick="marketManCancelTip()">Choose Another Play</button>`,
+      "Market Man Intel",
+    );
+  }
+
+  function marketManAcceptTip() {
+    if (!marketManPendingTip) return showMarketMan();
+    const roll = Math.random();
+    if (roll < 0.7) {
+      marketManPendingTip.outcome = "hit";
+      marketManPendingTip.percent = rand(20, 45);
+    } else if (roll < 0.9) {
+      marketManPendingTip.outcome = "flat";
+      marketManPendingTip.percent = rand(-2, 4);
+    } else {
+      marketManPendingTip.outcome = "miss";
+      marketManPendingTip.percent = rand(15, 30);
+    }
+    const tip = marketManPendingTip;
+    setIntel(`Market Man says ${tip.itemName} in ${tip.city} moves on the next day.`);
+    log(`Accepted Market Man's ${tip.itemName} tip for ${tip.city}.`, "warn");
+    closePanel();
+    renderAll();
+  }
+
+  function marketManCancelTip() {
+    marketManPendingTip = null;
+    showMarketMan();
+  }
+
+  function marketManOfferDeal() {
+    const entry = randomMarketManItem();
+    const state = marketLedger[city][entry.name];
+    const discount = rand(15, 25);
+    const quantity = rand(3, 5);
+    const unitPrice = Math.max(25, Math.round(state.price * (1 - discount / 100)));
+    marketManDealOffer = {
+      itemName: entry.name,
+      unitPrice,
+      quantity,
+      city,
+      discount,
+    };
+    marketManPanel(
+      "BACKROOM DEAL",
+      `<div class="marketManQuote">“${quantity} units of ${entry.name}. ${money(unitPrice)} each.”</div>
+       <div class="marketManDealStats"><span>Current market: <b>${money(state.price)}</b></span><span>Your discount: <b>${discount}%</b></span></div>
+       <div class="marketManIntro">The merchandise is real. The market afterward? That's the part nobody controls.</div>`,
+      `<button class="btnGold" onclick="marketManBuyDeal()">Buy What I Can</button>
+       <button onclick="marketManCancelDeal()">Choose Another Play</button>`,
+      "Limited Offer",
+    );
+  }
+
+  function marketManBuyDeal() {
+    const offer = marketManDealOffer;
+    if (!offer) return showMarketMan();
+    const capacity = Math.max(0, effectiveCarryLimit() - goodsCount(inventory));
+    const affordable = Math.floor(cash / offer.unitPrice);
+    const quantity = Math.min(offer.quantity, capacity, affordable);
+    if (quantity <= 0) {
+      marketManPanel(
+        "NO ROOM FOR THE DEAL",
+        `You need more cash or carrying space before Market Man can move the merchandise.`,
+        `<button onclick="marketManOfferDeal()">See the Offer Again</button><button onclick="marketManCancelDeal()">Back</button>`,
+        "Deal Blocked",
+      );
+      return;
+    }
+
+    cash -= quantity * offer.unitPrice;
+    inventory[offer.itemName] = (inventory[offer.itemName] || 0) + quantity;
+    const roll = Math.random();
+    let resultText = `You bought ${quantity}x ${offer.itemName} for ${money(quantity * offer.unitPrice)}.`;
+    let resultTag = "Clean Deal";
+
+    if (roll < 0.7) {
+      winSound();
+      resultText += `<br><br>The deal stays quiet. No strings attached.`;
+      log(`Market Man deal: ${quantity}x ${offer.itemName} at ${offer.discount}% below market.`, "good");
+    } else if (roll < 0.9) {
+      heat += rand(2, 6);
+      resultTag = "Word Got Around";
+      resultText += `<br><br>The goods are clean, but somebody talked. Heat rose a little.`;
+      log(`Market Man deal landed, but added a little heat.`, "warn");
+    } else {
+      const state = marketLedger[offer.city]?.[offer.itemName];
+      const crash = rand(15, 30);
+      if (state) setStatePrice(state, state.price * (1 - crash / 100), -0.08);
+      lossSound();
+      resultTag = "Chaos Hit";
+      resultText += `<br><br>The local ${offer.itemName} market immediately crashed ${crash}%.`;
+      log(`Market Man chaos: ${offer.itemName} crashed after the deal.`, "bad");
+    }
+
+    marketManDealOffer = null;
+    syncCurrentMarket();
+    marketManPanel(
+      "DEAL COMPLETE",
+      resultText,
+      `<button class="btnGold" onclick="closePanel();renderAll()">Back to the Market</button>`,
+      resultTag,
+    );
+    renderAll();
+  }
+
+  function marketManCancelDeal() {
+    marketManDealOffer = null;
+    showMarketMan();
+  }
+
+  function marketManSafePlay() {
+    const route = bestMarketRoute();
+    if (!route) {
+      closePanel();
+      return;
+    }
+    marketManRouteLock = {
+      itemName: route.entry.name,
+      buyCity: route.low.city,
+      sellCity: route.high.city,
+      buyCeiling: route.low.price,
+      sellFloor: route.high.price,
+      movesRemaining: 2,
+    };
+    setIntel(
+      `Protected route: buy ${route.entry.name} in ${route.low.city} at ${money(route.low.price)} or less; sell in ${route.high.city} at ${money(route.high.price)} or more.`,
+    );
+    log(`Market Man protected the ${route.entry.name} route for two market moves.`, "good");
+    marketManPanel(
+      "SAFE PLAY LOCKED",
+      `<div class="marketManRoute">
+         <span>BUY</span><b>${route.entry.name}</b><strong>${route.low.city} · ${money(route.low.price)}</strong>
+         <em>→</em>
+         <span>SELL</span><b>${route.entry.name}</b><strong>${route.high.city} · ${money(route.high.price)}</strong>
+       </div>
+       <div class="marketManIntro">Potential gross profit: <b>${money(route.profit)} per unit</b> (${route.spread.toFixed(0)}%). Market Man guarantees the buy ceiling and sell floor for the next two day advances.</div>`,
+      `<button class="btnGold" onclick="closePanel();renderAll()">Use the Route</button>`,
+      "Reliable Intel",
+    );
+  }
+
+  function marketManChaosOffer() {
+    marketManPanel(
+      "PLANS CHANGED",
+      `<div class="marketManQuote">“Move now. Ask questions later.”</div>
+       <div class="marketManIntro">Accept and Market Man will force an immediate market move. Most of the time it creates an opportunity. Sometimes the opportunity is for somebody else.</div>`,
+      `<button class="btnGold" onclick="marketManResolveChaos()">Accept the Chaos</button>
+       <button onclick="closePanel();renderAll()">Not Today</button>`,
+      "Rare Chaos Call",
+    );
+  }
+
+  function marketManResolveChaos() {
+    const entry = randomMarketManItem();
+    const state = marketLedger[city]?.[entry.name];
+    const roll = Math.random();
+    let text = "";
+    let tag = "Chaos Result";
+    if (roll < 0.7) {
+      const spike = rand(25, 50);
+      if (state) setStatePrice(state, state.price * (1 + spike / 100), 0.09);
+      winSound();
+      text = `${entry.name} exploded ${spike}% in ${city}. Market Man just created a selling window.`;
+      log(`Market Man chaos created a ${spike}% ${entry.name} spike.`, "good");
+      tag = "Opportunity Created";
+    } else if (roll < 0.9) {
+      catalog.forEach((item) => {
+        const local = marketLedger[city][item.name];
+        const shift = rand(-6, 6);
+        setStatePrice(local, local.price * (1 + shift / 100), shift / 1000);
+      });
+      text = `Every market in ${city} shifted at once. Some doors opened. Others closed.`;
+      log(`Market Man scrambled every ${city} market.`, "warn");
+      tag = "Everything Moved";
+    } else {
+      const crash = rand(20, 35);
+      if (state) setStatePrice(state, state.price * (1 - crash / 100), -0.1);
+      heat += rand(6, 12);
+      lossSound();
+      text = `${entry.name} collapsed ${crash}% in ${city}, and the sudden move added heat.`;
+      log(`Market Man chaos backfired on ${entry.name}.`, "bad");
+      tag = "Chaos Won";
+    }
+    syncCurrentMarket();
+    marketManPanel(
+      "MARKET MOVED",
+      text,
+      `<button class="btnGold" onclick="closePanel();renderAll()">Handle It</button>`,
+      tag,
+    );
+    renderAll();
+  }
+
   maybeEvent = function rebuiltEventRoll(chance) {
     if (gameEnded || lastEventRollDay === day) return;
     lastEventRollDay = day;
 
     const now = Date.now();
+    if (maybeMarketManEvent()) return;
     if (day - lastEventDay < 3 || now - lastEvent < 12000) return;
 
     const heatBonus = heat >= 95 ? 0.04 : heat >= 70 ? 0.02 : 0;
@@ -689,7 +1038,7 @@
     if (screen && screen.style.display !== "none" && !manual) return;
 
     const save = {
-      rebuildVersion: 2,
+      rebuildVersion: 3,
       cash,
       bank,
       day,
@@ -708,6 +1057,10 @@
       lastHeatSaveDay,
       lastEventDay,
       lastEventRollDay,
+      lastMarketManDay,
+      nextMarketManDay,
+      marketManPendingTip,
+      marketManRouteLock,
       marketLedger,
     };
 
@@ -739,6 +1092,10 @@
       lastHeatSaveDay = Number(save.lastHeatSaveDay ?? -99);
       lastEventDay = Number(save.lastEventDay ?? -99);
       lastEventRollDay = Number(save.lastEventRollDay ?? -99);
+      lastMarketManDay = Number(save.lastMarketManDay ?? -99);
+      nextMarketManDay = Number(save.nextMarketManDay ?? day + rand(6, 10));
+      marketManPendingTip = save.marketManPendingTip || null;
+      marketManRouteLock = save.marketManRouteLock || null;
       marketLedger = hydrateLedger(save.marketLedger);
 
       if (!save.marketLedger && Array.isArray(save.items)) {
@@ -824,7 +1181,7 @@
   function updateHandbook() {
     const version = document.getElementById("ver");
     const cloud = document.getElementById("cloud");
-    if (version) version.textContent = "v2.0 MARKET REBUILD";
+    if (version) version.textContent = "v2.1 MARKET MAN";
     if (cloud) cloud.textContent = "● DEVICE SAVE READY";
 
     document.querySelectorAll(".graffitiRule").forEach((rule) => {
@@ -836,9 +1193,29 @@
       } else if (text.includes("HEALTH / HOSPITAL")) {
         rule.innerHTML = `<b>CONDITION / RECOVERY</b><br>Condition drops only when something actually hurts you—fights, robberies, chases, and bad encounters. Low condition reduces carrying capacity. Lay low for free, use a clinic, or pay for a full hospital recovery.`;
       } else if (text.includes("THE STREETS")) {
-        rule.innerHTML = `<b>THE STREETS</b><br>Street events now roll only when a day passes, never on every buy or sell. Events have at least a three-day gap, so the market stays in control of the game. High heat still raises danger.`;
+        rule.innerHTML = `<b>THE STREETS</b><br>Street events now roll only when a day passes, never on every buy or sell. Events have at least a three-day gap, so the market stays in control of the game. High heat still raises danger.<br><br><b>MARKET MAN</b> is a rare helpful wild card who returns about every 6–10 day advances. His Hot Tip is usually right, his Backroom Deal is discounted, and his Safe Play protects a route for two moves—but chaos is always possible.`;
       }
     });
+  }
+
+  function installMarketManTestMode() {
+    try {
+      if (new URLSearchParams(window.location.search).get("marketman") !== "1") return;
+      const originalStartRun = window.startRun;
+      const originalContinueRun = window.continueRun;
+      if (typeof originalStartRun === "function") {
+        window.startRun = function marketManTestStart() {
+          originalStartRun();
+          setTimeout(() => showMarketMan(), 1650);
+        };
+      }
+      if (typeof originalContinueRun === "function") {
+        window.continueRun = function marketManTestContinue() {
+          originalContinueRun();
+          setTimeout(() => showMarketMan(), 1200);
+        };
+      }
+    } catch {}
   }
 
   function installKeyboardSupport() {
@@ -856,10 +1233,20 @@
   window.recoverLayLow = recoverLayLow;
   window.recoverClinic = recoverClinic;
   window.recoverHospital = recoverHospital;
+  window.showMarketMan = showMarketMan;
+  window.marketManOfferTip = marketManOfferTip;
+  window.marketManAcceptTip = marketManAcceptTip;
+  window.marketManCancelTip = marketManCancelTip;
+  window.marketManOfferDeal = marketManOfferDeal;
+  window.marketManBuyDeal = marketManBuyDeal;
+  window.marketManCancelDeal = marketManCancelDeal;
+  window.marketManSafePlay = marketManSafePlay;
+  window.marketManResolveChaos = marketManResolveChaos;
 
   syncCurrentMarket();
   addGameBar();
   updateActionDeck();
   updateHandbook();
+  installMarketManTestMode();
   installKeyboardSupport();
 })();
