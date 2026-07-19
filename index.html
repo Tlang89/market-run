@@ -1,1 +1,159 @@
-file:Market_Run_Rebuilt_v2/Market_Run_Rebuilt_v2/index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>The Pu$her — Market Run Rebuilt</title>
+<meta name="description" content="Read the market, move city to city, and build a lifetime street-trading empire." />
+<meta name="theme-color" content="#020202" />
+<style>
+:root{
+  --gold:#d4af37;
+  --bright:#f2d97a;
+  --soft:#9b8340;
+  --panel:rgba(10,10,10,.84);
+  --line:rgba(212,175,55,.32);
+  --good:#77e08a;
+  --bad:#ff7777;
+  --warn:#ffc76d;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{
+  margin:0;height:100%;overflow:hidden;background:#000;color:var(--gold);
+  font-family:Arial,Helvetica,sans-serif;
+}
+button{
+  touch-action:manipulation;border:1px solid #666;background:#171717;color:var(--gold);
+  padding:10px 12px;border-radius:5px;font-weight:900;min-width:78px;cursor:pointer;
+}
+button:active{background:var(--gold);color:#000;transform:scale(.96)}
+.btnGold{background:#b99128;color:#111;border-color:var(--gold)}
+
+#startScreen{position:fixed;inset:0;z-index:9999;background:#000;overflow:hidden}
+#startBg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform-origin:70% 62%;transition:transform 1.15s ease,opacity .55s ease;pointer-events:none}
+#startScreen:after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.04),rgba(0,0,0,.28));pointer-events:none}
+#startMenu{position:absolute;left:50%;bottom:8%;transform:translateX(-50%);z-index:99999;width:min(78vw,430px);display:flex;flex-direction:column;gap:14px;transition:opacity .5s ease}
+.startBtn{border:2px solid var(--gold);border-radius:11px;background:rgba(0,0,0,.38);color:var(--gold);padding:14px;text-align:center;font-weight:900;letter-spacing:2px;font-size:18px;cursor:pointer}
+.startBtn:active{background:var(--gold);color:#000;transform:scale(.96)}
+.corner{position:absolute;bottom:18px;z-index:3;color:var(--gold);font-size:12px;letter-spacing:.8px;opacity:.9}
+.corner.left{left:18px}.corner.right{right:18px}
+.zooming{transform:scale(1.18);filter:brightness(1.05)}
+.fadeOut{opacity:0}
+
+.game{height:100vh;display:flex;flex-direction:column;gap:8px;padding:8px;background:linear-gradient(rgba(0,0,0,.62),rgba(0,0,0,.92)),url("New York Street.png") center top / cover no-repeat;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.header{flex-shrink:0;border:1px solid var(--line);background:linear-gradient(180deg,rgba(20,20,20,.88),rgba(8,8,8,.82));padding:8px 14px;box-shadow:0 0 24px rgba(0,0,0,.75), inset 0 0 20px rgba(212,175,55,.04)}
+.title{font-size:clamp(30px,8vw,48px);line-height:.95;font-weight:900;color:var(--bright);letter-spacing:1px}
+.sub{margin-top:5px;color:#c76f6f;font-weight:900;letter-spacing:2px;font-size:13px}
+.tagline{margin-top:5px;color:var(--warn);font-weight:800}
+
+.hud{flex-shrink:0;display:grid;grid-template-columns:1.2fr 1fr 1fr 1.2fr;gap:8px}
+.hudCard{border:1px solid var(--line);background:var(--panel);padding:7px 10px;min-height:48px}
+.label{text-transform:uppercase;color:var(--soft);font-size:10px;letter-spacing:1.5px;margin-bottom:4px}
+.value{color:var(--bright);font-size:clamp(15px,4vw,22px);font-weight:900}
+
+.intel{flex-shrink:0;border:1px solid var(--line);border-left:3px solid var(--gold);background:rgba(0,0,0,.85);padding:6px 10px;color:var(--warn);font-size:14px;letter-spacing:.5px;font-weight:800;line-height:1.25}
+.marketWrap{flex:0 0 auto;min-height:265px;border:1px solid rgba(212,175,55,.35);background:rgba(8,8,8,.82);display:flex;flex-direction:column;overflow:hidden}
+.marketHead{flex-shrink:0;display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-bottom:1px solid var(--line);background:rgba(18,18,18,.9);color:var(--bright);font-size:20px;font-weight:900}
+.market{flex:1;min-height:215px;max-height:310px;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px}
+.itemCard{border:1px solid rgba(212,175,55,.2);background:linear-gradient(135deg,rgba(255,255,255,.035),rgba(212,175,55,.025));padding:10px;margin-bottom:8px;box-shadow:inset 0 0 14px rgba(212,175,55,.025)}
+.itemTop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.itemName{color:var(--bright);font-size:20px;font-weight:900}
+.price{color:var(--gold);font-size:23px;font-weight:900;white-space:nowrap}
+.meta{color:var(--soft);font-size:13px;margin-top:4px}
+.spark{height:22px;width:100%;border:1px solid rgba(212,175,55,.32);background:#060606;margin:10px 0 8px}
+.buttons{display:flex;gap:10px;flex-wrap:wrap}
+
+.bottom{flex-shrink:0;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.action{border:2px solid var(--gold);border-radius:12px;background:rgba(0,0,0,.72);color:var(--gold);text-align:center;font-weight:900;letter-spacing:1px;font-size:15px;padding:10px 6px;cursor:pointer}
+.action:active{background:var(--gold);color:#000;transform:scale(.97)}
+
+.drawer{flex-shrink:0;display:grid;grid-template-columns:1fr 1fr;gap:8px;opacity:.95}
+.miniPanel{border:2px solid var(--gold);background:rgba(0,0,0,.9);min-height:90px;max-height:160px;overflow:auto;box-shadow:0 0 12px rgba(212,175,55,.25), inset 0 0 10px rgba(212,175,55,.08)}
+.miniHead{display:flex;justify-content:space-between;padding:10px 12px;color:var(--bright);font-weight:900;border-bottom:2px solid var(--gold);letter-spacing:1px;font-size:14px}
+.miniBody{padding:7px 10px;font-size:13px;line-height:1.35}
+.line{display:flex;justify-content:space-between;gap:8px;padding:6px 0;font-size:13px;border-bottom:1px solid rgba(255,255,255,.12)}
+.line:last-child{border-bottom:none}
+
+.good{color:var(--good)}.bad{color:var(--bad)}.warn{color:var(--warn)}.info{color:var(--gold)}
+.up{color:var(--good);font-weight:900}.down{color:var(--bad);font-weight:900}.flat{color:var(--soft);font-weight:900}
+
+.overlay{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;padding:18px;animation:fadeIn .18s ease}
+.comic{width:min(620px,94vw);background:linear-gradient(rgba(0,0,0,.72),rgba(0,0,0,.9)),radial-gradient(circle at top,rgba(212,175,55,.14),transparent 45%),#111;border:3px solid var(--gold);padding:16px;text-align:center;box-shadow:0 0 38px rgba(0,0,0,.85);transform:scale(.66);opacity:0;animation:comicSlam .26s cubic-bezier(.2,1.45,.4,1) forwards}
+.comic img{width:100%;max-height:42vh;object-fit:contain;background:#030303;border:1px solid rgba(212,175,55,.22);margin-bottom:10px}
+.comic img.broken{display:none}
+.comicTag{color:var(--soft);font-size:12px;text-transform:uppercase;letter-spacing:3px;margin-bottom:8px}
+.comicTitle{color:var(--bright);font-size:clamp(28px,8vw,44px);font-weight:900;margin-bottom:8px}
+.comicText{color:var(--soft);font-size:18px;line-height:1.35;margin-bottom:14px}
+.cardGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.pickCard{border:2px solid var(--gold);background:#050505;color:var(--gold);padding:24px 8px;font-size:36px;font-weight:900;cursor:pointer}
+
+.hud,.marketWrap,.intel,.bottom,.drawer{opacity:0;transform:translateY(18px);animation:panelIn .42s ease forwards}
+.hud{animation-delay:.06s}.marketWrap{animation-delay:.12s}.intel{animation-delay:.18s}.bottom{animation-delay:.24s}.drawer{animation-delay:.30s}
+
+@keyframes panelIn{to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes comicSlam{0%{transform:scale(.66) rotate(-3deg);opacity:0}60%{transform:scale(1.045) rotate(1deg);opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes marketPulse{0%{transform:scale(1)}50%{transform:scale(1.018);box-shadow:0 0 24px rgba(212,175,55,.22)}100%{transform:scale(1)}}
+@keyframes shake{0%{transform:translateX(0)}25%{transform:translateX(-4px)}50%{transform:translateX(4px)}75%{transform:translateX(-2px)}100%{transform:translateX(0)}}
+.marketPulse{animation:marketPulse .32s ease}
+
+@media(max-width:560px){.game{padding:8px;gap:8px}.hud{grid-template-columns:1fr 1fr}.bottom{grid-template-columns:1fr 1fr}.drawer{grid-template-columns:1fr}.miniPanel{max-height:160px}.itemName{font-size:20px}.price{font-size:23px}.comicText{font-size:16px}}
+@media(min-width:700px){.title{font-size:42px}.market{max-height:210px}}
+</style>
+<link rel="stylesheet" href="rebuild.css" />
+</head>
+
+<body>
+
+<div id="startScreen">
+  <img id="startBg" src="startscreen.PNG" alt="The Pu$her" onerror="this.style.display='none'">
+  <div id="startMenu">
+    <div class="startBtn" id="guideBtn" onclick="toggleGuide()">HOW TO PLAY</div>
+    <div class="startBtn" id="continueBtn" onclick="continueRun()">CONTINUE SAVED RUN</div>
+    <div class="startBtn" id="startRunBtn" onclick="startRun()">START NEW RUN</div>
+    <div class="startBtn" onclick="localStorage.removeItem('pusher_lifetime_save_v1');localStorage.removeItem('pusher_lifetime_save_v2_fresh');localStorage.removeItem('pusher_lifetime_save_v3_final');location.reload()">CLEAR SAVES</div>
+  </div>
+
+  <div id="guidePanel" style="display:none;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(90vw,500px);background:rgba(0,0,0,.92);border:2px solid #d4af37;padding:18px;color:#d4af37;z-index:100001;pointer-events:auto;max-height:70vh;overflow-y:auto;box-shadow:0 0 28px rgba(0,0,0,.85)">
+    <div style="font-size:14px;line-height:1.45;text-align:left;">
+      <div class="startBtn" onclick="toggleGuide()" style="margin-bottom:14px;">CLOSE HANDBOOK</div>
+    </div>
+  </div>
+  <div class="corner left" id="cloud">☁ CLOUD SAVED</div>
+  <div class="corner right" id="ver">v2.0 MARKET REBUILD</div>
+</div>
+
+<div class="game" id="game">
+  <div class="hud" id="hud"></div>
+  <div class="marketWrap" id="marketWrap">
+    <div class="marketHead"><span>Black Market</span><span id="cityLabel">New York</span></div>
+    <div class="market" id="market"></div>
+  </div>
+  <div class="intel" id="intel">No fresh intel yet. Watch the market.</div>
+  <div class="bottom">
+    <div class="action" onclick="stay()">STAY</div>
+    <div class="action" onclick="deposit()">DEPOSIT</div>
+    <div class="action" onclick="withdraw()">WITHDRAW</div>
+    <div class="action" onclick="showTravel()">TRAVEL</div>
+    <div class="action" onclick="hospital()">RECOVER</div>
+    <div class="action" onclick="buyBlock()">BUY BLOCK</div>
+    <div class="action" onclick="storeGoods()">STORE</div>
+    <div class="action" onclick="takeGoods()">TAKE</div>
+    <div class="action" onclick="manualSave()">SAVE</div>
+  </div>
+  <div class="drawer">
+    <div class="miniPanel">
+      <div class="miniHead"><span>Inventory</span><span id="cap">0/30</span></div>
+      <div class="miniBody" id="inventoryBox"></div>
+    </div>
+    <div class="miniPanel">
+      <div class="miniHead"><span>Street Feed</span><span>Live</span></div>
+      <div class="miniBody" id="feed"></div>
+    </div>
+  </div>
+</div>
+
+<audio id="voicePlaya" src="playa_hand.m4a"></audio>
+<script src="rebuild.js"></script>
+</body>
+</html>
