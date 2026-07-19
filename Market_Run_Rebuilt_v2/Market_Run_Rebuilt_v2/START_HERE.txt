@@ -1,0 +1,45 @@
+THE PU$HER — MARKET RUN REBUILT v2.0
+====================================
+
+This is a complete standalone browser build. No installation, build command,
+or paid service is required.
+
+FASTEST WAY TO REPLACE THE CURRENT GITHUB PAGES BUILD
+1. Unzip this folder.
+2. Open the existing "market-run" GitHub repository.
+3. Upload every file inside the Market_Run_Rebuilt_v2 folder to the repository
+   root, replacing the old files when GitHub asks.
+4. Commit the upload.
+5. GitHub Pages will update after the new commit finishes publishing.
+
+CLOUDFLARE PAGES / STATIC HOSTING
+Upload the entire folder as a static site. index.html must stay in the same
+folder as rebuild.js, rebuild.css, the PNG artwork, and playa_hand.m4a.
+
+LOCAL TESTING
+Some browsers restrict audio or saved-game behavior when index.html is opened
+directly from a computer. For the most accurate test, serve the folder with any
+small static server or upload it to GitHub Pages / Cloudflare Pages.
+
+WHAT CHANGED
+- Risk 1–5 is now calculated from actual recent volatility.
+- Trend labels come from the same price history drawn on the graph.
+- Rising/Falling only appears when recent movement consistently supports it.
+- Mixed high-volatility movement is labeled Choppy or Volatile, not Stable.
+- Charts show a 10-day line, daily percentage, high/low, and last four prices.
+- City Price Board compares every item across all five cities before traveling.
+- Buying and selling no longer trigger street-event rolls.
+- Events roll only when a day passes and have a minimum three-day gap.
+- Health is now Condition and only drops from injuries.
+- Recovery includes Lay Low, Street Clinic, and Hospital choices.
+- Low Condition temporarily reduces carrying capacity.
+- Mobile uses one continuous scroll with bottom safe-area spacing.
+- Missing Miami, Los Angeles, and Atlanta backgrounds were added.
+- All storage, travel, hospital, police, and character images resolve correctly.
+- Existing characters, banking, storage, blocks, milestones, audio, inventory,
+  auto-save, and lifetime-run systems are preserved.
+
+SAVE COMPATIBILITY
+The rebuild can load the prior browser save and converts the old single-city
+market history into the new five-city system. Saves remain on the device in
+the browser's local storage.
